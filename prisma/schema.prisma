@@ -1,0 +1,109 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model Project {
+  id          BigInt  @id @default(autoincrement())
+  name        String
+  fromEmail   String  @map("from_email")
+  blog        Blog?
+  users       ProjectUser[]
+  tags        Tag[]
+
+  @@map("project")
+}
+
+
+model Blog {
+  id          BigInt    @id
+  project     Project   @relation(fields: [id], references: [id])
+  publicUrl   String    @unique @map("public_url")
+
+  @@map("blog")
+}
+
+
+model ProjectUser {
+  id            BigInt      @id @default(autoincrement())
+  project       Project     @relation(fields: [projectId], references: [id])
+  projectId     BigInt      @map("project_id")
+
+  firstName     String
+  lastName      String
+  email         String
+
+  password      String
+  passwordHash  String      @map("password_harsh")
+
+  createdAt     DateTime    @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt     DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
+
+  tokens        UserToken[]
+  posts         Post[]
+
+  @@map("project_user")
+  @@unique([email, projectId])
+}
+
+
+model Tag {
+  id          BigInt    @id @default(autoincrement())
+  project     Project   @relation(fields: [projectId], references: [id])
+  projectId   BigInt    @map("project_id")
+  name        String
+  slug        String
+  description String
+
+  posts        PostTags[]
+
+  createdAt   DateTime  @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt   DateTime  @db.Timestamptz() @updatedAt @map("updated_at")
+
+  @@map("tag")
+  @@unique([projectId, slug])
+}
+
+model Post {
+  id          BigInt      @id @default(autoincrement())
+  title       String
+  content     Json        @db.JsonB
+  tags        PostTags[]
+  owner       ProjectUser @relation(fields: [ownerId], references: [id])
+  ownerId     BigInt      @map("owner_id")
+
+  createdAt   DateTime    @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt   DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
+  publishedAt DateTime?   @db.Timestamptz()
+
+  @@map("post")
+}
+
+model PostTags {
+  post    Post    @relation(fields: [postId], references: [id])
+  postId  BigInt  @map("post_id")
+  tag     Tag     @relation(fields: [tagId], references: [id])
+  tagId   BigInt  @map("tag_id")
+
+  @@map("post_tags")
+  @@id([postId, tagId])
+}
+
+
+model UserToken {
+  id            String      @id
+  generatedAt   DateTime    @default(now()) @db.Timestamptz() @map("generated_at")
+
+  // duration in milliseconds
+  duration      Int
+
+  User          ProjectUser @relation(fields: [userId], references: [id])
+  userId        BigInt      @map("user_id")
+
+  @@map("user_token")
+}
