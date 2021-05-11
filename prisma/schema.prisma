@@ -34,8 +34,8 @@ model ProjectUser {
   project       Project     @relation(fields: [projectId], references: [id])
   projectId     BigInt      @map("project_id")
 
-  firstName     String
-  lastName      String
+  firstName     String      @map("first_name")
+  lastName      String      @map("last_name")
   email         String
 
   password      String
@@ -79,7 +79,7 @@ model Post {
 
   createdAt   DateTime    @db.Timestamptz() @default(now()) @map("created_at")
   updatedAt   DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
-  publishedAt DateTime?   @db.Timestamptz()
+  publishedAt DateTime?   @db.Timestamptz() @map("published_at")
 
   @@map("post")
 }
