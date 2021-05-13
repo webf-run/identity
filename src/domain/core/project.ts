@@ -1,5 +1,6 @@
 import { Context } from '../../context';
 
+import { ErrorCode } from '../AppError';
 import { R } from '../R';
 
 import { Blog, NewBlog } from './type';
@@ -27,5 +28,5 @@ export function createNewBlog(ctx: Context, blog: NewBlog): DomainResult<Blog> {
     publicUrl: x.blog!.publicUrl,
     fromEmail: x.fromEmail
   })))
-  .catch((_err) => R.ofOne('', ''));
+  .catch(R.liftDbError('P2002', ErrorCode.UNIQUE_URL, 'Blog URL is already taken'));
 }

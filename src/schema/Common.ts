@@ -10,8 +10,8 @@ export const Error = objectType({
 });
 
 
-export const ErrorList = objectType({
-  name: 'ErrorList',
+export const AppError = objectType({
+  name: 'AppError',
   definition(t) {
     t.list.field('errors', { type: Error })
   }

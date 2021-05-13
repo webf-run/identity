@@ -1,5 +1,6 @@
-import { NexusGenFieldTypes, NexusGenInputs } from '../../../nexus-typegen';
+import { NexusGenInputs, NexusGenObjects } from '../../NexusTypegen';
+
 
 export type UserInput = NexusGenInputs['UserInput'];
 export type NewBlog = NexusGenInputs['NewBlogInput'];
-export type Blog = NexusGenFieldTypes['Blog'];
+export type Blog = NexusGenObjects['Blog'];

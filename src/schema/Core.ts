@@ -1,5 +1,4 @@
 import { extendType, inputObjectType, nullable, objectType, unionType } from 'nexus';
-import { NexusUnionTypeDef, UnionMembers } from 'nexus/dist/core';
 
 import { createNewBlog } from '../domain/core/project';
 import { R } from '../domain/R';

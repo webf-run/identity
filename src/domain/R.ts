@@ -1,18 +1,15 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
-import { NexusGenObjects } from '../../nexus-typegen';
-
 import { Either, ResultTag, Right } from '../util/Either';
+import { AppError, ErrorCode } from './AppError';
 
 
 function map<T, R>(callback: (value: T) => R) {
-  return (value: T) => Either.ok(callback(value));
+  return (value: T) => Either.left(callback(value));
 }
 
-function ofOne(code: string, message: string): Right<NexusGenObjects['ErrorList']> {
-  return Either.error({
-    errors: [{ code, message }]
-  });
+function ofError(code: string, message: string): Right<AppError> {
+  return Either.right({ errors: [{ code, message }] });
 }
 
 async function unpack<T>(value: DomainResult<T>) {
@@ -25,10 +22,14 @@ async function unpack<T>(value: DomainResult<T>) {
   }
 }
 
-export const R = { ok: Either.ok, map, ofOne, unpack };
+function liftDbError(code: string, domainCode: ErrorCode, message: string) {
+  return (err: any) => {
+    if (err instanceof PrismaClientKnownRequestError && err.code === code) {
+      return ofError(domainCode, message);
+    }
 
-export function matchErr(error: any) {
-  if (error instanceof PrismaClientKnownRequestError) {
-
-  }
+    throw err;
+  };
 }
+
+export const R = { of: Either.left, ofError, map, liftDbError, unpack };

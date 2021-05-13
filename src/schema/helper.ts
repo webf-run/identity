@@ -7,8 +7,8 @@ export function errorUnion<T extends string>(name: T, member: Unpacked<UnionMemb
   return unionType({
     name: name as any,
     definition(t) {
-      t.members(member, 'ErrorList');
+      t.members(member, 'AppError');
     },
-    resolveType: (x) => x.hasOwnProperty('errors') ? 'ErrorList' : member
+    resolveType: (x) => x.hasOwnProperty('errors') ? 'AppError' : member
   });
 }

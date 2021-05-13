@@ -8,7 +8,7 @@ export type Right<E> = { tag: ResultTag.Error; error: E; };
 
 export type Either<Value, Error> = Left<Value> | Right<Error>;
 
-const ok = <T>(value: T) => ({ tag: ResultTag.Ok, value }) as Left<T>;
-const error = <T>(error: T) => ({ tag: ResultTag.Error, error }) as Right<T>;
+const left = <T>(value: T) => ({ tag: ResultTag.Ok, value }) as Left<T>;
+const right = <T>(error: T) => ({ tag: ResultTag.Error, error }) as Right<T>;
 
-export const Either = { ok, error };
+export const Either = { left, right };

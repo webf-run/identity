@@ -4,7 +4,7 @@
  */
 
 
-import { Context } from "./src/context"
+import { Context } from "./context"
 
 
 
@@ -40,6 +40,9 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  AppError: { // root type
+    errors: NexusGenRootTypes['Error'][]; // [Error!]!
+  }
   Blog: { // root type
     fromEmail: string; // String!
     id: string; // ID!
@@ -50,9 +53,6 @@ export interface NexusGenObjects {
     code: string; // String!
     message: string; // String!
   }
-  ErrorList: { // root type
-    errors: NexusGenRootTypes['Error'][]; // [Error!]!
-  }
   Mutation: {};
   Query: {};
 }
@@ -61,7 +61,7 @@ export interface NexusGenInterfaces {
 }
 
 export interface NexusGenUnions {
-  CreateBlogResponse: NexusGenRootTypes['Blog'] | NexusGenRootTypes['ErrorList'];
+  CreateBlogResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Blog'];
 }
 
 export type NexusGenRootTypes = NexusGenObjects & NexusGenUnions
@@ -69,6 +69,9 @@ export type NexusGenRootTypes = NexusGenObjects & NexusGenUnions
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  AppError: { // field return type
+    errors: NexusGenRootTypes['Error'][]; // [Error!]!
+  }
   Blog: { // field return type
     fromEmail: string; // String!
     id: string; // ID!
@@ -79,9 +82,6 @@ export interface NexusGenFieldTypes {
     code: string; // String!
     message: string; // String!
   }
-  ErrorList: { // field return type
-    errors: NexusGenRootTypes['Error'][]; // [Error!]!
-  }
   Mutation: { // field return type
     createBlog: NexusGenRootTypes['CreateBlogResponse']; // CreateBlogResponse!
   }
@@ -91,6 +91,9 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  AppError: { // field return type name
+    errors: 'Error'
+  }
   Blog: { // field return type name
     fromEmail: 'String'
     id: 'ID'
@@ -100,9 +103,6 @@ export interface NexusGenFieldTypeNames {
   Error: { // field return type name
     code: 'String'
     message: 'String'
-  }
-  ErrorList: { // field return type name
-    errors: 'Error'
   }
   Mutation: { // field return type name
     createBlog: 'CreateBlogResponse'
@@ -121,7 +121,7 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  CreateBlogResponse: "Blog" | "ErrorList"
+  CreateBlogResponse: "AppError" | "Blog"
 }
 
 export interface NexusGenTypeInterfaces {

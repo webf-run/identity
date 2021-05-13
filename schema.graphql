@@ -2,6 +2,10 @@
 ### Do not make changes to this file directly
 
 
+type AppError {
+  errors: [Error!]!
+}
+
 type Blog {
   fromEmail: String!
   id: ID!
@@ -9,15 +13,11 @@ type Blog {
   publicUrl: String!
 }
 
-union CreateBlogResponse = Blog | ErrorList
+union CreateBlogResponse = AppError | Blog
 
 type Error {
   code: String!
   message: String!
-}
-
-type ErrorList {
-  errors: [Error!]!
 }
 
 type Mutation {
