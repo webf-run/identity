@@ -9,12 +9,23 @@ type Blog {
   publicUrl: String!
 }
 
+union CreateBlogResponse = Blog | ErrorList
+
+type Error {
+  code: String!
+  message: String!
+}
+
+type ErrorList {
+  errors: [Error!]!
+}
+
 type Mutation {
-  createBlog(input: NewBlogInput!): Blog!
+  createBlog(input: NewBlogInput!): CreateBlogResponse!
 }
 
 input NewBlogInput {
-  firstUser: UserInput!
+  firstUser: UserInput
   fromEmail: String!
   name: String!
   publicUrl: String!

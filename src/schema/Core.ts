@@ -1,4 +1,10 @@
-import { extendType, inputObjectType, nonNull, objectType } from 'nexus';
+import { extendType, inputObjectType, nullable, objectType, unionType } from 'nexus';
+import { NexusUnionTypeDef, UnionMembers } from 'nexus/dist/core';
+
+import { createNewBlog } from '../domain/core/project';
+import { R } from '../domain/R';
+import { errorUnion } from './helper';
+
 
 export const UserInput = inputObjectType({
   name: 'UserInput',
@@ -11,15 +17,17 @@ export const UserInput = inputObjectType({
   }
 });
 
-export const BlogInput = inputObjectType({
+
+export const NewBlogInput = inputObjectType({
   name: 'NewBlogInput',
   definition(t) {
     t.string('name');
     t.string('publicUrl');
     t.string('fromEmail');
-    t.field('firstUser', { type: UserInput });
+    t.field('firstUser', { type: nullable(UserInput), });
   }
 });
+
 
 export const Blog = objectType({
   name: 'Blog',
@@ -32,7 +40,7 @@ export const Blog = objectType({
 });
 
 
-export const IAMQuery = extendType({
+export const CoreQuery = extendType({
   type: 'Query',
   definition(t) {
     t.list.field('getBlogs', {
@@ -40,7 +48,7 @@ export const IAMQuery = extendType({
       resolve(_root, _args, ctx) {
         return ctx.db.blog.findMany({
           include: {
-            project: {}
+            project: true
           }
         }).then((x) =>
           x.map((y) => ({
@@ -54,38 +62,19 @@ export const IAMQuery = extendType({
   }
 });
 
-export const IAMMutation = extendType({
+export const CreateBlogResponse = errorUnion('CreateBlogResponse', 'Blog');
+
+export const CoreMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.field('createBlog', {
-      type: 'Blog',
+      type: 'CreateBlogResponse',
       args: {
-        input: BlogInput
+        input: NewBlogInput
       },
-      resolve(_root, args, ctx) {
+      async resolve(_root, args, ctx) {
         const input = args.input;
-
-        // ctx.db.blog.create({
-        //   data: {
-
-        //   }
-        // })
-
-        ctx.db.project.create({
-          data: {
-            name: input.name,
-            fromEmail: input.fromEmail,
-            blog: {
-              create: {
-                publicUrl: input.publicUrl
-              }
-            }
-          }
-        })
-        .then((x) => console.log('done', x))
-        .catch((err) => console.log(err));
-
-        return { id: '1', name: '1234', fromEmail: '', publicUrl: ''  };
+        return R.unpack(createNewBlog(ctx, input));
       }
     });
   }

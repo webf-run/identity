@@ -1,1 +1,2 @@
-export * from './IAM';
+export * from './Core';
+export * from './Common';

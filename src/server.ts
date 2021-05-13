@@ -1,4 +1,5 @@
 import { ApolloServer } from 'apollo-server';
+
 import type { Context } from './context';
 import { schema } from './schema/schema';
 

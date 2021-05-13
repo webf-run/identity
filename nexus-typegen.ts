@@ -15,7 +15,7 @@ declare global {
 
 export interface NexusGenInputs {
   NewBlogInput: { // input type
-    firstUser: NexusGenInputs['UserInput']; // UserInput!
+    firstUser?: NexusGenInputs['UserInput'] | null; // UserInput
     fromEmail: string; // String!
     name: string; // String!
     publicUrl: string; // String!
@@ -46,6 +46,13 @@ export interface NexusGenObjects {
     name: string; // String!
     publicUrl: string; // String!
   }
+  Error: { // root type
+    code: string; // String!
+    message: string; // String!
+  }
+  ErrorList: { // root type
+    errors: NexusGenRootTypes['Error'][]; // [Error!]!
+  }
   Mutation: {};
   Query: {};
 }
@@ -54,9 +61,10 @@ export interface NexusGenInterfaces {
 }
 
 export interface NexusGenUnions {
+  CreateBlogResponse: NexusGenRootTypes['Blog'] | NexusGenRootTypes['ErrorList'];
 }
 
-export type NexusGenRootTypes = NexusGenObjects
+export type NexusGenRootTypes = NexusGenObjects & NexusGenUnions
 
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
@@ -67,8 +75,15 @@ export interface NexusGenFieldTypes {
     name: string; // String!
     publicUrl: string; // String!
   }
+  Error: { // field return type
+    code: string; // String!
+    message: string; // String!
+  }
+  ErrorList: { // field return type
+    errors: NexusGenRootTypes['Error'][]; // [Error!]!
+  }
   Mutation: { // field return type
-    createBlog: NexusGenRootTypes['Blog']; // Blog!
+    createBlog: NexusGenRootTypes['CreateBlogResponse']; // CreateBlogResponse!
   }
   Query: { // field return type
     getBlogs: NexusGenRootTypes['Blog'][]; // [Blog!]!
@@ -82,8 +97,15 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
     publicUrl: 'String'
   }
+  Error: { // field return type name
+    code: 'String'
+    message: 'String'
+  }
+  ErrorList: { // field return type name
+    errors: 'Error'
+  }
   Mutation: { // field return type name
-    createBlog: 'Blog'
+    createBlog: 'CreateBlogResponse'
   }
   Query: { // field return type name
     getBlogs: 'Blog'
@@ -99,6 +121,7 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
+  CreateBlogResponse: "Blog" | "ErrorList"
 }
 
 export interface NexusGenTypeInterfaces {
@@ -114,11 +137,11 @@ export type NexusGenInterfaceNames = never;
 
 export type NexusGenScalarNames = keyof NexusGenScalars;
 
-export type NexusGenUnionNames = never;
+export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = never;
+export type NexusGenAbstractsUsingStrategyResolveType = "CreateBlogResponse";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
