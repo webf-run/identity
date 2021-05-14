@@ -5,8 +5,23 @@
 
 
 import { Context } from "./context"
-
-
+import { core } from "nexus"
+declare global {
+  interface NexusGenCustomInputMethods<TypeName extends string> {
+    /**
+     * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+     */
+    datetime<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "DateTime";
+  }
+}
+declare global {
+  interface NexusGenCustomOutputMethods<TypeName extends string> {
+    /**
+     * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+     */
+    datetime<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
+  }
+}
 
 
 declare global {
@@ -14,6 +29,10 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  InputToken: { // input type
+    password: string; // String!
+    username: string; // String!
+  }
   NewBlogInput: { // input type
     firstUser?: NexusGenInputs['UserInput'] | null; // UserInput
     fromEmail: string; // String!
@@ -37,11 +56,18 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
+  DateTime: any
 }
 
 export interface NexusGenObjects {
   AppError: { // root type
     errors: NexusGenRootTypes['Error'][]; // [Error!]!
+  }
+  AuthToken: { // root type
+    duration: number; // Int!
+    generatedAt: NexusGenScalars['DateTime']; // DateTime!
+    id: string; // String!
+    type: string; // String!
   }
   Blog: { // root type
     fromEmail: string; // String!
@@ -61,6 +87,7 @@ export interface NexusGenInterfaces {
 }
 
 export interface NexusGenUnions {
+  AuthTokenReponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AuthToken'];
   CreateBlogResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Blog'];
 }
 
@@ -71,6 +98,12 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 export interface NexusGenFieldTypes {
   AppError: { // field return type
     errors: NexusGenRootTypes['Error'][]; // [Error!]!
+  }
+  AuthToken: { // field return type
+    duration: number; // Int!
+    generatedAt: NexusGenScalars['DateTime']; // DateTime!
+    id: string; // String!
+    type: string; // String!
   }
   Blog: { // field return type
     fromEmail: string; // String!
@@ -83,6 +116,7 @@ export interface NexusGenFieldTypes {
     message: string; // String!
   }
   Mutation: { // field return type
+    authenticateUser: NexusGenRootTypes['AuthTokenReponse']; // AuthTokenReponse!
     createBlog: NexusGenRootTypes['CreateBlogResponse']; // CreateBlogResponse!
   }
   Query: { // field return type
@@ -93,6 +127,12 @@ export interface NexusGenFieldTypes {
 export interface NexusGenFieldTypeNames {
   AppError: { // field return type name
     errors: 'Error'
+  }
+  AuthToken: { // field return type name
+    duration: 'Int'
+    generatedAt: 'DateTime'
+    id: 'String'
+    type: 'String'
   }
   Blog: { // field return type name
     fromEmail: 'String'
@@ -105,6 +145,7 @@ export interface NexusGenFieldTypeNames {
     message: 'String'
   }
   Mutation: { // field return type name
+    authenticateUser: 'AuthTokenReponse'
     createBlog: 'CreateBlogResponse'
   }
   Query: { // field return type name
@@ -114,6 +155,9 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    authenticateUser: { // args
+      input: NexusGenInputs['InputToken']; // InputToken!
+    }
     createBlog: { // args
       input: NexusGenInputs['NewBlogInput']; // NewBlogInput!
     }
@@ -121,6 +165,7 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
+  AuthTokenReponse: "AppError" | "AuthToken"
   CreateBlogResponse: "AppError" | "Blog"
 }
 
@@ -141,7 +186,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "CreateBlogResponse";
+export type NexusGenAbstractsUsingStrategyResolveType = "AuthTokenReponse" | "CreateBlogResponse";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

@@ -8,7 +8,7 @@ function map<T, R>(callback: (value: T) => R) {
   return (value: T) => Either.left(callback(value));
 }
 
-function ofError(code: string, message: string): Right<AppError> {
+function ofError(code: ErrorCode, message: string): Right<AppError> {
   return Either.right({ errors: [{ code, message }] });
 }
 

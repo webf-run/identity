@@ -13,7 +13,7 @@ model Project {
   name        String
   fromEmail   String  @map("from_email")
   blog        Blog?
-  users       ProjectUser[]
+  users       User[]
   tags        Tag[]
 
   @@map("project")
@@ -29,14 +29,14 @@ model Blog {
 }
 
 
-model ProjectUser {
+model User {
   id            BigInt      @id @default(autoincrement())
   project       Project     @relation(fields: [projectId], references: [id])
   projectId     BigInt      @map("project_id")
 
   firstName     String      @map("first_name")
   lastName      String      @map("last_name")
-  email         String
+  email         String      @unique
 
   password      String
   passwordHash  String      @map("password_harsh")
@@ -47,8 +47,7 @@ model ProjectUser {
   tokens        UserToken[]
   posts         Post[]
 
-  @@map("project_user")
-  @@unique([email, projectId])
+  @@map("app_user")
 }
 
 
@@ -74,7 +73,7 @@ model Post {
   title       String
   content     Json        @db.JsonB
   tags        PostTags[]
-  owner       ProjectUser @relation(fields: [ownerId], references: [id])
+  owner       User        @relation(fields: [ownerId], references: [id])
   ownerId     BigInt      @map("owner_id")
 
   createdAt   DateTime    @db.Timestamptz() @default(now()) @map("created_at")
@@ -102,7 +101,7 @@ model UserToken {
   // duration in milliseconds
   duration      Int
 
-  User          ProjectUser @relation(fields: [userId], references: [id])
+  User          User        @relation(fields: [userId], references: [id])
   userId        BigInt      @map("user_id")
 
   @@map("user_token")

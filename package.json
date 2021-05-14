@@ -18,6 +18,7 @@
     "url": "https://github.com/RanoIO/bisa/issues"
   },
   "homepage": "https://github.com/RanoIO/bisa#readme",
+  "type": "module",
   "devDependencies": {
     "@types/node": "^15.0.2",
     "prisma": "^2.22.1",
@@ -28,7 +29,10 @@
   "dependencies": {
     "@prisma/client": "^2.22.1",
     "apollo-server": "^2.24.0",
+    "argon2": "^0.27.2",
+    "crypto-random-string": "^4.0.0",
     "graphql": "^15.5.0",
+    "graphql-scalars": "^1.9.3",
     "nexus": "^1.0.0"
   }
 }
