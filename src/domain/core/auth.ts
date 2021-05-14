@@ -1,6 +1,6 @@
 import { UserToken } from '@prisma/client';
 import argon2 from 'argon2';
-// import cryptoRandomString from 'crypto-random-string';
+import cryptoRandomString from 'crypto-random-string';
 
 import { Context } from '../../context';
 
@@ -46,7 +46,7 @@ export async function authenticate(ctx: Context, input: InputToken): DomainResul
 
 
 function generateToken(db: Context['db'], userId: bigint, prefix: 'u'): Promise<UserToken> {
-  const tokenId = prefix + '-'; // + cryptoRandomString({ length: 32, type: 'url-safe' });
+  const tokenId = prefix + '-' + cryptoRandomString({ length: 32, type: 'url-safe' });
 
   return db.userToken.create({
     data: {

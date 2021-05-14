@@ -10,6 +10,7 @@ export async function main() {
 
   const context = makeContext(client);
   const server = makeServer(context);
+
   const info = await server.listen();
 
   console.log(`🚀 Server ready at ${info.url}`);
