@@ -15,15 +15,6 @@ type AuthToken {
 
 union AuthTokenReponse = AppError | AuthToken
 
-type Blog {
-  fromEmail: String!
-  id: ID!
-  name: String!
-  publicUrl: String!
-}
-
-union CreateBlogResponse = AppError | Blog
-
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -41,20 +32,29 @@ input InputToken {
 
 type Mutation {
   authenticateUser(input: InputToken!): AuthTokenReponse!
-  createBlog(input: NewBlogInput!): CreateBlogResponse!
+  createPublication(input: NewPublication!): NewPublicationResponse!
   forgotPassword(username: String!): Boolean!
   resetPassword(code: String!, password: String!): Boolean!
 }
 
-input NewBlogInput {
+input NewPublication {
   firstUser: UserInput
   fromEmail: String!
   name: String!
   publicUrl: String!
 }
 
+union NewPublicationResponse = AppError | Publication
+
+type Publication {
+  fromEmail: String!
+  id: ID!
+  name: String!
+  publicUrl: String!
+}
+
 type Query {
-  getBlogs: [Blog!]!
+  getPublications: [Publication!]!
 }
 
 """New User Input"""

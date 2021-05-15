@@ -1,7 +1,6 @@
 import { extendType, inputObjectType, nullable, objectType } from 'nexus';
-import { authenticate } from '../domain/core/auth';
 
-import { createNewBlog } from '../domain/core/project';
+import { createNewPublication } from '../domain/core/project';
 import { R } from '../domain/R';
 
 import { errorUnion } from './helper';
@@ -19,8 +18,8 @@ export const UserInput = inputObjectType({
 });
 
 
-export const NewBlogInput = inputObjectType({
-  name: 'NewBlogInput',
+export const NewPublication = inputObjectType({
+  name: 'NewPublication',
   definition(t) {
     t.string('name');
     t.string('publicUrl');
@@ -30,8 +29,8 @@ export const NewBlogInput = inputObjectType({
 });
 
 
-export const Blog = objectType({
-  name: 'Blog',
+export const Publication = objectType({
+  name: 'Publication',
   definition(t) {
     t.id('id');
     t.string('name');
@@ -44,10 +43,10 @@ export const Blog = objectType({
 export const CoreQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.list.field('getBlogs', {
-      type: 'Blog',
+    t.list.field('getPublications', {
+      type: 'Publication',
       resolve(_root, _args, ctx) {
-        return ctx.db.blog.findMany({
+        return ctx.db.publication.findMany({
           include: {
             project: true
           }
@@ -63,20 +62,20 @@ export const CoreQuery = extendType({
   }
 });
 
-export const CreateBlogResponse = errorUnion('CreateBlogResponse', 'Blog');
+export const NewPublicationResponse = errorUnion('NewPublicationResponse', 'Publication');
 
 
 export const CoreMutation = extendType({
   type: 'Mutation',
   definition(t) {
-    t.field('createBlog', {
-      type: 'CreateBlogResponse',
+    t.field('createPublication', {
+      type: 'NewPublicationResponse',
       args: {
-        input: NewBlogInput
+        input: NewPublication
       },
       resolve(_root, args, ctx) {
         const input = args.input;
-        return R.unpack(createNewBlog(ctx, input));
+        return R.unpack(createNewPublication(ctx, input));
       }
     });
   }

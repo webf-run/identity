@@ -4,21 +4,19 @@ import { Context } from '../../context';
 import { ErrorCode } from '../AppError';
 import { R } from '../R';
 import { hashPassword } from './auth';
-import { Blog, NewBlog } from './type';
+import { Publication, NewPublication } from './type';
 
 
-export async function createNewBlog(ctx: Context, blog: NewBlog): DomainResult<Blog> {
+export async function createNewPublication(ctx: Context, publication: NewPublication): DomainResult<Publication> {
 
-  let request: Prisma.ProjectCreateInput;
+  const user = publication.firstUser;
 
-  const user = blog.firstUser;
-
-  request = {
-    name: blog.name,
-    fromEmail: blog.fromEmail,
-    blog: {
+  const request: Prisma.ProjectCreateInput = {
+    name: publication.name,
+    fromEmail: publication.fromEmail,
+    publication: {
       create: {
-        publicUrl: blog.publicUrl
+        publicUrl: publication.publicUrl
       }
     }
   };
@@ -38,15 +36,14 @@ export async function createNewBlog(ctx: Context, blog: NewBlog): DomainResult<B
   return ctx.db.project.create({
     data: request,
     include: {
-      blog: true
+      publication: true
     }
   })
   .then(R.map((x) => ({
     id: x.id.toString(),
     name: x.name,
-    publicUrl: x.blog!.publicUrl,
+    publicUrl: x.publication!.publicUrl,
     fromEmail: x.fromEmail
   })))
-  .catch((x) => { console.log(x); throw x; })
-  .catch(R.liftDbError('P2002', ErrorCode.UNIQUE_URL, 'Blog URL is already taken'));
+  .catch(R.liftDbError('P2002', ErrorCode.UNIQUE_URL, 'Publication URL is already taken'));
 }
