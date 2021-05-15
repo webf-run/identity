@@ -9,6 +9,9 @@ export function errorUnion<T extends string>(name: T, member: Unpacked<UnionMemb
     definition(t) {
       t.members(member, 'AppError');
     },
-    resolveType: (x) => x.hasOwnProperty('errors') ? 'AppError' : member
+    resolveType: (x) =>
+      (typeof x === 'object' && x.hasOwnProperty('errors'))
+        ? 'AppError'
+        : member
   });
 }

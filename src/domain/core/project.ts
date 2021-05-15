@@ -1,11 +1,9 @@
 import { Prisma } from '@prisma/client';
-import argon2 from 'argon2';
 
 import { Context } from '../../context';
-
 import { ErrorCode } from '../AppError';
 import { R } from '../R';
-
+import { hashPassword } from './auth';
 import { Blog, NewBlog } from './type';
 
 
@@ -26,13 +24,13 @@ export async function createNewBlog(ctx: Context, blog: NewBlog): DomainResult<B
   };
 
   if (user) {
-    const password = await (user && argon2.hash(user.password, { type: argon2.argon2id }));
+    const [password, hashAlgo] = await (user && hashPassword(user.password));
 
     request.users = {
       create: {
         ...user,
         password,
-        passwordHash: 'argon2id'
+        passwordHash: hashAlgo
       }
     }
   }

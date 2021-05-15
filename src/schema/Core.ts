@@ -7,15 +7,6 @@ import { R } from '../domain/R';
 import { errorUnion } from './helper';
 
 
-export const InputToken = inputObjectType({
-  name: 'InputToken',
-  definition(t) {
-    t.string('username');
-    t.string('password');
-  }
-});
-
-
 export const UserInput = inputObjectType({
   name: 'UserInput',
   description: 'New User Input',
@@ -35,17 +26,6 @@ export const NewBlogInput = inputObjectType({
     t.string('publicUrl');
     t.string('fromEmail');
     t.field('firstUser', { type: nullable(UserInput), });
-  }
-});
-
-
-export const AuthToken = objectType({
-  name: 'AuthToken',
-  definition(t) {
-    t.string('type');
-    t.string('id');
-    t.datetime('generatedAt');
-    t.int('duration');
   }
 });
 
@@ -84,7 +64,7 @@ export const CoreQuery = extendType({
 });
 
 export const CreateBlogResponse = errorUnion('CreateBlogResponse', 'Blog');
-export const AuthTokenReponse = errorUnion('AuthTokenReponse', 'AuthToken');
+
 
 export const CoreMutation = extendType({
   type: 'Mutation',
@@ -99,15 +79,5 @@ export const CoreMutation = extendType({
         return R.unpack(createNewBlog(ctx, input));
       }
     });
-
-    t.field('authenticateUser', {
-      type: 'AuthTokenReponse',
-      args: {
-        input: InputToken
-      },
-      resolve(_root, args, ctx) {
-        return R.unpack(authenticate(ctx, args.input));
-      }
-    })
   }
 });

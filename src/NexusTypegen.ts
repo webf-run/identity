@@ -118,6 +118,8 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     authenticateUser: NexusGenRootTypes['AuthTokenReponse']; // AuthTokenReponse!
     createBlog: NexusGenRootTypes['CreateBlogResponse']; // CreateBlogResponse!
+    forgotPassword: boolean; // Boolean!
+    resetPassword: boolean; // Boolean!
   }
   Query: { // field return type
     getBlogs: NexusGenRootTypes['Blog'][]; // [Blog!]!
@@ -147,6 +149,8 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     authenticateUser: 'AuthTokenReponse'
     createBlog: 'CreateBlogResponse'
+    forgotPassword: 'Boolean'
+    resetPassword: 'Boolean'
   }
   Query: { // field return type name
     getBlogs: 'Blog'
@@ -160,6 +164,13 @@ export interface NexusGenArgTypes {
     }
     createBlog: { // args
       input: NexusGenInputs['NewBlogInput']; // NewBlogInput!
+    }
+    forgotPassword: { // args
+      username: string; // String!
+    }
+    resetPassword: { // args
+      code: string; // String!
+      password: string; // String!
     }
   }
 }

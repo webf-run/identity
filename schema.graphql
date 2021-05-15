@@ -42,6 +42,8 @@ input InputToken {
 type Mutation {
   authenticateUser(input: InputToken!): AuthTokenReponse!
   createBlog(input: NewBlogInput!): CreateBlogResponse!
+  forgotPassword(username: String!): Boolean!
+  resetPassword(code: String!, password: String!): Boolean!
 }
 
 input NewBlogInput {
