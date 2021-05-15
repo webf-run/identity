@@ -31,10 +31,13 @@ input InputToken {
 }
 
 type Mutation {
+  approveTag(approved: Boolean!, tagId: ID!): Tag!
   authenticateUser(input: InputToken!): AuthTokenReponse!
   createPublication(input: NewPublication!): NewPublicationResponse!
+  createTag(tag: TagInput!): TagResponse!
   forgotPassword(username: String!): Boolean!
   resetPassword(code: String!, password: String!): Boolean!
+  updateTag(tag: TagInput!): Tag!
 }
 
 input NewPublication {
@@ -55,7 +58,24 @@ type Publication {
 
 type Query {
   getPublications: [Publication!]!
+  getTags(approved: Boolean!, search: String, skip: Int!, top: Int!): [Tag!]!
 }
+
+type Tag {
+  approved: Boolean!
+  description: String!
+  id: ID!
+  name: String!
+  slug: String!
+}
+
+input TagInput {
+  description: String
+  name: String!
+  slug: String
+}
+
+union TagResponse = AppError | Tag
 
 """New User Input"""
 input UserInput {

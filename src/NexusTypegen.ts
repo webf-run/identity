@@ -39,6 +39,11 @@ export interface NexusGenInputs {
     name: string; // String!
     publicUrl: string; // String!
   }
+  TagInput: { // input type
+    description?: string | null; // String
+    name: string; // String!
+    slug?: string | null; // String
+  }
   UserInput: { // input type
     email: string; // String!
     firstName: string; // String!
@@ -81,6 +86,13 @@ export interface NexusGenObjects {
     publicUrl: string; // String!
   }
   Query: {};
+  Tag: { // root type
+    approved: boolean; // Boolean!
+    description: string; // String!
+    id: string; // ID!
+    name: string; // String!
+    slug: string; // String!
+  }
 }
 
 export interface NexusGenInterfaces {
@@ -89,6 +101,7 @@ export interface NexusGenInterfaces {
 export interface NexusGenUnions {
   AuthTokenReponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AuthToken'];
   NewPublicationResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Publication'];
+  TagResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Tag'];
 }
 
 export type NexusGenRootTypes = NexusGenObjects & NexusGenUnions
@@ -110,10 +123,13 @@ export interface NexusGenFieldTypes {
     message: string; // String!
   }
   Mutation: { // field return type
+    approveTag: NexusGenRootTypes['Tag']; // Tag!
     authenticateUser: NexusGenRootTypes['AuthTokenReponse']; // AuthTokenReponse!
     createPublication: NexusGenRootTypes['NewPublicationResponse']; // NewPublicationResponse!
+    createTag: NexusGenRootTypes['TagResponse']; // TagResponse!
     forgotPassword: boolean; // Boolean!
     resetPassword: boolean; // Boolean!
+    updateTag: NexusGenRootTypes['Tag']; // Tag!
   }
   Publication: { // field return type
     fromEmail: string; // String!
@@ -123,6 +139,14 @@ export interface NexusGenFieldTypes {
   }
   Query: { // field return type
     getPublications: NexusGenRootTypes['Publication'][]; // [Publication!]!
+    getTags: NexusGenRootTypes['Tag'][]; // [Tag!]!
+  }
+  Tag: { // field return type
+    approved: boolean; // Boolean!
+    description: string; // String!
+    id: string; // ID!
+    name: string; // String!
+    slug: string; // String!
   }
 }
 
@@ -141,10 +165,13 @@ export interface NexusGenFieldTypeNames {
     message: 'String'
   }
   Mutation: { // field return type name
+    approveTag: 'Tag'
     authenticateUser: 'AuthTokenReponse'
     createPublication: 'NewPublicationResponse'
+    createTag: 'TagResponse'
     forgotPassword: 'Boolean'
     resetPassword: 'Boolean'
+    updateTag: 'Tag'
   }
   Publication: { // field return type name
     fromEmail: 'String'
@@ -154,16 +181,31 @@ export interface NexusGenFieldTypeNames {
   }
   Query: { // field return type name
     getPublications: 'Publication'
+    getTags: 'Tag'
+  }
+  Tag: { // field return type name
+    approved: 'Boolean'
+    description: 'String'
+    id: 'ID'
+    name: 'String'
+    slug: 'String'
   }
 }
 
 export interface NexusGenArgTypes {
   Mutation: {
+    approveTag: { // args
+      approved: boolean; // Boolean!
+      tagId: string; // ID!
+    }
     authenticateUser: { // args
       input: NexusGenInputs['InputToken']; // InputToken!
     }
     createPublication: { // args
       input: NexusGenInputs['NewPublication']; // NewPublication!
+    }
+    createTag: { // args
+      tag: NexusGenInputs['TagInput']; // TagInput!
     }
     forgotPassword: { // args
       username: string; // String!
@@ -172,12 +214,24 @@ export interface NexusGenArgTypes {
       code: string; // String!
       password: string; // String!
     }
+    updateTag: { // args
+      tag: NexusGenInputs['TagInput']; // TagInput!
+    }
+  }
+  Query: {
+    getTags: { // args
+      approved: boolean; // Boolean!
+      search?: string | null; // String
+      skip: number; // Int!
+      top: number; // Int!
+    }
   }
 }
 
 export interface NexusGenAbstractTypeMembers {
   AuthTokenReponse: "AppError" | "AuthToken"
   NewPublicationResponse: "AppError" | "Publication"
+  TagResponse: "AppError" | "Tag"
 }
 
 export interface NexusGenTypeInterfaces {
@@ -197,7 +251,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "AuthTokenReponse" | "NewPublicationResponse";
+export type NexusGenAbstractsUsingStrategyResolveType = "AuthTokenReponse" | "NewPublicationResponse" | "TagResponse";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

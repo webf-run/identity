@@ -55,7 +55,7 @@ model User {
 model Tag {
   id            BigInt    @id @default(autoincrement())
   name          String
-  slug          String
+  slug          String    @unique()
   description   String
   approved      Boolean   @default(false)
 

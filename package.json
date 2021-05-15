@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "@prisma/client": "^2.22.1",
+    "@sindresorhus/slugify": "^2.1.0",
     "apollo-server": "^2.24.0",
     "argon2": "^0.27.2",
     "crypto-random-string": "^4.0.0",

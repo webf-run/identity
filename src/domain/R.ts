@@ -1,21 +1,35 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
-import { Either, ResultTag, Right } from '../util/Either';
+import { Either, EitherTag, Right } from '../util/Either';
 import { AppError, ErrorCode } from './AppError';
 
+function of<T>(value: T) {
+  return Either.left(value);
+}
 
-function map<T, R>(callback: (value: T) => R) {
+function off<T, R>(callback: (value: T) => R) {
   return (value: T) => Either.left(callback(value));
+
 }
 
 function ofError(code: ErrorCode, message: string): Right<AppError> {
   return Either.right({ errors: [{ code, message }] });
 }
 
+async function map<T, R>(callback: (value: T) => R, value: DomainResult<T>): DomainResult<R> {
+  const du = await value;
+
+  if (du.tag === EitherTag.Ok) {
+    return Either.left(callback(du.value));
+  } else {
+    return Either.right(du.error);
+  }
+}
+
 async function unpack<T>(value: DomainResult<T>) {
   const du = await value;
 
-  if (du.tag === ResultTag.Ok) {
+  if (du.tag === EitherTag.Ok) {
     return du.value;
   } else {
     return du.error;
@@ -32,4 +46,5 @@ function liftDbError(code: string, domainCode: ErrorCode, message: string) {
   };
 }
 
-export const R = { of: Either.left, ofError, map, liftDbError, unpack };
+
+export const R = { of, ofError, off, liftDbError, map, unpack };

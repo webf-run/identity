@@ -40,6 +40,9 @@ export const Publication = objectType({
 });
 
 
+export const NewPublicationResponse = errorUnion('NewPublicationResponse', 'Publication');
+
+
 export const CoreQuery = extendType({
   type: 'Query',
   definition(t) {
@@ -61,9 +64,6 @@ export const CoreQuery = extendType({
     })
   }
 });
-
-export const NewPublicationResponse = errorUnion('NewPublicationResponse', 'Publication');
-
 
 export const CoreMutation = extendType({
   type: 'Mutation',

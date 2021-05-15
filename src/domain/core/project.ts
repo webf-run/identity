@@ -39,7 +39,7 @@ export async function createNewPublication(ctx: Context, publication: NewPublica
       publication: true
     }
   })
-  .then(R.map((x) => ({
+  .then(R.off((x) => ({
     id: x.id.toString(),
     name: x.name,
     publicUrl: x.publication!.publicUrl,
