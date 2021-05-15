@@ -29,10 +29,6 @@ declare global {
 }
 
 export interface NexusGenInputs {
-  InputToken: { // input type
-    password: string; // String!
-    username: string; // String!
-  }
   NewPublication: { // input type
     firstUser?: NexusGenInputs['UserInput'] | null; // UserInput
     fromEmail: string; // String!
@@ -43,6 +39,10 @@ export interface NexusGenInputs {
     description?: string | null; // String
     name: string; // String!
     slug?: string | null; // String
+  }
+  TokenInput: { // input type
+    password: string; // String!
+    username: string; // String!
   }
   UserInput: { // input type
     email: string; // String!
@@ -199,7 +199,7 @@ export interface NexusGenArgTypes {
       tagId: string; // ID!
     }
     authenticateUser: { // args
-      input: NexusGenInputs['InputToken']; // InputToken!
+      input: NexusGenInputs['TokenInput']; // TokenInput!
     }
     createPublication: { // args
       input: NexusGenInputs['NewPublication']; // NewPublication!

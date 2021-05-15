@@ -17,8 +17,8 @@ export const AuthToken = objectType({
 });
 
 
-export const InputToken = inputObjectType({
-  name: 'InputToken',
+export const TokenInput = inputObjectType({
+  name: 'TokenInput',
   definition(t) {
     t.string('username');
     t.string('password');
@@ -34,7 +34,7 @@ export const AuthMutation = extendType({
   definition(t) {
     t.field('authenticateUser', {
       type: 'AuthTokenReponse',
-      args: { input: InputToken },
+      args: { input: TokenInput },
       resolve(_root, args, ctx) {
         return R.unpack(authenticate(ctx, args.input));
       }

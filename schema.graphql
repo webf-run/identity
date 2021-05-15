@@ -25,14 +25,9 @@ type Error {
   message: String!
 }
 
-input InputToken {
-  password: String!
-  username: String!
-}
-
 type Mutation {
   approveTag(approved: Boolean!, tagId: ID!): Tag!
-  authenticateUser(input: InputToken!): AuthTokenReponse!
+  authenticateUser(input: TokenInput!): AuthTokenReponse!
   createPublication(input: NewPublication!): NewPublicationResponse!
   createTag(tag: TagInput!): TagResponse!
   forgotPassword(username: String!): Boolean!
@@ -76,6 +71,11 @@ input TagInput {
 }
 
 union TagResponse = AppError | Tag
+
+input TokenInput {
+  password: String!
+  username: String!
+}
 
 """New User Input"""
 input UserInput {

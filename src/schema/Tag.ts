@@ -55,14 +55,11 @@ export const TagMutation = extendType({
     t.field('createTag', {
       type: 'TagResponse',
       args: { tag: TagInput },
-      async resolve(_root, args, ctx) {
-        const x = await R.unpack(
-          R.map((y) => ({ ...y, id: y.id.toString() }),
-            createTag(ctx, args.tag)));
+      resolve(_root, args, ctx) {
+        const tag = createTag(ctx, args.tag);
+        const mapped = R.map((y) => ({ ...y, id: y.id.toString() }), tag);
 
-        console.log(x);
-
-        return x;
+        return R.unpack(mapped);
       }
     });
 

@@ -7,10 +7,10 @@ import { Context } from '../../context';
 import { ErrorCode } from '../AppError';
 import { R } from '../R';
 
-import { AuthToken, InputToken } from './type';
+import { AuthToken, TokenInput } from './type';
 
 
-export async function authenticate(ctx: Context, input: InputToken): DomainResult<AuthToken> {
+export async function authenticate(ctx: Context, input: TokenInput): DomainResult<AuthToken> {
 
   const { username, password } = input;
 

@@ -3,13 +3,13 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { Either, EitherTag, Right } from '../util/Either';
 import { AppError, ErrorCode } from './AppError';
 
+
 function of<T>(value: T) {
   return Either.left(value);
 }
 
 function off<T, R>(callback: (value: T) => R) {
   return (value: T) => Either.left(callback(value));
-
 }
 
 function ofError(code: ErrorCode, message: string): Right<AppError> {
