@@ -1,14 +1,16 @@
 import { Either } from '../util/Either';
 
 
+export type Validation<T, E> = Either<T, E[]>;
+
+
 export type ValidatorConfig<T, E> = {
   [key in keyof Partial<T>]:
     | Assertion<T[key], E>
     | ValidatorConfig<T[key], E>;
 };
 
-export type Assertion<T, E> = (value: T) => Either<T, E[]>;
-
+export type Assertion<T, E> = (value: T) => Validation<T, E>;
 
 
 export function notEmpty<E = string>(msg: E): Assertion<string, E> {
@@ -40,6 +42,13 @@ export function length<E = string>(length: number, msg: E): Assertion<string, E>
       : Either.left([msg]);
 }
 
+export function pattern<E = string>(pattern: RegExp, msg: E): Assertion<string, E> {
+  return (value: string) =>
+    pattern.test(value)
+      ? Either.right(value)
+      : Either.left([msg]);
+}
+
 
 export function concat<T, E>(...assertions: Assertion<T, E>[]): Assertion<T, E> {
 
@@ -66,7 +75,7 @@ export function concat<T, E>(...assertions: Assertion<T, E>[]): Assertion<T, E> 
 }
 
 
-export function collect<T, E>(config: ValidatorConfig<T, E>): Assertion<Partial<T>, E> {
+export function apply<T, E>(config: ValidatorConfig<T, E>): Assertion<Partial<T>, E> {
 
   const callback = (value: Partial<T>) => {
 
@@ -101,6 +110,22 @@ export function collect<T, E>(config: ValidatorConfig<T, E>): Assertion<Partial<
   };
 
   return callback;
+}
+
+
+export function collect<E>(...results: Validation<any, E>[]) {
+
+  const list = results.reduce((acc, next) => {
+    if (Either.isLeft(next)) {
+      return acc.concat(next.value);
+    }
+    return acc;
+  }, [] as E[]);
+
+  // Right branch is useless here.
+  return list.length
+    ? Either.left(list)
+    : Either.right({});
 }
 
 

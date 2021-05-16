@@ -1,20 +1,41 @@
-import { Tag, Prisma } from '@prisma/client';
+import { Tag } from '@prisma/client';
 import slugify from '@sindresorhus/slugify';
 
 import { Context } from '../../context';
 import { Either } from '../../util/Either';
 import { isEqIgnore } from '../../util/unit';
-import { AppError, ErrorCode } from '../AppError';
+import { ErrorCode } from '../AppError';
 import { R } from '../R';
-import { collect, concat, maxLen, minLen, notEmpty } from '../validator';
+import { apply, collect, concat, maxLen, minLen, notEmpty, pattern } from '../validator';
 import { TagInput } from './type';
+
+
+const nameV = concat(
+  notEmpty('Tag name should not be empty'),
+  minLen(2, 'Tag name must be two characters or more'),
+  maxLen(48, 'Tag name should not be more than 48 characters'));
+
+const descriptionV =
+  maxLen(140, 'Description should not be more than 140 characters');
+
+const slugV = concat(
+  pattern(/^[a-zA-Z0-9-]+$/, 'Slug can have only a-z, A-Z, 0-9 and hypen(-)'),
+  pattern(/^[a-zA-Z0-9]+$/, 'Slug can only begin with alphanumeric character'));
+
+const newTagValidator = apply<Pick<Tag, 'name' | 'description' >, string>({
+  name: nameV,
+  description: descriptionV
+});
+
+const updateTagValidator = (tag: Pick<Tag, 'name' | 'description' | 'slug'>) =>
+  collect(newTagValidator(tag), slugV(tag.slug));
 
 
 export async function createTag({ db }: Context, newTag: TagInput): DomainResult<Tag> {
 
   const slug = slugify(newTag.name);
 
-  const validationRs = validator({
+  const validationRs = newTagValidator({
     name: newTag.name,
     description: newTag.description || ''
   });
@@ -54,6 +75,7 @@ export async function createTag({ db }: Context, newTag: TagInput): DomainResult
   return R.of(tag);
 }
 
+
 export async function updateTag(ctx: Context, tagId: string, newTag: TagInput) {
 
   const tag = await ctx.db.tag.findUnique({
@@ -66,9 +88,10 @@ export async function updateTag(ctx: Context, tagId: string, newTag: TagInput) {
     return R.ofError(ErrorCode.NOT_FOUND, 'Tag not found');
   }
 
-  const validationRs = validator({
+  const validationRs = updateTagValidator({
     name: newTag.name,
-    description: newTag.description || ''
+    description: newTag.description || '',
+    slug: newTag.slug || tag.slug
   });
 
   if (Either.isLeft(validationRs)) {
@@ -91,13 +114,3 @@ export async function updateTag(ctx: Context, tagId: string, newTag: TagInput) {
 
   return updated;
 }
-
-
-const validator = collect<Tag, string>({
-  name: concat(
-    notEmpty('Tag should not be empty'),
-    minLen(2, 'Tag name must be two characters or more'),
-    maxLen(48, 'Tag name should not be more than 48 characters')),
-
-  description: maxLen(140, 'Description should not be more than 140 characters')
-});
