@@ -20,7 +20,7 @@ const descriptionV =
 
 const slugV = concat(
   pattern(/^[a-zA-Z0-9-]+$/, 'Slug can have only a-z, A-Z, 0-9 and hypen(-)'),
-  pattern(/^[a-zA-Z0-9]+$/, 'Slug can only begin with alphanumeric character'));
+  pattern(/^[a-zA-Z0-9]/, 'Slug can only begin with alphanumeric character'));
 
 const newTagValidator = apply<Pick<Tag, 'name' | 'description' >, string>({
   name: nameV,
@@ -76,13 +76,10 @@ export async function createTag({ db }: Context, newTag: TagInput): DomainResult
 }
 
 
-export async function updateTag(ctx: Context, tagId: string, newTag: TagInput) {
+export async function updateTag(ctx: Context, tagId: bigint, newTag: TagInput): DomainResult<Tag> {
 
-  const tag = await ctx.db.tag.findUnique({
-    where: {
-      id: BigInt(tagId)
-    }
-  });
+  const tag = await ctx.db.tag.findUnique({ where: { id: tagId } });
+
 
   if (!tag) {
     return R.ofError(ErrorCode.NOT_FOUND, 'Tag not found');
@@ -112,5 +109,5 @@ export async function updateTag(ctx: Context, tagId: string, newTag: TagInput) {
     }
   });
 
-  return updated;
+  return R.of(updated);
 }

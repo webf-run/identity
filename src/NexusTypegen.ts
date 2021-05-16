@@ -129,7 +129,7 @@ export interface NexusGenFieldTypes {
     createTag: NexusGenRootTypes['TagResponse']; // TagResponse!
     forgotPassword: boolean; // Boolean!
     resetPassword: boolean; // Boolean!
-    updateTag: NexusGenRootTypes['Tag']; // Tag!
+    updateTag: NexusGenRootTypes['TagResponse']; // TagResponse!
   }
   Publication: { // field return type
     fromEmail: string; // String!
@@ -171,7 +171,7 @@ export interface NexusGenFieldTypeNames {
     createTag: 'TagResponse'
     forgotPassword: 'Boolean'
     resetPassword: 'Boolean'
-    updateTag: 'Tag'
+    updateTag: 'TagResponse'
   }
   Publication: { // field return type name
     fromEmail: 'String'
@@ -216,6 +216,7 @@ export interface NexusGenArgTypes {
     }
     updateTag: { // args
       tag: NexusGenInputs['TagInput']; // TagInput!
+      tagId: string; // ID!
     }
   }
   Query: {

@@ -1,6 +1,6 @@
 import { extendType, inputObjectType, list, nullable, objectType } from 'nexus';
 
-import { createTag } from '../domain/content/tag';
+import { createTag, updateTag } from '../domain/content/tag';
 import { R } from '../domain/R';
 import { errorUnion } from './helper';
 
@@ -64,10 +64,13 @@ export const TagMutation = extendType({
     });
 
     t.field('updateTag', {
-      type: TagObj,
-      args: { tag: TagInput },
-      resolve() {
-        throw 'err';
+      type: 'TagResponse',
+      args: { tag: TagInput, tagId: 'ID' },
+      resolve(_root, args, ctx) {
+        const tag = updateTag(ctx, BigInt(args.tagId), args.tag);
+        const mapped = R.map((y) => ({ ...y, id: y.id.toString() }), tag);
+
+        return R.unpack(mapped);
       }
     });
 

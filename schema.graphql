@@ -32,7 +32,7 @@ type Mutation {
   createTag(tag: TagInput!): TagResponse!
   forgotPassword(username: String!): Boolean!
   resetPassword(code: String!, password: String!): Boolean!
-  updateTag(tag: TagInput!): Tag!
+  updateTag(tag: TagInput!, tagId: ID!): TagResponse!
 }
 
 input NewPublication {
