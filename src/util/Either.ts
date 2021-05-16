@@ -3,24 +3,28 @@ export enum EitherTag {
   Error = 'error'
 }
 
-export type Left<V> = { tag: EitherTag.Ok; value: V; }
-export type Right<E> = { tag: EitherTag.Error; error: E; };
+export type Left<E> = { tag: EitherTag.Error; value: E; }
+export type Right<V> = { tag: EitherTag.Ok; value: V; };
 
-export type Either<Value, Error> = Left<Value> | Right<Error>;
+export type Either<Value, Error> = Left<Error> | Right<Value>;
 
-const left = <T>(value: T) => ({ tag: EitherTag.Ok, value }) as Left<T>;
-const right = <T>(error: T) => ({ tag: EitherTag.Error, error }) as Right<T>;
+const left = <T>(value: T) => ({ tag: EitherTag.Error, value }) as Left<T>;
+const right = <T>(error: T) => ({ tag: EitherTag.Ok, value: error }) as Right<T>;
 
-function isLeft<V, E>(value: Either<V, E>): value is Left<V> {
+function isLeft<V, E>(value: Either<V, E>): value is Left<E> {
+  return value.tag === EitherTag.Error;
+};
+
+function isRight<V, E>(value: Either<V, E>): value is Right<V> {
   return value.tag === EitherTag.Ok;
 };
 
-function map<V, E, R>(callback: (value: V) => R) {
-  return (value: Either<V, E>) => {
-    return isLeft(value)
-      ? callback(value.value)
+function map<V, R>(callback: (value: V) => R) {
+  return <E>(value: Either<V, E>) => {
+    return isRight(value)
+      ? Either.right(callback(value.value))
       : value;
   };
 }
 
-export const Either = { isLeft, left, right, map };
+export const Either = { isLeft, isRight, left, right, map };

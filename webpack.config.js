@@ -18,7 +18,8 @@ module.exports = {
   externals: [nodeExternals({
     allowlist: [
       'crypto-random-string',
-      '@sindresorhus/slugify'
+      '@sindresorhus/slugify',
+      '@sindresorhus/transliterate'
     ]
   })],
 
