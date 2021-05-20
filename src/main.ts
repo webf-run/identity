@@ -1,6 +1,7 @@
 import { makeServer } from './server';
 import { initializeClient } from './client';
 import { makeContext } from './context';
+import { makeClient } from './storage/space';
 
 
 export async function main() {
@@ -12,6 +13,8 @@ export async function main() {
   const server = makeServer(context);
 
   const info = await server.listen();
+
+  makeClient();
 
   console.log(`🚀 Server ready at ${info.url}`);
 }

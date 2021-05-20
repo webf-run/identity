@@ -14,6 +14,7 @@ model Project {
   fromEmail     String  @map("from_email")
   publication   Publication?
   users         User[]
+  assets        Asset[]
 
   @@map("project")
 }
@@ -81,6 +82,7 @@ model Post {
   publishedAt DateTime?   @db.Timestamptz() @map("published_at")
 
   postMeta    PostMeta?
+  postImage   PostImage[]
 
   @@map("post")
 }
@@ -141,4 +143,51 @@ model LoginAttempt {
   lastAttempt   DateTime  @db.Timestamptz() @updatedAt @map("last_attempt")
 
   @@map("login_attempt")
+}
+
+
+model Asset {
+  id            BigInt    @id @default(autoincrement())
+
+  fileName      String    @map("file_name")
+  contentType   String    @map("content_type")
+
+  size          Int
+  sizeUnit      String    @map("size_unit")
+
+  createdAt     DateTime  @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt     DateTime  @db.Timestamptz() @updatedAt @map("updated_at")
+
+  verified      Boolean   @default(false)
+
+  project       Project   @relation(fields: [projectId], references: [id])
+  projectId     BigInt    @map("project_id")
+
+  image         Image?
+
+  @@map("asset")
+}
+
+
+model Image {
+  id          BigInt      @id
+  asset       Asset       @relation(fields: [id], references: [id])
+  caption     Json        @db.JsonB
+  altText     String      @map("alt_text")
+
+  postImage   PostImage?
+
+  @@map("image")
+}
+
+
+model PostImage {
+  image       Image     @relation(fields: [imageId], references: [id])
+  imageId     BigInt    @map("image_id")
+
+  post        Post      @relation(fields: [postId], references: [id])
+  postId      BigInt    @map("project_id")
+
+  @@id([imageId, postId])
+  @@map("post_image")
 }
