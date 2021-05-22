@@ -6,6 +6,28 @@ type AppError {
   errors: [Error!]!
 }
 
+type AssetSource {
+  bucket: String!
+  cloudType: String!
+  id: ID!
+  key: String!
+  publicUrl: String!
+  region: String!
+  uploadUrl: String!
+}
+
+input AssetSourceInput {
+  bucket: String!
+  cloudType: String!
+  key: String!
+  publicUrl: String!
+  region: String!
+  secret: String!
+  uploadUrl: String!
+}
+
+union AssetSourceReponse = AppError | AssetSource
+
 type AuthToken {
   duration: Int!
   generatedAt: DateTime!
@@ -25,14 +47,21 @@ type Error {
   message: String!
 }
 
+input ImageInput {
+  extension: String!
+  title: String!
+}
+
 type Mutation {
   approveTag(approved: Boolean!, tagId: ID!): Tag!
   authenticateUser(input: TokenInput!): AuthTokenReponse!
+  createAssetSource(source: AssetSourceInput!): AssetSourceReponse!
   createPublication(input: NewPublication!): NewPublicationResponse!
   createTag(tag: TagInput!): TagResponse!
   forgotPassword(username: String!): Boolean!
   resetPassword(code: String!, password: String!): Boolean!
   updateTag(tag: TagInput!, tagId: ID!): TagResponse!
+  uploadImage(image: ImageInput!): SignedUrl!
 }
 
 input NewPublication {
@@ -56,6 +85,11 @@ type Query {
   getTags(approved: Boolean!, search: String, skip: Int!, top: Int!): [Tag!]!
 }
 
+type SignedUrl {
+  fields: [UrlFormField!]!
+  url: String!
+}
+
 type Tag {
   approved: Boolean!
   description: String!
@@ -75,6 +109,12 @@ union TagResponse = AppError | Tag
 input TokenInput {
   password: String!
   username: String!
+}
+
+"""Form fields to be submitted along with Signed URL"""
+type UrlFormField {
+  key: String!
+  value: String!
 }
 
 """New User Input"""

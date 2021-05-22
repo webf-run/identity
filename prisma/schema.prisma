@@ -105,6 +105,7 @@ model Tag {
   @@map("tag")
 }
 
+
 model Post {
   id          BigInt      @id @default(autoincrement())
   title       String
@@ -154,7 +155,7 @@ model AssetSource {
 
   // Region - Digital Ocean, AWS
   // Blank - Azure, Google
-  root        String
+  region       String
 
   // Space - Digital Ocean
   // Bucket - AWS, Google

@@ -22,7 +22,7 @@ const slugV = concat(
   pattern(/^[a-zA-Z0-9-]+$/, 'Slug can have only a-z, A-Z, 0-9 and hypen(-)'),
   pattern(/^[a-zA-Z0-9]/, 'Slug can only begin with alphanumeric character'));
 
-const newTagValidator = apply<Pick<Tag, 'name' | 'description' >, string>({
+const newTagValidator = apply({
   name: nameV,
   description: descriptionV
 });

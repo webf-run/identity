@@ -15,3 +15,11 @@ export function errorUnion<T extends string>(name: T, member: Unpacked<UnionMemb
         : member
   });
 }
+
+
+export function serializeId<T extends { id: Number | BigInt }>(x: T): Omit<T, 'id'> & { id: string; } {
+  return {
+    ...x,
+    id: x.id.toString()
+  };
+}

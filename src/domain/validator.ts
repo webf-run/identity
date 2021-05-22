@@ -1,8 +1,9 @@
+import mime from 'mime-types';
+
 import { Either } from '../util/Either';
 
 
 export type Validation<T, E> = Either<T, E[]>;
-
 
 export type ValidatorConfig<T, E> = {
   [key in keyof Partial<T>]:
@@ -11,6 +12,9 @@ export type ValidatorConfig<T, E> = {
 };
 
 export type Assertion<T, E> = (value: T) => Validation<T, E>;
+
+
+const imageMime = new Set(['image/bmp', 'image/gif', 'image/jpeg', 'image/png', 'image/webp']);
 
 
 export function notEmpty<E = string>(msg: E): Assertion<string, E> {
@@ -50,6 +54,25 @@ export function pattern<E = string>(pattern: RegExp, msg: E): Assertion<string, 
 }
 
 
+export function inSet<E = string>(list: readonly string[], msg: E): Assertion<string, E> {
+  const set = new Set(list);
+
+  return (value: string) =>
+    set.has(value)
+      ? Either.right(value)
+      : Either.left([msg]);
+}
+
+
+export function isImageExtension<E = string>(msg: E): Assertion<string, E> {
+  return (extension: string) => {
+    return imageMime.has(mime.lookup(extension) || '')
+      ? Either.right(extension)
+      : Either.left([msg])
+  };
+}
+
+
 export function concat<T, E>(...assertions: Assertion<T, E>[]): Assertion<T, E> {
 
   const callback = (value: T) => {
@@ -75,9 +98,9 @@ export function concat<T, E>(...assertions: Assertion<T, E>[]): Assertion<T, E> 
 }
 
 
-export function apply<T, E>(config: ValidatorConfig<T, E>): Assertion<Partial<T>, E> {
+export function apply<T, E = string>(config: ValidatorConfig<T, E>): Assertion<{ [key in (keyof typeof config)]: T[key]; }, E> {
 
-  const callback = (value: Partial<T>) => {
+  const callback = (value: T) => {
 
     function traverse<X>(config: ValidatorConfig<X, E>, obj: any, collect: E[]) {
 

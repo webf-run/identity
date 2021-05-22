@@ -1,6 +1,6 @@
-import { makeServer } from './server';
-import { initializeClient } from './client';
 import { makeContext } from './context';
+import { initializeClient } from './DBClient';
+import { makeServer } from './server';
 import { makeClient } from './storage/space';
 
 
@@ -14,7 +14,7 @@ export async function main() {
 
   const info = await server.listen();
 
-  makeClient();
+  // makeClient();
 
   console.log(`🚀 Server ready at ${info.url}`);
 }

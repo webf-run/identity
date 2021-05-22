@@ -29,6 +29,19 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  AssetSourceInput: { // input type
+    bucket: string; // String!
+    cloudType: string; // String!
+    key: string; // String!
+    publicUrl: string; // String!
+    region: string; // String!
+    secret: string; // String!
+    uploadUrl: string; // String!
+  }
+  ImageInput: { // input type
+    extension: string; // String!
+    title: string; // String!
+  }
   NewPublication: { // input type
     firstUser?: NexusGenInputs['UserInput'] | null; // UserInput
     fromEmail: string; // String!
@@ -68,6 +81,15 @@ export interface NexusGenObjects {
   AppError: { // root type
     errors: NexusGenRootTypes['Error'][]; // [Error!]!
   }
+  AssetSource: { // root type
+    bucket: string; // String!
+    cloudType: string; // String!
+    id: string; // ID!
+    key: string; // String!
+    publicUrl: string; // String!
+    region: string; // String!
+    uploadUrl: string; // String!
+  }
   AuthToken: { // root type
     duration: number; // Int!
     generatedAt: NexusGenScalars['DateTime']; // DateTime!
@@ -86,6 +108,10 @@ export interface NexusGenObjects {
     publicUrl: string; // String!
   }
   Query: {};
+  SignedUrl: { // root type
+    fields: NexusGenRootTypes['UrlFormField'][]; // [UrlFormField!]!
+    url: string; // String!
+  }
   Tag: { // root type
     approved: boolean; // Boolean!
     description: string; // String!
@@ -93,12 +119,17 @@ export interface NexusGenObjects {
     name: string; // String!
     slug: string; // String!
   }
+  UrlFormField: { // root type
+    key: string; // String!
+    value: string; // String!
+  }
 }
 
 export interface NexusGenInterfaces {
 }
 
 export interface NexusGenUnions {
+  AssetSourceReponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AssetSource'];
   AuthTokenReponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AuthToken'];
   NewPublicationResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Publication'];
   TagResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Tag'];
@@ -111,6 +142,15 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 export interface NexusGenFieldTypes {
   AppError: { // field return type
     errors: NexusGenRootTypes['Error'][]; // [Error!]!
+  }
+  AssetSource: { // field return type
+    bucket: string; // String!
+    cloudType: string; // String!
+    id: string; // ID!
+    key: string; // String!
+    publicUrl: string; // String!
+    region: string; // String!
+    uploadUrl: string; // String!
   }
   AuthToken: { // field return type
     duration: number; // Int!
@@ -125,11 +165,13 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     approveTag: NexusGenRootTypes['Tag']; // Tag!
     authenticateUser: NexusGenRootTypes['AuthTokenReponse']; // AuthTokenReponse!
+    createAssetSource: NexusGenRootTypes['AssetSourceReponse']; // AssetSourceReponse!
     createPublication: NexusGenRootTypes['NewPublicationResponse']; // NewPublicationResponse!
     createTag: NexusGenRootTypes['TagResponse']; // TagResponse!
     forgotPassword: boolean; // Boolean!
     resetPassword: boolean; // Boolean!
     updateTag: NexusGenRootTypes['TagResponse']; // TagResponse!
+    uploadImage: NexusGenRootTypes['SignedUrl']; // SignedUrl!
   }
   Publication: { // field return type
     fromEmail: string; // String!
@@ -141,6 +183,10 @@ export interface NexusGenFieldTypes {
     getPublications: NexusGenRootTypes['Publication'][]; // [Publication!]!
     getTags: NexusGenRootTypes['Tag'][]; // [Tag!]!
   }
+  SignedUrl: { // field return type
+    fields: NexusGenRootTypes['UrlFormField'][]; // [UrlFormField!]!
+    url: string; // String!
+  }
   Tag: { // field return type
     approved: boolean; // Boolean!
     description: string; // String!
@@ -148,11 +194,24 @@ export interface NexusGenFieldTypes {
     name: string; // String!
     slug: string; // String!
   }
+  UrlFormField: { // field return type
+    key: string; // String!
+    value: string; // String!
+  }
 }
 
 export interface NexusGenFieldTypeNames {
   AppError: { // field return type name
     errors: 'Error'
+  }
+  AssetSource: { // field return type name
+    bucket: 'String'
+    cloudType: 'String'
+    id: 'ID'
+    key: 'String'
+    publicUrl: 'String'
+    region: 'String'
+    uploadUrl: 'String'
   }
   AuthToken: { // field return type name
     duration: 'Int'
@@ -167,11 +226,13 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     approveTag: 'Tag'
     authenticateUser: 'AuthTokenReponse'
+    createAssetSource: 'AssetSourceReponse'
     createPublication: 'NewPublicationResponse'
     createTag: 'TagResponse'
     forgotPassword: 'Boolean'
     resetPassword: 'Boolean'
     updateTag: 'TagResponse'
+    uploadImage: 'SignedUrl'
   }
   Publication: { // field return type name
     fromEmail: 'String'
@@ -183,12 +244,20 @@ export interface NexusGenFieldTypeNames {
     getPublications: 'Publication'
     getTags: 'Tag'
   }
+  SignedUrl: { // field return type name
+    fields: 'UrlFormField'
+    url: 'String'
+  }
   Tag: { // field return type name
     approved: 'Boolean'
     description: 'String'
     id: 'ID'
     name: 'String'
     slug: 'String'
+  }
+  UrlFormField: { // field return type name
+    key: 'String'
+    value: 'String'
   }
 }
 
@@ -200,6 +269,9 @@ export interface NexusGenArgTypes {
     }
     authenticateUser: { // args
       input: NexusGenInputs['TokenInput']; // TokenInput!
+    }
+    createAssetSource: { // args
+      source: NexusGenInputs['AssetSourceInput']; // AssetSourceInput!
     }
     createPublication: { // args
       input: NexusGenInputs['NewPublication']; // NewPublication!
@@ -218,6 +290,9 @@ export interface NexusGenArgTypes {
       tag: NexusGenInputs['TagInput']; // TagInput!
       tagId: string; // ID!
     }
+    uploadImage: { // args
+      image: NexusGenInputs['ImageInput']; // ImageInput!
+    }
   }
   Query: {
     getTags: { // args
@@ -230,6 +305,7 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
+  AssetSourceReponse: "AppError" | "AssetSource"
   AuthTokenReponse: "AppError" | "AuthToken"
   NewPublicationResponse: "AppError" | "Publication"
   TagResponse: "AppError" | "Tag"
@@ -252,7 +328,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "AuthTokenReponse" | "NewPublicationResponse" | "TagResponse";
+export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceReponse" | "AuthTokenReponse" | "NewPublicationResponse" | "TagResponse";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
