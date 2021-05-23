@@ -1,6 +1,6 @@
 import { extendType, inputObjectType, objectType } from 'nexus';
 
-import { createAssetSource } from '../domain/content/asset';
+import { createAssetSource } from '../domain/content/assetSource';
 import { R } from '../domain/R';
 import { errorUnion, serializeId } from './helper';
 

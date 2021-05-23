@@ -18,8 +18,8 @@ export const UserInput = inputObjectType({
 });
 
 
-export const NewPublication = inputObjectType({
-  name: 'NewPublication',
+export const PublicationInput = inputObjectType({
+  name: 'PublicationInput',
   definition(t) {
     t.string('name');
     t.string('publicUrl');
@@ -33,8 +33,8 @@ export const Publication = objectType({
   name: 'Publication',
   definition(t) {
     t.id('id');
-    t.string('name');
-    t.string('fromEmail');
+    t.string('name', { resolve: (x) => x.project.name });
+    t.string('fromEmail', { resolve: (x) => x.project.fromEmail });
     t.string('publicUrl');
   }
 });
@@ -53,15 +53,9 @@ export const CoreQuery = extendType({
           include: {
             project: true
           }
-        }).then((x) =>
-          x.map((y) => ({
-            id: y.project.id.toString(),
-            name: y.project.name,
-            fromEmail: y.project.fromEmail,
-            publicUrl: y.publicUrl
-          })));
+        });
       }
-    })
+    });
   }
 });
 
@@ -71,11 +65,10 @@ export const CoreMutation = extendType({
     t.field('createPublication', {
       type: 'NewPublicationResponse',
       args: {
-        input: NewPublication
+        input: 'PublicationInput'
       },
       resolve(_root, args, ctx) {
-        const input = args.input;
-        return R.unpack(createNewPublication(ctx, input));
+        return R.unpack(createNewPublication(ctx, args.input));
       }
     });
   }

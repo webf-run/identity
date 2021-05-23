@@ -2,48 +2,51 @@ import { Prisma } from '@prisma/client';
 
 import { Context } from '../../context';
 import { ErrorCode } from '../AppError';
+import { PublicationInput } from '../Input';
+import { Publication } from '../Output';
 import { R } from '../R';
 import { hashPassword } from './auth';
-import { Publication, NewPublication } from './type';
 
 
-export async function createNewPublication(ctx: Context, publication: NewPublication): DomainResult<Publication> {
+export async function createNewPublication(ctx: Context, input: PublicationInput): DomainResult<Publication> {
 
-  const user = publication.firstUser;
+  const { db } = ctx;
 
-  const request: Prisma.ProjectCreateInput = {
-    name: publication.name,
-    fromEmail: publication.fromEmail,
-    publication: {
+  const user = input.firstUser;
+
+  const request: Prisma.PublicationCreateInput = {
+    publicUrl: input.publicUrl,
+    project: {
       create: {
-        publicUrl: publication.publicUrl
+        name: input.name,
+        fromEmail: input.fromEmail,
       }
     }
   };
 
+
   if (user) {
     const [password, hashAlgo] = await (user && hashPassword(user.password));
 
-    request.users = {
+    request.staff = {
       create: {
-        ...user,
-        password,
-        passwordHash: hashAlgo
+        user: {
+          create: {
+            ...user,
+            password,
+            passwordHash: hashAlgo
+          }
+        }
       }
-    }
+    };
   }
 
-  return ctx.db.project.create({
+
+  return db.publication.create({
     data: request,
     include: {
-      publication: true
+      project: true
     }
-  })
-  .then(R.off((x) => ({
-    id: x.id.toString(),
-    name: x.name,
-    publicUrl: x.publication!.publicUrl,
-    fromEmail: x.fromEmail
-  })))
+  }).then((x) => R.of(x))
   .catch(R.liftDbError('P2002', ErrorCode.UNIQUE_URL, 'Publication URL is already taken'));
 }

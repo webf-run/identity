@@ -3,7 +3,7 @@
  * Do not make changes to this file directly
  */
 
-
+import * as test from "./domain/Output"
 import { Context } from "./context"
 import { core } from "nexus"
 declare global {
@@ -42,7 +42,7 @@ export interface NexusGenInputs {
     extension: string; // String!
     title: string; // String!
   }
-  NewPublication: { // input type
+  PublicationInput: { // input type
     firstUser?: NexusGenInputs['UserInput'] | null; // UserInput
     fromEmail: string; // String!
     name: string; // String!
@@ -90,23 +90,13 @@ export interface NexusGenObjects {
     region: string; // String!
     uploadUrl: string; // String!
   }
-  AuthToken: { // root type
-    duration: number; // Int!
-    generatedAt: NexusGenScalars['DateTime']; // DateTime!
-    id: string; // String!
-    type: string; // String!
-  }
+  AuthToken: test.AuthToken;
   Error: { // root type
     code: string; // String!
     message: string; // String!
   }
   Mutation: {};
-  Publication: { // root type
-    fromEmail: string; // String!
-    id: string; // ID!
-    name: string; // String!
-    publicUrl: string; // String!
-  }
+  Publication: test.Publication;
   Query: {};
   SignedUrl: { // root type
     fields: NexusGenRootTypes['UrlFormField'][]; // [UrlFormField!]!
@@ -274,7 +264,7 @@ export interface NexusGenArgTypes {
       source: NexusGenInputs['AssetSourceInput']; // AssetSourceInput!
     }
     createPublication: { // args
-      input: NexusGenInputs['NewPublication']; // NewPublication!
+      input: NexusGenInputs['PublicationInput']; // PublicationInput!
     }
     createTag: { // args
       tag: NexusGenInputs['TagInput']; // TagInput!

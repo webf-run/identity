@@ -1,14 +1,11 @@
-import path from 'path';
-
 import { AssetSource } from '@prisma/client';
-import cuid from 'cuid';
 
 import { Context } from '../../context';
 import { Either } from '../../util/Either';
 import { ErrorCode } from '../AppError';
+import { AssetSourceInput } from '../Input';
 import { R } from '../R';
-import { apply, concat, inSet, isImageExtension, maxLen, minLen, notEmpty } from '../validator';
-import { AssetSourceInput, ImageInput } from './type';
+import { apply, inSet, notEmpty } from '../validator';
 
 
 const assetSourceV = apply({
@@ -19,16 +16,6 @@ const assetSourceV = apply({
   uploadUrl: notEmpty('Upload Url is required'),
   key: notEmpty('Key is required'),
   secret: notEmpty('Secret is required')
-});
-
-
-const imageV = apply<ImageInput>({
-  title: concat(
-    notEmpty('Title should not be empty'),
-    minLen(2, 'Title should be at least 2 characters'),
-    maxLen(48, 'Title should not be more than 48 characters')),
-
-  extension: isImageExtension('Invalid image extension provided')
 });
 
 
@@ -56,24 +43,28 @@ export async function createAssetSource(ctx: Context, source: AssetSourceInput):
     }
   });
 
-
   return R.of(newAssetSource);
 }
 
 
-export async function makeImageUploadIntent(ctx: Context, image: ImageInput) {
+export async function getLRUAssetSource(ctx: Context): Promise<AssetSource | null> {
 
   const { db } = ctx;
-  const title = path.basename(image.title);
 
-  const result = imageV({ title, extension: image.extension });
+  const results = await db.assetSource.findMany({
+    include: {
+      _count: {
+        select: {
+          assets: true
+        }
+      }
+    }
+  });
 
-  if (Either.isLeft(result)) {
-    return R.ofError(ErrorCode.INVALID_DATA, result.value.join('\n'));
-  }
+  const record = results.length === 0
+    ? null
+    : results.reduce((current, next) =>
+        (current._count?.assets || 0) >= (next._count?.assets || 0) ? current : next)
 
-  // const fileName = cuid();
-
-  // TODO: Pending work.
-  
+  return record;
 }

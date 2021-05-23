@@ -6,6 +6,15 @@ import { R } from '../domain/R';
 import { errorUnion } from './helper';
 
 
+export const TokenInput = inputObjectType({
+  name: 'TokenInput',
+  definition(t) {
+    t.string('username');
+    t.string('password');
+  }
+});
+
+
 export const AuthToken = objectType({
   name: 'AuthToken',
   definition(t) {
@@ -13,15 +22,6 @@ export const AuthToken = objectType({
     t.string('id');
     t.datetime('generatedAt');
     t.int('duration');
-  }
-});
-
-
-export const TokenInput = inputObjectType({
-  name: 'TokenInput',
-  definition(t) {
-    t.string('username');
-    t.string('password');
   }
 });
 
@@ -38,7 +38,8 @@ export const AuthMutation = extendType({
       resolve(_root, args, ctx) {
         return R.unpack(authenticate(ctx, args.input));
       }
-    }),
+    });
+
     t.field('forgotPassword', {
       type: 'Boolean',
       args: { username: 'String' },
@@ -49,6 +50,7 @@ export const AuthMutation = extendType({
         return typeof res === 'boolean' ? res : false;
       }
     });
+
     t.field('resetPassword', {
       type: 'Boolean',
       args: { code: 'String', password: 'String' },

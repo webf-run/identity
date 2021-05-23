@@ -5,6 +5,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["selectRelationCount", "orderByAggregateGroup"]
 }
 
 
@@ -12,8 +13,8 @@ model Project {
   id            BigInt  @id @default(autoincrement())
   name          String
   fromEmail     String  @map("from_email")
+
   publication   Publication?
-  users         User[]
   assets        Asset[]
 
   @@map("project")
@@ -22,8 +23,6 @@ model Project {
 
 model User {
   id            BigInt      @id @default(autoincrement())
-  project       Project     @relation(fields: [projectId], references: [id])
-  projectId     BigInt      @map("project_id")
 
   firstName     String      @map("first_name")
   lastName      String      @map("last_name")
@@ -35,6 +34,7 @@ model User {
   createdAt     DateTime    @db.Timestamptz() @default(now()) @map("created_at")
   updatedAt     DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
 
+  staff         Staff[]
   tokens        UserToken[]
   posts         Post[]
   resetRequest  ResetPasswordRequest?
@@ -86,44 +86,65 @@ model Publication {
   project       Project   @relation(fields: [id], references: [id])
   publicUrl     String    @unique @map("public_url")
 
+  staff         Staff[]
+  posts         Post[]
+
   @@map("publication")
 }
 
 
+model Staff {
+  publication     Publication   @relation(fields: [publicationId], references: [id])
+  publicationId   BigInt        @map("publication_id")
+
+  user            User          @relation(fields: [userId], references: [id])
+  userId          BigInt        @map("user_id")
+
+  @@map("staff")
+  @@id([publicationId, userId])
+}
+
+
 model Tag {
-  id            BigInt    @id @default(autoincrement())
+  id            BigInt      @id @default(autoincrement())
   name          String
-  slug          String    @unique()
+  slug          String      @unique()
   description   String
-  approved      Boolean   @default(false)
+  approved      Boolean     @default(false)
 
   posts         PostTags[]
 
-  createdAt     DateTime  @db.Timestamptz() @default(now()) @map("created_at")
-  updatedAt     DateTime  @db.Timestamptz() @updatedAt @map("updated_at")
+  createdAt     DateTime    @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt     DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
 
   @@map("tag")
 }
 
 
 model Post {
-  id          BigInt      @id @default(autoincrement())
-  title       String
-  slug        String      @unique
-  content     Json        @db.JsonB
-  tags        PostTags[]
-  owner       User        @relation(fields: [ownerId], references: [id])
-  ownerId     BigInt      @map("owner_id")
+  id              BigInt        @id @default(autoincrement())
+  title           String
+  slug            String        @unique
 
-  createdAt   DateTime    @db.Timestamptz() @default(now()) @map("created_at")
-  updatedAt   DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
-  publishedAt DateTime?   @db.Timestamptz() @map("published_at")
+  content         Json          @db.JsonB
 
-  postMeta    PostMeta?
-  postImage   PostImage[]
+  owner           User          @relation(fields: [ownerId], references: [id])
+  ownerId         BigInt        @map("owner_id")
+
+  publication     Publication   @relation(fields: [publicationId], references: [id])
+  publicationId   BigInt
+
+  createdAt       DateTime      @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt       DateTime      @db.Timestamptz() @updatedAt @map("updated_at")
+  publishedAt     DateTime?     @db.Timestamptz() @map("published_at")
+
+  tags            PostTags[]
+  postMeta        PostMeta?
+  postImage       PostImage[]
 
   @@map("post")
 }
+
 
 model PostMeta {
   id              BigInt      @id
@@ -134,6 +155,7 @@ model PostMeta {
 
   @@map("post_meta")
 }
+
 
 model PostTags {
   post    Post    @relation(fields: [postId], references: [id])
@@ -154,8 +176,8 @@ model AssetSource {
   cloudType   String    @map("cloud_type")
 
   // Region - Digital Ocean, AWS
-  // Blank - Azure, Google
-  region       String
+  // Blank - Azure, Google (But still required to ensure uniqueness)
+  region      String
 
   // Space - Digital Ocean
   // Bucket - AWS, Google
@@ -172,6 +194,7 @@ model AssetSource {
   assets      Asset[]
 
   @@map("asset_source")
+  @@unique([cloudType, region, bucket])
 }
 
 
@@ -206,7 +229,7 @@ model Asset {
 model Image {
   id          BigInt      @id
   asset       Asset       @relation(fields: [id], references: [id])
-  
+
   caption     Json        @db.JsonB
   altText     String      @map("alt_text")
 

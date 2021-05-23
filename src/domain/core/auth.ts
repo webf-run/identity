@@ -7,7 +7,8 @@ import { Context } from '../../context';
 import { ErrorCode } from '../AppError';
 import { R } from '../R';
 
-import { AuthToken, TokenInput } from './type';
+import { TokenInput } from '../Input';
+import { AuthToken } from '../Output';
 
 
 export async function authenticate(ctx: Context, input: TokenInput): DomainResult<AuthToken> {
@@ -34,12 +35,7 @@ export async function authenticate(ctx: Context, input: TokenInput): DomainResul
 
   const token = await generateToken(ctx.db, user.id, 'u');
 
-  return R.of({
-    id: token.id.toString(),
-    type: 'Bearer',
-    duration: token.duration,
-    generatedAt: token.generatedAt
-  });
+  return R.of({ ...token, type: 'Bearer' });
 }
 
 

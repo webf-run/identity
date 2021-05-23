@@ -56,7 +56,7 @@ type Mutation {
   approveTag(approved: Boolean!, tagId: ID!): Tag!
   authenticateUser(input: TokenInput!): AuthTokenReponse!
   createAssetSource(source: AssetSourceInput!): AssetSourceReponse!
-  createPublication(input: NewPublication!): NewPublicationResponse!
+  createPublication(input: PublicationInput!): NewPublicationResponse!
   createTag(tag: TagInput!): TagResponse!
   forgotPassword(username: String!): Boolean!
   resetPassword(code: String!, password: String!): Boolean!
@@ -64,18 +64,18 @@ type Mutation {
   uploadImage(image: ImageInput!): SignedUrl!
 }
 
-input NewPublication {
-  firstUser: UserInput
-  fromEmail: String!
-  name: String!
-  publicUrl: String!
-}
-
 union NewPublicationResponse = AppError | Publication
 
 type Publication {
   fromEmail: String!
   id: ID!
+  name: String!
+  publicUrl: String!
+}
+
+input PublicationInput {
+  firstUser: UserInput
+  fromEmail: String!
   name: String!
   publicUrl: String!
 }

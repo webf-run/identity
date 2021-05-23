@@ -3,17 +3,16 @@ import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { Conditions } from '@aws-sdk/s3-presigned-post/dist/types/types';
 
 
-export async function makeClient() {
+export function makeClient(region: string, endpoint: string, key: string, secret: string) {
 
   const client = new S3Client({
-    region: '--',
-    endpoint: '---',
+    region,
+    endpoint,
     credentials: {
-      accessKeyId: 'N/A',
-      secretAccessKey: 'N/A'
+      accessKeyId: key,
+      secretAccessKey: secret
     }
   });
-
 
   return client;
 }

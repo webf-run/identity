@@ -13,9 +13,7 @@ export async function main() {
   const server = makeServer(context);
 
   const info = await server.listen();
-
-  // makeClient();
-
+  
   console.log(`🚀 Server ready at ${info.url}`);
 }
 

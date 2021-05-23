@@ -5,9 +5,9 @@ import { Context } from '../../context';
 import { Either } from '../../util/Either';
 import { isEqIgnore } from '../../util/unit';
 import { ErrorCode } from '../AppError';
+import { TagInput } from '../Input';
 import { R } from '../R';
 import { apply, collect, concat, maxLen, minLen, notEmpty, pattern } from '../validator';
-import { TagInput } from './type';
 
 
 const nameV = concat(

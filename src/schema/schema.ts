@@ -14,22 +14,30 @@ const currentDir = process.cwd();
 
 export const schema = makeSchema({
   types,
+
   outputs: {
     typegen: join(currentDir, 'src', 'NexusTypegen.ts'),
     schema: join(currentDir, 'schema.graphql')
   },
+
   contextType: {
     module: join(currentDir, 'src', 'context.ts'),
     export: 'Context'
   },
+
   nonNullDefaults: {
     input: true,
     output: true
   },
+
   sourceTypes: {
-    modules: [],
+    debug: true,
+    modules: [{
+      module: join(currentDir, 'src/domain/Output.ts'),
+      alias: 'test'
+    }],
     mapping: {
-      DateTime: 'Date',
+      DateTime: 'Date'
     }
   }
 });
