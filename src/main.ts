@@ -1,20 +1,19 @@
-import { makeContext } from './context';
-import { initializeClient } from './DBClient';
+import { initialize } from './DBClient';
 import { makeServer } from './server';
-import { makeClient } from './storage/space';
 
 
 export async function main() {
 
   // Initialize the Database client
-  const client = initializeClient();
+  const db = initialize();
 
-  const context = makeContext(client);
-  const server = makeServer(context);
+  // Initialize a GraphQL Server with fastify client
+  const server = await makeServer(db);
 
   const info = await server.listen();
-  
+
   console.log(`🚀 Server ready at ${info.url}`);
 }
+
 
 main().then(() => {});

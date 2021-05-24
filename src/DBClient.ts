@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const DB_KEY = Symbol.for('bisa.db');
 
 
-export function initializeClient() {
+export function initialize(): PrismaClient {
 
   const obj = global as any;
 

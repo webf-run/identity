@@ -6,7 +6,7 @@ import { Context } from '../../context';
 import { Either } from '../../util/Either';
 import { ErrorCode } from '../AppError';
 import { R } from '../R';
-import { generateImageUrl } from '../../storage/image';
+import { generateUrl } from '../../storage/image';
 import { makeClient, SignedUrl } from '../../storage/space';
 import { ImageInput } from '../Input';
 import { apply, concat, isImageExtension, maxLen, minLen, notEmpty } from '../validator';
@@ -66,7 +66,7 @@ export async function createImageUploadIntent(ctx: Context, input: ImageInput): 
 
   // Currently, support only Digital Ocean spaces
   const client = makeClient(source.region, source.uploadUrl, source.key, source.secret);
-  const uploadUrl = await generateImageUrl(client, source.bucket, fileName);
+  const uploadUrl = await generateUrl(client, source.bucket, fileName);
 
   client.destroy();
 

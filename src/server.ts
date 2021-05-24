@@ -1,9 +1,17 @@
+import { PrismaClient } from '@prisma/client';
 import { ApolloServer } from 'apollo-server';
 
-import type { Context } from './context';
+import { makeContext } from './context';
 import { schema } from './schema/schema';
 
 
-export function makeServer(context: Context): ApolloServer {
-  return new ApolloServer({ schema, context });
+export function makeServer(db: PrismaClient): ApolloServer {
+
+  // Create GraphQL Server
+  const server = new ApolloServer({
+    schema,
+    context: () => makeContext(db)
+  });
+
+  return server;
 }
