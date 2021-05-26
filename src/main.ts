@@ -1,5 +1,5 @@
 import { initialize } from './DBClient';
-import { makeServer } from './server';
+import { makeServer } from './server/server';
 
 
 export async function main() {

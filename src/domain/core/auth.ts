@@ -2,13 +2,12 @@ import { UserToken } from '@prisma/client';
 import argon2 from 'argon2';
 import cryptoRandomString from 'crypto-random-string';
 
-import { Context } from '../../context';
-
+import { Access } from '../Access';
 import { ErrorCode } from '../AppError';
-import { R } from '../R';
-
+import { Context } from '../Context';
 import { TokenInput } from '../Input';
 import { AuthToken } from '../Output';
+import { R } from '../R';
 
 
 export async function authenticate(ctx: Context, input: TokenInput): DomainResult<AuthToken> {
@@ -86,7 +85,7 @@ export async function resetPassword(ctx: Context, code: string, password: string
   });
 
   if (!resetReqeust) {
-    return R.ofError(ErrorCode.INVALID_REQUEST, '');
+    return R.ofError(ErrorCode.INVALID_AUTH_REQUEST, '');
   }
 
   const [hash, algo] = await hashPassword(password);
@@ -113,6 +112,60 @@ export async function resetPassword(ctx: Context, code: string, password: string
 }
 
 
+export async function validateToken(db: Context['db'], tokenId: string, scope?: string): DomainResult<Access> {
+
+  // TODO: Do not select password related sensitive data
+  const token = await db.userToken.findUnique({
+    where: {
+      id: tokenId
+    },
+    include: {
+      user: {
+        include: {
+          staff: {
+            include: {
+              publication: {
+                include: {
+                  project: true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  });
+
+  const isTokenValid = token && (token.generatedAt.getTime() + token.duration) < Date.now();
+
+
+  if (!isTokenValid) {
+    return R.ofError(ErrorCode.INVALID_TOKEN, 'Invalid authentication token');
+  }
+
+  const publications = token!.user.staff.map((x) => x.publication);
+
+
+  const access: Access = {
+    type: 'user',
+    user: token!.user,
+    publications: publications
+  };
+
+  // Check and find for any scope
+  if (scope) {
+    const publication = publications
+      .find((x) => x.publicUrl === scope || x.id.toString() === scope);
+
+    if (!publication) {
+      return R.ofError(ErrorCode.FORBIDDEN, 'Trying to access unknown publication');
+    }
+  }
+
+  return R.of(access);
+}
+
+
 export async function hashPassword(password: string): Promise<[string, string]> {
   const hash = await argon2.hash(password, { type: argon2.argon2id });
 
@@ -126,7 +179,7 @@ function generateToken(db: Context['db'], userId: bigint, prefix: 'u'): Promise<
   return db.userToken.create({
     data: {
       id: tokenId,
-      duration: 3600 * 72,
+      duration: 3600 * 1000 * 72,
       userId
     }
   });

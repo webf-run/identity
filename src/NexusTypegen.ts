@@ -3,8 +3,8 @@
  * Do not make changes to this file directly
  */
 
-import * as test from "./domain/Output"
-import { Context } from "./context"
+import * as Op from "./domain/Output"
+import { Context } from "./domain/Context"
 import { core } from "nexus"
 declare global {
   interface NexusGenCustomInputMethods<TypeName extends string> {
@@ -90,13 +90,13 @@ export interface NexusGenObjects {
     region: string; // String!
     uploadUrl: string; // String!
   }
-  AuthToken: test.AuthToken;
+  AuthToken: Op.AuthToken;
   Error: { // root type
     code: string; // String!
     message: string; // String!
   }
   Mutation: {};
-  Publication: test.Publication;
+  Publication: Op.Publication;
   Query: {};
   SignedUrl: { // root type
     fields: NexusGenRootTypes['UrlFormField'][]; // [UrlFormField!]!

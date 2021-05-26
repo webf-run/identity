@@ -2,9 +2,9 @@ import path from 'path';
 
 import cuid from 'cuid';
 
-import { Context } from '../../context';
 import { Either } from '../../util/Either';
 import { ErrorCode } from '../AppError';
+import { Context } from '../Context';
 import { R } from '../R';
 import { generateUrl } from '../../storage/image';
 import { makeClient, SignedUrl } from '../../storage/space';

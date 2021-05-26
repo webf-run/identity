@@ -21,7 +21,7 @@ export const schema = makeSchema({
   },
 
   contextType: {
-    module: join(currentDir, 'src', 'context.ts'),
+    module: join(currentDir, 'src', 'domain/Context.ts'),
     export: 'Context'
   },
 
@@ -34,7 +34,8 @@ export const schema = makeSchema({
     debug: true,
     modules: [{
       module: join(currentDir, 'src/domain/Output.ts'),
-      alias: 'test'
+      // The alias Op is short for output
+      alias: 'Op'
     }],
     mapping: {
       DateTime: 'Date'

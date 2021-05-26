@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 
-import { Context } from '../../context';
 import { ErrorCode } from '../AppError';
+import { Context } from '../Context';
 import { PublicationInput } from '../Input';
 import { Publication } from '../Output';
 import { R } from '../R';
