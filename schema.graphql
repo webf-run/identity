@@ -52,19 +52,58 @@ input ImageInput {
   title: String!
 }
 
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+
 type Mutation {
   approveTag(approved: Boolean!, tagId: ID!): Tag!
   authenticateUser(input: TokenInput!): AuthTokenReponse!
   createAssetSource(source: AssetSourceInput!): AssetSourceReponse!
+  createPost(post: PostInput!): PostResponse!
   createPublication(input: PublicationInput!): NewPublicationResponse!
   createTag(tag: TagInput!): TagResponse!
+  deletePost(postId: ID!): PostResponse!
   forgotPassword(username: String!): Boolean!
   resetPassword(code: String!, password: String!): Boolean!
+  updatePost(post: PostInput!, postId: ID!): PostResponse!
   updateTag(tag: TagInput!, tagId: ID!): TagResponse!
   uploadImage(image: ImageInput!): SignedUrl!
 }
 
 union NewPublicationResponse = AppError | Publication
+
+type Post {
+  content: JSONObject!
+  id: ID!
+  meta: PostMeta!
+  slug: String!
+  title: String!
+}
+
+input PostInput {
+  content: JSONObject!
+  meta: PostMetaInput!
+  slug: String!
+
+  """Id of the tags that you want to associate"""
+  tags: [ID!]!
+  title: String!
+}
+
+type PostMeta {
+  description: String!
+  postId: ID!
+  title: String!
+}
+
+input PostMetaInput {
+  description: String!
+  title: String!
+}
+
+union PostResponse = AppError | Post
 
 type Publication {
   fromEmail: String!

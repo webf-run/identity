@@ -11,6 +11,7 @@ export interface Context {
   access: Access;
 }
 
+
 export async function makeContext(db: PrismaClient, tokenId: string): DomainResult<Context> {
 
   const result = await validateToken(db, tokenId);

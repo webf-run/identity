@@ -3,7 +3,7 @@ import { ApolloServer, AuthenticationError } from 'apollo-server';
 import type { ApolloServerPlugin } from 'apollo-server-plugin-base';
 
 import { schema } from '../schema/schema';
-import { makeContextFromWeb } from './context';
+import { makeContextFromWeb } from './webContext';
 
 
 export function makeServer(db: PrismaClient): ApolloServer {

@@ -12,6 +12,10 @@ declare global {
      * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
      */
     datetime<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "DateTime";
+    /**
+     * The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+     */
+    json<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "JSONObject";
   }
 }
 declare global {
@@ -20,6 +24,10 @@ declare global {
      * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
      */
     datetime<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
+    /**
+     * The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+     */
+    json<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "JSONObject";
   }
 }
 
@@ -40,6 +48,17 @@ export interface NexusGenInputs {
   }
   ImageInput: { // input type
     extension: string; // String!
+    title: string; // String!
+  }
+  PostInput: { // input type
+    content: NexusGenScalars['JSONObject']; // JSONObject!
+    meta: NexusGenInputs['PostMetaInput']; // PostMetaInput!
+    slug: string; // String!
+    tags: string[]; // [ID!]!
+    title: string; // String!
+  }
+  PostMetaInput: { // input type
+    description: string; // String!
     title: string; // String!
   }
   PublicationInput: { // input type
@@ -75,6 +94,7 @@ export interface NexusGenScalars {
   Boolean: boolean
   ID: string
   DateTime: Date
+  JSONObject: any
 }
 
 export interface NexusGenObjects {
@@ -96,6 +116,18 @@ export interface NexusGenObjects {
     message: string; // String!
   }
   Mutation: {};
+  Post: { // root type
+    content: NexusGenScalars['JSONObject']; // JSONObject!
+    id: string; // ID!
+    meta: NexusGenRootTypes['PostMeta']; // PostMeta!
+    slug: string; // String!
+    title: string; // String!
+  }
+  PostMeta: { // root type
+    description: string; // String!
+    postId: string; // ID!
+    title: string; // String!
+  }
   Publication: Op.Publication;
   Query: {};
   SignedUrl: { // root type
@@ -122,6 +154,7 @@ export interface NexusGenUnions {
   AssetSourceReponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AssetSource'];
   AuthTokenReponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AuthToken'];
   NewPublicationResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Publication'];
+  PostResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Post'];
   TagResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Tag'];
 }
 
@@ -156,12 +189,27 @@ export interface NexusGenFieldTypes {
     approveTag: NexusGenRootTypes['Tag']; // Tag!
     authenticateUser: NexusGenRootTypes['AuthTokenReponse']; // AuthTokenReponse!
     createAssetSource: NexusGenRootTypes['AssetSourceReponse']; // AssetSourceReponse!
+    createPost: NexusGenRootTypes['PostResponse']; // PostResponse!
     createPublication: NexusGenRootTypes['NewPublicationResponse']; // NewPublicationResponse!
     createTag: NexusGenRootTypes['TagResponse']; // TagResponse!
+    deletePost: NexusGenRootTypes['PostResponse']; // PostResponse!
     forgotPassword: boolean; // Boolean!
     resetPassword: boolean; // Boolean!
+    updatePost: NexusGenRootTypes['PostResponse']; // PostResponse!
     updateTag: NexusGenRootTypes['TagResponse']; // TagResponse!
     uploadImage: NexusGenRootTypes['SignedUrl']; // SignedUrl!
+  }
+  Post: { // field return type
+    content: NexusGenScalars['JSONObject']; // JSONObject!
+    id: string; // ID!
+    meta: NexusGenRootTypes['PostMeta']; // PostMeta!
+    slug: string; // String!
+    title: string; // String!
+  }
+  PostMeta: { // field return type
+    description: string; // String!
+    postId: string; // ID!
+    title: string; // String!
   }
   Publication: { // field return type
     fromEmail: string; // String!
@@ -217,12 +265,27 @@ export interface NexusGenFieldTypeNames {
     approveTag: 'Tag'
     authenticateUser: 'AuthTokenReponse'
     createAssetSource: 'AssetSourceReponse'
+    createPost: 'PostResponse'
     createPublication: 'NewPublicationResponse'
     createTag: 'TagResponse'
+    deletePost: 'PostResponse'
     forgotPassword: 'Boolean'
     resetPassword: 'Boolean'
+    updatePost: 'PostResponse'
     updateTag: 'TagResponse'
     uploadImage: 'SignedUrl'
+  }
+  Post: { // field return type name
+    content: 'JSONObject'
+    id: 'ID'
+    meta: 'PostMeta'
+    slug: 'String'
+    title: 'String'
+  }
+  PostMeta: { // field return type name
+    description: 'String'
+    postId: 'ID'
+    title: 'String'
   }
   Publication: { // field return type name
     fromEmail: 'String'
@@ -263,11 +326,17 @@ export interface NexusGenArgTypes {
     createAssetSource: { // args
       source: NexusGenInputs['AssetSourceInput']; // AssetSourceInput!
     }
+    createPost: { // args
+      post: NexusGenInputs['PostInput']; // PostInput!
+    }
     createPublication: { // args
       input: NexusGenInputs['PublicationInput']; // PublicationInput!
     }
     createTag: { // args
       tag: NexusGenInputs['TagInput']; // TagInput!
+    }
+    deletePost: { // args
+      postId: string; // ID!
     }
     forgotPassword: { // args
       username: string; // String!
@@ -275,6 +344,10 @@ export interface NexusGenArgTypes {
     resetPassword: { // args
       code: string; // String!
       password: string; // String!
+    }
+    updatePost: { // args
+      post: NexusGenInputs['PostInput']; // PostInput!
+      postId: string; // ID!
     }
     updateTag: { // args
       tag: NexusGenInputs['TagInput']; // TagInput!
@@ -298,6 +371,7 @@ export interface NexusGenAbstractTypeMembers {
   AssetSourceReponse: "AppError" | "AssetSource"
   AuthTokenReponse: "AppError" | "AuthToken"
   NewPublicationResponse: "AppError" | "Publication"
+  PostResponse: "AppError" | "Post"
   TagResponse: "AppError" | "Tag"
 }
 
@@ -318,7 +392,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceReponse" | "AuthTokenReponse" | "NewPublicationResponse" | "TagResponse";
+export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceReponse" | "AuthTokenReponse" | "NewPublicationResponse" | "PostResponse" | "TagResponse";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
