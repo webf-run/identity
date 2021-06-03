@@ -1,3 +1,5 @@
+import type { IncomingHttpHeaders } from 'http';
+
 import type { PrismaClient } from '@prisma/client';
 import { ApolloError, AuthenticationError, ExpressContext, ForbiddenError } from 'apollo-server-express';
 
@@ -7,24 +9,18 @@ import { Either } from '../util/Either';
 
 
 const BEARER_REGEX = /^(Bearer)(\s)(.+)$/;
+const SCOPE_HEADER = 'x-bisa-scope';
 
 
 export async function makeContextFromWeb(db: PrismaClient, webContext: ExpressContext): Promise<Context> {
 
   const headers = webContext.req.headers;
-  const authHeader = headers.authorization;
+  const rawScope = headers[SCOPE_HEADER];
+  const tokenId = parseAuthHeader(headers);
+  const scope = rawScope instanceof Array ? rawScope[0] : rawScope;
 
-  if (!authHeader) {
-    throw new AuthenticationError('Authentication token is required');
-  }
 
-  const [_, __, ___, tokenId] = BEARER_REGEX.exec(authHeader) || [];
-
-  if (!tokenId) {
-    throw new AuthenticationError('Invalid authenticatin token');
-  }
-
-  const result = await makeContext(db, tokenId);
+  const result = await makeContext(db, tokenId, scope);
 
   if (Either.isLeft(result)) {
     const errors = result.value.errors;
@@ -41,4 +37,21 @@ export async function makeContextFromWeb(db: PrismaClient, webContext: ExpressCo
   }
 
   return result.value;
+}
+
+
+function parseAuthHeader(headers: IncomingHttpHeaders) {
+  const authHeader = headers.authorization;
+
+  if (authHeader === undefined) {
+    return authHeader;
+  }
+
+  const [_, __, ___, tokenId] = BEARER_REGEX.exec(authHeader) || [];
+
+  if (!tokenId) {
+    throw new AuthenticationError('Invalid authentication token');
+  }
+
+  return tokenId;
 }

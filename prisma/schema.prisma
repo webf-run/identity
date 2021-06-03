@@ -124,7 +124,7 @@ model Tag {
 model Post {
   id              BigInt        @id @default(autoincrement())
   title           String
-  slug            String        @unique
+  slug            String
 
   content         Json          @db.JsonB
 
@@ -132,7 +132,12 @@ model Post {
   ownerId         BigInt        @map("owner_id")
 
   publication     Publication   @relation(fields: [publicationId], references: [id])
-  publicationId   BigInt
+  publicationId   BigInt        @map("publication_id")
+
+  base            Post?         @relation("DraftCopy", fields: [baseId], references: [id])
+  baseId          BigInt?       @unique @map("base_id")
+
+  draft           Post?         @relation("DraftCopy")
 
   createdAt       DateTime      @db.Timestamptz() @default(now()) @map("created_at")
   updatedAt       DateTime      @db.Timestamptz() @updatedAt @map("updated_at")
@@ -143,6 +148,7 @@ model Post {
   postImage       PostImage[]
 
   @@map("post")
+  @@unique([slug, baseId])
 }
 
 
@@ -160,8 +166,10 @@ model PostMeta {
 model PostTags {
   post    Post    @relation(fields: [postId], references: [id])
   postId  BigInt  @map("post_id")
+
   tag     Tag     @relation(fields: [tagId], references: [id])
   tagId   BigInt  @map("tag_id")
+
   order   Int
 
   @@map("post_tags")

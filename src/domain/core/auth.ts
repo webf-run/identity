@@ -160,6 +160,8 @@ export async function validateToken(db: Context['db'], tokenId: string, scope?: 
     if (!publication) {
       return R.ofError(ErrorCode.FORBIDDEN, 'Trying to access unknown publication');
     }
+
+    access.scope = publication;
   }
 
   return R.of(access);

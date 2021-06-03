@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { ApolloServer, AuthenticationError } from 'apollo-server';
 import type { ApolloServerPlugin } from 'apollo-server-plugin-base';
 
+import { Context } from '../domain/Context';
 import { schema } from '../schema/schema';
 import { makeContextFromWeb } from './webContext';
 
@@ -11,9 +12,8 @@ export function makeServer(db: PrismaClient): ApolloServer {
   // Create GraphQL Server
   const server = new ApolloServer({
     schema,
-    context: (webContext) => {
-      makeContextFromWeb(db, webContext);
-    },
+    context: (webContext) =>
+      makeContextFromWeb(db, webContext),
     plugins: [publicQuery()]
   });
 
@@ -21,7 +21,7 @@ export function makeServer(db: PrismaClient): ApolloServer {
 }
 
 
-function publicQuery(): ApolloServerPlugin {
+function publicQuery(): ApolloServerPlugin<Context> {
   return {
     requestDidStart() {
       return {

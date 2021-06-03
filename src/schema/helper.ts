@@ -17,7 +17,7 @@ export function errorUnion<T extends string>(name: T, member: Unpacked<UnionMemb
 }
 
 
-export function serializeId<T extends { id: Number | BigInt }>(x: T): Omit<T, 'id'> & { id: string; } {
+export function serializeId<T extends { id: number | bigint }>(x: T): Omit<T, 'id'> & { id: string; } {
   return {
     ...x,
     id: x.id.toString()

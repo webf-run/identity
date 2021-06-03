@@ -16,7 +16,7 @@ export interface UserAccess {
 
 export interface PublicAccess {
   type: 'public';
-  scope: Publication;
+  scope?: Publication;
   publications: Publication[];
 }
 
@@ -26,4 +26,8 @@ export type Access = UserAccess | PublicAccess;
 
 export function isUser(access: Access): access is UserAccess {
   return access.type === 'user';
+}
+
+export function makePublicAccess(): PublicAccess {
+  return { type: 'public', publications: [] };
 }
