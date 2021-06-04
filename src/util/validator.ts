@@ -1,6 +1,6 @@
 import mime from 'mime-types';
 
-import { Either } from '../util/Either';
+import { Either } from './Either';
 
 
 export type Validation<T, E> = Either<T, E[]>;

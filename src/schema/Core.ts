@@ -32,7 +32,7 @@ export const PublicationInput = inputObjectType({
 export const Publication = objectType({
   name: 'Publication',
   definition(t) {
-    t.id('id');
+    t.id('id', { resolve: (x) => x.id.toString() });
     t.string('name', { resolve: (x) => x.project.name });
     t.string('fromEmail', { resolve: (x) => x.project.fromEmail });
     t.string('publicUrl');

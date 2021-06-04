@@ -136,8 +136,8 @@ export async function validateToken(db: Context['db'], tokenId: string, scope?: 
     }
   });
 
-  const isTokenValid = token && (token.generatedAt.getTime() + token.duration) < Date.now();
 
+  const isTokenValid = token && (token.generatedAt.getTime() + token.duration) >= Date.now();
 
   if (!isTokenValid) {
     return R.ofError(ErrorCode.INVALID_TOKEN, 'Invalid authentication token');

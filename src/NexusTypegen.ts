@@ -53,8 +53,7 @@ export interface NexusGenInputs {
   PostInput: { // input type
     content: NexusGenScalars['JSONObject']; // JSONObject!
     meta: NexusGenInputs['PostMetaInput']; // PostMetaInput!
-    slug: string; // String!
-    tags: string[]; // [ID!]!
+    slug?: string | null; // String
     title: string; // String!
   }
   PostMetaInput: { // input type
@@ -116,18 +115,8 @@ export interface NexusGenObjects {
     message: string; // String!
   }
   Mutation: {};
-  Post: { // root type
-    content: NexusGenScalars['JSONObject']; // JSONObject!
-    id: string; // ID!
-    meta: NexusGenRootTypes['PostMeta']; // PostMeta!
-    slug: string; // String!
-    title: string; // String!
-  }
-  PostMeta: { // root type
-    description: string; // String!
-    postId: string; // ID!
-    title: string; // String!
-  }
+  Post: Op.Post;
+  PostMeta: Op.PostMeta;
   Publication: Op.Publication;
   Query: {};
   SignedUrl: { // root type
@@ -202,7 +191,7 @@ export interface NexusGenFieldTypes {
   Post: { // field return type
     content: NexusGenScalars['JSONObject']; // JSONObject!
     id: string; // ID!
-    meta: NexusGenRootTypes['PostMeta']; // PostMeta!
+    meta: NexusGenRootTypes['PostMeta'] | null; // PostMeta
     slug: string; // String!
     title: string; // String!
   }
@@ -328,6 +317,7 @@ export interface NexusGenArgTypes {
     }
     createPost: { // args
       post: NexusGenInputs['PostInput']; // PostInput!
+      tags: string[]; // [ID!]!
     }
     createPublication: { // args
       input: NexusGenInputs['PublicationInput']; // PublicationInput!
@@ -348,6 +338,7 @@ export interface NexusGenArgTypes {
     updatePost: { // args
       post: NexusGenInputs['PostInput']; // PostInput!
       postId: string; // ID!
+      tags: string[]; // [ID!]!
     }
     updateTag: { // args
       tag: NexusGenInputs['TagInput']; // TagInput!

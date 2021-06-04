@@ -61,13 +61,24 @@ type Mutation {
   approveTag(approved: Boolean!, tagId: ID!): Tag!
   authenticateUser(input: TokenInput!): AuthTokenReponse!
   createAssetSource(source: AssetSourceInput!): AssetSourceReponse!
-  createPost(post: PostInput!): PostResponse!
+  createPost(
+    post: PostInput!
+
+    """Ids of the tags that you want to associate"""
+    tags: [ID!]!
+  ): PostResponse!
   createPublication(input: PublicationInput!): NewPublicationResponse!
   createTag(tag: TagInput!): TagResponse!
   deletePost(postId: ID!): PostResponse!
   forgotPassword(username: String!): Boolean!
   resetPassword(code: String!, password: String!): Boolean!
-  updatePost(post: PostInput!, postId: ID!): PostResponse!
+  updatePost(
+    post: PostInput!
+    postId: ID!
+
+    """Ids of the tags that you want to associate"""
+    tags: [ID!]!
+  ): PostResponse!
   updateTag(tag: TagInput!, tagId: ID!): TagResponse!
   uploadImage(image: ImageInput!): SignedUrl!
 }
@@ -77,7 +88,7 @@ union NewPublicationResponse = AppError | Publication
 type Post {
   content: JSONObject!
   id: ID!
-  meta: PostMeta!
+  meta: PostMeta
   slug: String!
   title: String!
 }
@@ -85,10 +96,7 @@ type Post {
 input PostInput {
   content: JSONObject!
   meta: PostMetaInput!
-  slug: String!
-
-  """Id of the tags that you want to associate"""
-  tags: [ID!]!
+  slug: String
   title: String!
 }
 

@@ -1,11 +1,10 @@
-import { AssetSource } from '@prisma/client';
-
 import { Either } from '../../util/Either';
+import { apply, inSet, notEmpty } from '../../util/validator';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { AssetSourceInput } from '../Input';
 import { R } from '../R';
-import { apply, inSet, notEmpty } from '../validator';
+import { AssetSource } from '../Output';
 
 
 const assetSourceV = apply({

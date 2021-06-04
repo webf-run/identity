@@ -9,7 +9,7 @@ import { R } from '../R';
 import { generateUrl } from '../../storage/image';
 import { makeClient, SignedUrl } from '../../storage/space';
 import { ImageInput } from '../Input';
-import { apply, concat, isImageExtension, maxLen, minLen, notEmpty } from '../validator';
+import { apply, concat, isImageExtension, maxLen, minLen, notEmpty } from '../../util/validator';
 import { getLRUAssetSource } from './assetSource';
 
 

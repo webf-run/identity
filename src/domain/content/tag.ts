@@ -7,7 +7,7 @@ import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { TagInput } from '../Input';
 import { R } from '../R';
-import { apply, collect, concat, maxLen, minLen, notEmpty, pattern } from '../validator';
+import { apply, collect, concat, maxLen, minLen, notEmpty, pattern } from '../../util/validator';
 
 
 const nameV = concat(
