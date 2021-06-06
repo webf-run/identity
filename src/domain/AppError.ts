@@ -15,3 +15,8 @@ export enum ErrorCode {
 
 
 export type AppError = NexusGenObjects['AppError'];
+
+
+export function isAppError(error: any): error is AppError {
+  return error?.errors instanceof Array;
+}

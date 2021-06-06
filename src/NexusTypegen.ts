@@ -140,10 +140,11 @@ export interface NexusGenInterfaces {
 }
 
 export interface NexusGenUnions {
-  AssetSourceReponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AssetSource'];
+  AssetSourceResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AssetSource'];
   AuthTokenReponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AuthToken'];
   NewPublicationResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Publication'];
   PostResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Post'];
+  SignedUrlResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['SignedUrl'];
   TagResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Tag'];
 }
 
@@ -177,7 +178,7 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     approveTag: NexusGenRootTypes['Tag']; // Tag!
     authenticateUser: NexusGenRootTypes['AuthTokenReponse']; // AuthTokenReponse!
-    createAssetSource: NexusGenRootTypes['AssetSourceReponse']; // AssetSourceReponse!
+    createAssetSource: NexusGenRootTypes['AssetSourceResponse']; // AssetSourceResponse!
     createPost: NexusGenRootTypes['PostResponse']; // PostResponse!
     createPublication: NexusGenRootTypes['NewPublicationResponse']; // NewPublicationResponse!
     createTag: NexusGenRootTypes['TagResponse']; // TagResponse!
@@ -186,7 +187,7 @@ export interface NexusGenFieldTypes {
     resetPassword: boolean; // Boolean!
     updatePost: NexusGenRootTypes['PostResponse']; // PostResponse!
     updateTag: NexusGenRootTypes['TagResponse']; // TagResponse!
-    uploadImage: NexusGenRootTypes['SignedUrl']; // SignedUrl!
+    uploadImage: NexusGenRootTypes['SignedUrlResponse']; // SignedUrlResponse!
   }
   Post: { // field return type
     content: NexusGenScalars['JSONObject']; // JSONObject!
@@ -253,7 +254,7 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     approveTag: 'Tag'
     authenticateUser: 'AuthTokenReponse'
-    createAssetSource: 'AssetSourceReponse'
+    createAssetSource: 'AssetSourceResponse'
     createPost: 'PostResponse'
     createPublication: 'NewPublicationResponse'
     createTag: 'TagResponse'
@@ -262,7 +263,7 @@ export interface NexusGenFieldTypeNames {
     resetPassword: 'Boolean'
     updatePost: 'PostResponse'
     updateTag: 'TagResponse'
-    uploadImage: 'SignedUrl'
+    uploadImage: 'SignedUrlResponse'
   }
   Post: { // field return type name
     content: 'JSONObject'
@@ -359,10 +360,11 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  AssetSourceReponse: "AppError" | "AssetSource"
+  AssetSourceResponse: "AppError" | "AssetSource"
   AuthTokenReponse: "AppError" | "AuthToken"
   NewPublicationResponse: "AppError" | "Publication"
   PostResponse: "AppError" | "Post"
+  SignedUrlResponse: "AppError" | "SignedUrl"
   TagResponse: "AppError" | "Tag"
 }
 
@@ -383,7 +385,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceReponse" | "AuthTokenReponse" | "NewPublicationResponse" | "PostResponse" | "TagResponse";
+export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceResponse" | "AuthTokenReponse" | "NewPublicationResponse" | "PostResponse" | "SignedUrlResponse" | "TagResponse";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

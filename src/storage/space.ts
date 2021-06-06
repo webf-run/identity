@@ -3,7 +3,7 @@ import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { Conditions } from '@aws-sdk/s3-presigned-post/dist/types/types';
 
 
-export function makeClient(region: string, endpoint: string, key: string, secret: string) {
+export function makeClient(region: string, endpoint: string, key: string, secret: string): S3Client {
 
   const client = new S3Client({
     region,

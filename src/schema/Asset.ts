@@ -1,6 +1,8 @@
 import { extendType, inputObjectType, objectType } from 'nexus';
 
+import { isAppError } from '../domain/AppError';
 import { createAssetSource } from '../domain/content/assetSource';
+import { createImageUploadIntent } from '../domain/content/image';
 import { R } from '../domain/R';
 import { errorUnion, serializeId } from './helper';
 
@@ -60,7 +62,9 @@ export const SignedUrl = objectType({
   }
 });
 
-export const AssetSourceReponse = errorUnion('AssetSourceReponse', 'AssetSource');
+
+export const AssetSourceResponse = errorUnion('AssetSourceResponse', 'AssetSource');
+export const SignedUrlResponse = errorUnion('SignedUrlResponse', 'SignedUrl');
 
 
 export const AssetMutation = extendType({
@@ -69,7 +73,7 @@ export const AssetMutation = extendType({
   definition(t) {
 
     t.field('createAssetSource', {
-      type: 'AssetSourceReponse',
+      type: 'AssetSourceResponse',
       args: {
         source: 'AssetSourceInput'
       },
@@ -79,12 +83,20 @@ export const AssetMutation = extendType({
     });
 
     t.field('uploadImage', {
-      type: 'SignedUrl',
+      type: 'SignedUrlResponse',
       args: {
         image: 'ImageInput'
       },
-      resolve(_root, _args, ctx) {
-        throw 'error';
+      async resolve(_root, args, ctx) {
+        const result = await R.unpack(createImageUploadIntent(ctx, args.image));
+
+        if (!isAppError(result)) {
+          const fields = result.fields.map(([key, value]) => ({ key, value}));
+
+          return { url: result.url, fields };
+        }
+
+        return result;
       }
     });
   }

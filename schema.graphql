@@ -26,7 +26,7 @@ input AssetSourceInput {
   uploadUrl: String!
 }
 
-union AssetSourceReponse = AppError | AssetSource
+union AssetSourceResponse = AppError | AssetSource
 
 type AuthToken {
   duration: Int!
@@ -60,7 +60,7 @@ scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publicati
 type Mutation {
   approveTag(approved: Boolean!, tagId: ID!): Tag!
   authenticateUser(input: TokenInput!): AuthTokenReponse!
-  createAssetSource(source: AssetSourceInput!): AssetSourceReponse!
+  createAssetSource(source: AssetSourceInput!): AssetSourceResponse!
   createPost(
     post: PostInput!
 
@@ -80,7 +80,7 @@ type Mutation {
     tags: [ID!]!
   ): PostResponse!
   updateTag(tag: TagInput!, tagId: ID!): TagResponse!
-  uploadImage(image: ImageInput!): SignedUrl!
+  uploadImage(image: ImageInput!): SignedUrlResponse!
 }
 
 union NewPublicationResponse = AppError | Publication
@@ -136,6 +136,8 @@ type SignedUrl {
   fields: [UrlFormField!]!
   url: String!
 }
+
+union SignedUrlResponse = AppError | SignedUrl
 
 type Tag {
   approved: Boolean!
