@@ -38,6 +38,7 @@ export const PostMetaInput = inputObjectType({
   }
 });
 
+
 export const PostInput = inputObjectType({
   name: 'PostInput',
   definition(t) {
@@ -52,6 +53,7 @@ export const PostInput = inputObjectType({
 export const PostResponse = errorUnion('PostResponse', 'Post');
 
 const tagListArgs = list(idArg({ description: 'Ids of the tags that you want to associate' }));
+
 
 export const PostMutation = extendType({
   type: 'Mutation',

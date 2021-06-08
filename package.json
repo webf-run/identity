@@ -35,18 +35,19 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.16.0",
-    "@aws-sdk/s3-presigned-post": "^3.16.0",
+    "@aws-sdk/client-s3": "^3.18.0",
+    "@aws-sdk/s3-presigned-post": "^3.18.0",
     "@prisma/client": "^2.23.0",
+    "@sendgrid/mail": "^7.4.4",
     "@sindresorhus/slugify": "^2.1.0",
     "@types/mime-types": "^2.1.0",
-    "apollo-server": "^2.24.1",
-    "argon2": "^0.27.2",
+    "apollo-server": "^2.25.0",
+    "argon2": "^0.28.2",
     "crypto-random-string": "^4.0.0",
     "cuid": "^2.1.8",
     "graphql": "^15.5.0",
     "graphql-scalars": "^1.9.3",
-    "mime-types": "^2.1.30",
+    "mime-types": "^2.1.31",
     "nexus": "^1.0.0"
   }
 }

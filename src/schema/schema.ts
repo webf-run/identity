@@ -12,6 +12,7 @@ import * as types from './types';
 // it should be exposed as CLI argument.
 const currentDir = process.cwd();
 
+
 export const schema = makeSchema({
   types,
 
@@ -38,7 +39,8 @@ export const schema = makeSchema({
       alias: 'Op'
     }],
     mapping: {
-      DateTime: 'Date'
+      // DateTime: 'Date',
+      // JSONObject: 'object'
     }
   }
 });
