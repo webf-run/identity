@@ -9,15 +9,38 @@ generator client {
 }
 
 
+model EmailConfig {
+  id            BigInt    @id @default(autoincrement())
+  fromEmail     String    @map("from_email")
+  apiKey        String    @map("api_key")
+
+  // Identifies the type of mail service - sendgrid, mailgun, mailchimp, etc.
+  service       String
+
+  @@map("email_config")
+}
+
+
 model Project {
-  id            BigInt  @id @default(autoincrement())
+  id            BigInt    @id @default(autoincrement())
   name          String
-  fromEmail     String  @map("from_email")
+  fromEmail     String    @map("from_email")
 
   publication   Publication?
+  quota         Quota?
   assets        Asset[]
 
   @@map("project")
+}
+
+
+// Allows to maintain the maximum size limits for uploaded assets
+model Quota {
+  id            BigInt    @id
+  project       Project   @relation(fields: [id], references: [id])
+  sizeInBytes   Int       @map("size_in_byte")
+
+  @@map("quota")
 }
 
 
@@ -39,8 +62,18 @@ model User {
   posts         Post[]
   resetRequest  ResetPasswordRequest?
   loginAttempt  LoginAttempt?
+  admin         Admin?
 
   @@map("app_user")
+}
+
+
+model Admin {
+  id            BigInt      @id
+  superAdmin    Boolean     @map("super_admin")
+  user          User        @relation(references: [id], fields: [id])
+
+  @@map("admin")
 }
 
 
