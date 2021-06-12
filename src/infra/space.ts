@@ -33,6 +33,7 @@ export interface UrlOption {
   expiry?: number;
 }
 
+
 export interface SignedUrl {
   url: string;
   fields: [string, string][];

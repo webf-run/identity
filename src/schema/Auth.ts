@@ -26,14 +26,14 @@ export const AuthToken = objectType({
 });
 
 
-export const AuthTokenReponse = errorUnion('AuthTokenReponse', 'AuthToken');
+export const AuthTokenResponse = errorUnion('AuthTokenResponse', 'AuthToken');
 
 
 export const AuthMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.field('authenticateUser', {
-      type: 'AuthTokenReponse',
+      type: 'AuthTokenResponse',
       args: { input: TokenInput },
       resolve(_root, args, ctx) {
         return R.unpack(authenticate(ctx, args.input));

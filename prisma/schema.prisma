@@ -11,6 +11,7 @@ generator client {
 
 model EmailConfig {
   id            BigInt    @id @default(autoincrement())
+  fromName      String    @map("from_name")
   fromEmail     String    @map("from_email")
   apiKey        String    @map("api_key")
 

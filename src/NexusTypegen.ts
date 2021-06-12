@@ -37,6 +37,9 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  AppConfigInput: { // input type
+    email?: NexusGenInputs['EmailConfigInput'] | null; // EmailConfigInput
+  }
   AssetSourceInput: { // input type
     bucket: string; // String!
     cloudType: string; // String!
@@ -45,6 +48,12 @@ export interface NexusGenInputs {
     region: string; // String!
     secret: string; // String!
     uploadUrl: string; // String!
+  }
+  EmailConfigInput: { // input type
+    apiKey: string; // String!
+    fromEmail: string; // String!
+    fromName: string; // String!
+    service: NexusGenEnums['EmailServiceType']; // EmailServiceType!
   }
   ImageInput: { // input type
     extension: string; // String!
@@ -84,6 +93,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
+  EmailServiceType: "sendgrid"
 }
 
 export interface NexusGenScalars {
@@ -123,6 +133,9 @@ export interface NexusGenObjects {
     fields: NexusGenRootTypes['UrlFormField'][]; // [UrlFormField!]!
     url: string; // String!
   }
+  Status: { // root type
+    status: boolean; // Boolean!
+  }
   Tag: { // root type
     approved: boolean; // Boolean!
     description: string; // String!
@@ -141,16 +154,17 @@ export interface NexusGenInterfaces {
 
 export interface NexusGenUnions {
   AssetSourceResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AssetSource'];
-  AuthTokenReponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AuthToken'];
+  AuthTokenResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AuthToken'];
   NewPublicationResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Publication'];
   PostResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Post'];
   SignedUrlResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['SignedUrl'];
+  StatusResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Status'];
   TagResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Tag'];
 }
 
 export type NexusGenRootTypes = NexusGenObjects & NexusGenUnions
 
-export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
+export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
   AppError: { // field return type
@@ -177,7 +191,7 @@ export interface NexusGenFieldTypes {
   }
   Mutation: { // field return type
     approveTag: NexusGenRootTypes['Tag']; // Tag!
-    authenticateUser: NexusGenRootTypes['AuthTokenReponse']; // AuthTokenReponse!
+    authenticateUser: NexusGenRootTypes['AuthTokenResponse']; // AuthTokenResponse!
     createAssetSource: NexusGenRootTypes['AssetSourceResponse']; // AssetSourceResponse!
     createPost: NexusGenRootTypes['PostResponse']; // PostResponse!
     createPublication: NexusGenRootTypes['NewPublicationResponse']; // NewPublicationResponse!
@@ -185,6 +199,7 @@ export interface NexusGenFieldTypes {
     deletePost: NexusGenRootTypes['PostResponse']; // PostResponse!
     forgotPassword: boolean; // Boolean!
     resetPassword: boolean; // Boolean!
+    updateAppConfig: NexusGenRootTypes['StatusResponse']; // StatusResponse!
     updatePost: NexusGenRootTypes['PostResponse']; // PostResponse!
     updateTag: NexusGenRootTypes['TagResponse']; // TagResponse!
     uploadImage: NexusGenRootTypes['SignedUrlResponse']; // SignedUrlResponse!
@@ -214,6 +229,9 @@ export interface NexusGenFieldTypes {
   SignedUrl: { // field return type
     fields: NexusGenRootTypes['UrlFormField'][]; // [UrlFormField!]!
     url: string; // String!
+  }
+  Status: { // field return type
+    status: boolean; // Boolean!
   }
   Tag: { // field return type
     approved: boolean; // Boolean!
@@ -253,7 +271,7 @@ export interface NexusGenFieldTypeNames {
   }
   Mutation: { // field return type name
     approveTag: 'Tag'
-    authenticateUser: 'AuthTokenReponse'
+    authenticateUser: 'AuthTokenResponse'
     createAssetSource: 'AssetSourceResponse'
     createPost: 'PostResponse'
     createPublication: 'NewPublicationResponse'
@@ -261,6 +279,7 @@ export interface NexusGenFieldTypeNames {
     deletePost: 'PostResponse'
     forgotPassword: 'Boolean'
     resetPassword: 'Boolean'
+    updateAppConfig: 'StatusResponse'
     updatePost: 'PostResponse'
     updateTag: 'TagResponse'
     uploadImage: 'SignedUrlResponse'
@@ -290,6 +309,9 @@ export interface NexusGenFieldTypeNames {
   SignedUrl: { // field return type name
     fields: 'UrlFormField'
     url: 'String'
+  }
+  Status: { // field return type name
+    status: 'Boolean'
   }
   Tag: { // field return type name
     approved: 'Boolean'
@@ -336,6 +358,9 @@ export interface NexusGenArgTypes {
       code: string; // String!
       password: string; // String!
     }
+    updateAppConfig: { // args
+      config: NexusGenInputs['AppConfigInput']; // AppConfigInput!
+    }
     updatePost: { // args
       post: NexusGenInputs['PostInput']; // PostInput!
       postId: string; // ID!
@@ -361,10 +386,11 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   AssetSourceResponse: "AppError" | "AssetSource"
-  AuthTokenReponse: "AppError" | "AuthToken"
+  AuthTokenResponse: "AppError" | "AuthToken"
   NewPublicationResponse: "AppError" | "Publication"
   PostResponse: "AppError" | "Post"
   SignedUrlResponse: "AppError" | "SignedUrl"
+  StatusResponse: "AppError" | "Status"
   TagResponse: "AppError" | "Tag"
 }
 
@@ -375,7 +401,7 @@ export type NexusGenObjectNames = keyof NexusGenObjects;
 
 export type NexusGenInputNames = keyof NexusGenInputs;
 
-export type NexusGenEnumNames = never;
+export type NexusGenEnumNames = keyof NexusGenEnums;
 
 export type NexusGenInterfaceNames = never;
 
@@ -385,7 +411,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceResponse" | "AuthTokenReponse" | "NewPublicationResponse" | "PostResponse" | "SignedUrlResponse" | "TagResponse";
+export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceResponse" | "AuthTokenResponse" | "NewPublicationResponse" | "PostResponse" | "SignedUrlResponse" | "StatusResponse" | "TagResponse";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

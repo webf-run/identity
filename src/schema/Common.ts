@@ -1,5 +1,7 @@
 import { objectType } from 'nexus';
 
+import { errorUnion } from './helper';
+
 
 export const Error = objectType({
   name: 'Error',
@@ -16,3 +18,14 @@ export const AppError = objectType({
     t.list.field('errors', { type: Error })
   }
 });
+
+
+export const Status = objectType({
+  name: 'Status',
+  definition(t) {
+    t.boolean('status');
+  }
+});
+
+
+export const StatusResponse = errorUnion('StatusResponse', 'Status');

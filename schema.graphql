@@ -2,6 +2,11 @@
 ### Do not make changes to this file directly
 
 
+"""App configuration object"""
+input AppConfigInput {
+  email: EmailConfigInput
+}
+
 type AppError {
   errors: [Error!]!
 }
@@ -35,12 +40,24 @@ type AuthToken {
   type: String!
 }
 
-union AuthTokenReponse = AppError | AuthToken
+union AuthTokenResponse = AppError | AuthToken
 
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
+
+input EmailConfigInput {
+  apiKey: String!
+  fromEmail: String!
+  fromName: String!
+  service: EmailServiceType!
+}
+
+"""Supported email services. Currently only sendgrid."""
+enum EmailServiceType {
+  sendgrid
+}
 
 type Error {
   code: String!
@@ -59,7 +76,7 @@ scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publicati
 
 type Mutation {
   approveTag(approved: Boolean!, tagId: ID!): Tag!
-  authenticateUser(input: TokenInput!): AuthTokenReponse!
+  authenticateUser(input: TokenInput!): AuthTokenResponse!
   createAssetSource(source: AssetSourceInput!): AssetSourceResponse!
   createPost(
     post: PostInput!
@@ -72,6 +89,7 @@ type Mutation {
   deletePost(postId: ID!): PostResponse!
   forgotPassword(username: String!): Boolean!
   resetPassword(code: String!, password: String!): Boolean!
+  updateAppConfig(config: AppConfigInput!): StatusResponse!
   updatePost(
     post: PostInput!
     postId: ID!
@@ -138,6 +156,12 @@ type SignedUrl {
 }
 
 union SignedUrlResponse = AppError | SignedUrl
+
+type Status {
+  status: Boolean!
+}
+
+union StatusResponse = AppError | Status
 
 type Tag {
   approved: Boolean!

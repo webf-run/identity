@@ -54,10 +54,10 @@ export function pattern<E = string>(pattern: RegExp, msg: E): Assertion<string, 
 }
 
 
-export function inSet<E = string>(list: readonly string[], msg: E): Assertion<string, E> {
+export function inSet<T, E = string>(list: readonly T[], msg: E): Assertion<T, E> {
   const set = new Set(list);
 
-  return (value: string) =>
+  return (value: T) =>
     set.has(value)
       ? Either.right(value)
       : Either.left([msg]);

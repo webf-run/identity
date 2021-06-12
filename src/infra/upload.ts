@@ -3,7 +3,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { generateSignedUrl } from './space';
 
 
-export function generateUrl(client: S3Client, bucket: string, fileName: string) {
+export function generateImageUrl(client: S3Client, bucket: string, fileName: string) {
   return generateSignedUrl(client, {
     bucket,
     fileName,
