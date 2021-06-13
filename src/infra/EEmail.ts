@@ -13,6 +13,7 @@ export interface MailData {
 
 export type EmailConfigLazy = () => Promise<EmailConfig | null>;
 
+
 export class EmailService {
 
   #config: EmailConfigLazy;
@@ -35,11 +36,14 @@ export class EmailService {
     const config = await this.#config();
 
     if (!config) {
-      throw 'Email service not configured';
+      return false;
     } else if (config.service === 'sendgrid') {
-      return sgMail.send(email);
+      const [response, _] = await sgMail.send(email);
+
+      return response.statusCode >= 200
+        && response.statusCode <= 300;
     }
 
-    throw 'Unimplemented service type';
+    return false;
   }
 }

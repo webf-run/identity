@@ -1,7 +1,7 @@
 import type { PrismaClient } from '@prisma/client';
 import { getEmailConfig } from '../data/email';
 
-import { EmailService } from '../infra/email';
+import { EmailService } from '../infra/EEmail';
 import { Either } from '../util/Either';
 import { Access, makePublicAccess } from './Access';
 import { validateToken } from './core/auth';
