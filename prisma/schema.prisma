@@ -30,6 +30,7 @@ model Project {
   publication   Publication?
   quota         Quota?
   assets        Asset[]
+  invitations   Invitation[]
 
   @@map("project")
 }
@@ -45,6 +46,26 @@ model Quota {
 }
 
 
+model Invitation {
+  id            BigInt      @id @default(autoincrement())
+  code          String      @unique
+
+  firstName     String      @map("first_name")
+  lastName      String      @map("last_name")
+  email         String
+
+  // If invitation is not issued against a project,
+  // it means it is an admin user invitation.
+  project       Project?    @relation(fields: [projectId], references: [id])
+  projectId     BigInt?     @map("project_id")
+
+  createdAt     DateTime    @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt     DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
+
+  @@map("invitation")
+}
+
+
 model User {
   id            BigInt      @id @default(autoincrement())
 
@@ -53,7 +74,7 @@ model User {
   email         String      @unique
 
   password      String
-  passwordHash  String      @map("password_harsh")
+  passwordHash  String      @map("password_hash")
 
   createdAt     DateTime    @db.Timestamptz() @default(now()) @map("created_at")
   updatedAt     DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
@@ -72,7 +93,7 @@ model User {
 model Admin {
   id            BigInt      @id
   superAdmin    Boolean     @map("super_admin")
-  user          User        @relation(references: [id], fields: [id])
+  user          User        @relation(fields: [id], references: [id])
 
   @@map("admin")
 }
