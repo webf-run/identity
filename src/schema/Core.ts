@@ -6,6 +6,16 @@ import { R } from '../domain/R';
 import { errorUnion } from './helper';
 
 
+export const QuotaInput = inputObjectType({
+  name: 'QuotaInput',
+  description: 'Project/Publication quota',
+  definition(t) {
+    t.int('assetSize');
+    t.int('staffCapacity');
+  }
+});
+
+
 export const UserInput = inputObjectType({
   name: 'UserInput',
   description: 'New User Input',
@@ -13,7 +23,7 @@ export const UserInput = inputObjectType({
     t.string('firstName');
     t.string('lastName');
     t.string('email');
-    t.string('password');
+    t.nullable.string('password');
   }
 });
 
@@ -24,7 +34,8 @@ export const PublicationInput = inputObjectType({
     t.string('name');
     t.string('publicUrl');
     t.string('fromEmail');
-    t.field('firstUser', { type: nullable(UserInput), });
+    t.field('firstUser', { type: 'UserInput' });
+    t.field('quota', { type: 'QuotaInput' });
   }
 });
 

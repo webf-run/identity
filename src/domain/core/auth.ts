@@ -1,7 +1,7 @@
-import { UserToken } from '@prisma/client';
 import argon2 from 'argon2';
 import cryptoRandomString from 'crypto-random-string';
 
+import { generateAuthToken, hashPassword } from '../../data/code';
 import { Access } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
@@ -25,14 +25,14 @@ export async function authenticate(ctx: Context, input: TokenInput): DomainResul
     return R.ofError(ErrorCode.INVALID_CRD, 'Invalid user credentials');
   }
 
-  const verified = await verifyPassword(user.password, password, user.passwordHash);
+  const verified = await verifyPassword(user.password, password, user.passwordHashFn);
 
   // Use with given email found but not password match.
   if (!verified) {
     return R.ofError(ErrorCode.INVALID_CRD, 'Invalid user credentials');
   }
 
-  const token = await generateToken(ctx.db, user.id, 'u');
+  const token = await generateAuthToken(ctx.db, user.id, 'u');
 
   return R.of({ ...token, type: 'Bearer' });
 }
@@ -68,7 +68,7 @@ export async function forgotPassword(ctx: Context, username: string): DomainResu
 }
 
 
-export async function resetPassword(ctx: Context, code: string, password: string): DomainResult<boolean> {
+export async function resetPassword(ctx: Context, code: string, newPassword: string): DomainResult<boolean> {
 
   // Token is valid for 30 minutes only
   const validTime = new Date(Date.now() - 30 * 60000);
@@ -88,16 +88,13 @@ export async function resetPassword(ctx: Context, code: string, password: string
     return R.ofError(ErrorCode.INVALID_AUTH_REQUEST, '');
   }
 
-  const [hash, algo] = await hashPassword(password);
+  const [password, passwordHashFn] = await hashPassword(newPassword);
 
   const changePasswordT = ctx.db.user.update({
     where: {
       id: resetReqeust.userId
     },
-    data: {
-      password: hash,
-      passwordHash: algo
-    }
+    data: { password, passwordHashFn }
   });
 
   const deleteRequestT = ctx.db.resetPasswordRequest.delete({
@@ -168,24 +165,6 @@ export async function validateToken(db: Context['db'], tokenId: string, scope?: 
 }
 
 
-export async function hashPassword(password: string): Promise<[string, string]> {
-  const hash = await argon2.hash(password, { type: argon2.argon2id });
-
-  return [hash, 'argon2id'];
-}
-
-
-function generateToken(db: Context['db'], userId: bigint, prefix: 'u'): Promise<UserToken> {
-  const tokenId = prefix + '-' + cryptoRandomString({ length: 32, type: 'url-safe' });
-
-  return db.userToken.create({
-    data: {
-      id: tokenId,
-      duration: 3600 * 1000 * 72,
-      userId
-    }
-  });
-}
 
 function verifyPassword(hash: string, password: string, algo: string): Promise<boolean> {
   if (algo === 'argon2id') {

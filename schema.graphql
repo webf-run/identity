@@ -139,15 +139,22 @@ type Publication {
 }
 
 input PublicationInput {
-  firstUser: UserInput
+  firstUser: UserInput!
   fromEmail: String!
   name: String!
   publicUrl: String!
+  quota: QuotaInput!
 }
 
 type Query {
   getPublications: [Publication!]!
   getTags(approved: Boolean!, search: String, skip: Int!, top: Int!): [Tag!]!
+}
+
+"""Project/Publication quota"""
+input QuotaInput {
+  assetSize: Int!
+  staffCapacity: Int!
 }
 
 type SignedUrl {
@@ -195,5 +202,5 @@ input UserInput {
   email: String!
   firstName: String!
   lastName: String!
-  password: String!
+  password: String
 }

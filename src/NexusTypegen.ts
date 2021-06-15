@@ -70,10 +70,15 @@ export interface NexusGenInputs {
     title: string; // String!
   }
   PublicationInput: { // input type
-    firstUser?: NexusGenInputs['UserInput'] | null; // UserInput
+    firstUser: NexusGenInputs['UserInput']; // UserInput!
     fromEmail: string; // String!
     name: string; // String!
     publicUrl: string; // String!
+    quota: NexusGenInputs['QuotaInput']; // QuotaInput!
+  }
+  QuotaInput: { // input type
+    assetSize: number; // Int!
+    staffCapacity: number; // Int!
   }
   TagInput: { // input type
     description?: string | null; // String
@@ -88,7 +93,7 @@ export interface NexusGenInputs {
     email: string; // String!
     firstName: string; // String!
     lastName: string; // String!
-    password: string; // String!
+    password?: string | null; // String
   }
 }
 

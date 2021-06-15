@@ -38,9 +38,11 @@ model Project {
 
 // Allows to maintain the maximum size limits for uploaded assets
 model Quota {
-  id            BigInt    @id
-  project       Project   @relation(fields: [id], references: [id])
-  sizeInBytes   Int       @map("size_in_byte")
+  id              BigInt    @id
+  project         Project   @relation(fields: [id], references: [id])
+  sizeInBytes     Int       @map("size_in_bytes")
+  staffCapacity   Int       @map("staff_capacity")
+  occupied        Int
 
   @@map("quota")
 }
@@ -67,24 +69,24 @@ model Invitation {
 
 
 model User {
-  id            BigInt      @id @default(autoincrement())
+  id                BigInt      @id @default(autoincrement())
 
-  firstName     String      @map("first_name")
-  lastName      String      @map("last_name")
-  email         String      @unique
+  firstName         String      @map("first_name")
+  lastName          String      @map("last_name")
+  email             String      @unique
 
-  password      String
-  passwordHash  String      @map("password_hash")
+  password          String
+  passwordHashFn    String      @map("password_hash_fn")
 
-  createdAt     DateTime    @db.Timestamptz() @default(now()) @map("created_at")
-  updatedAt     DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
+  createdAt         DateTime    @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt         DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
 
-  staff         Staff[]
-  tokens        UserToken[]
-  posts         Post[]
-  resetRequest  ResetPasswordRequest?
-  loginAttempt  LoginAttempt?
-  admin         Admin?
+  staff             Staff[]
+  tokens            UserToken[]
+  posts             Post[]
+  resetRequest      ResetPasswordRequest?
+  loginAttempt      LoginAttempt?
+  admin             Admin?
 
   @@map("app_user")
 }
