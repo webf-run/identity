@@ -153,6 +153,7 @@ type Query {
 
 """Project/Publication quota"""
 input QuotaInput {
+  """Maximum storage space allowed for assets in MBs."""
   assetSize: Int!
   staffCapacity: Int!
 }

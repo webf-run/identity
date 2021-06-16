@@ -40,7 +40,7 @@ model Project {
 model Quota {
   id              BigInt    @id
   project         Project   @relation(fields: [id], references: [id])
-  sizeInBytes     Int       @map("size_in_bytes")
+  sizeInMB        Int       @map("size_in_mb")
   staffCapacity   Int       @map("staff_capacity")
   occupied        Int
 
@@ -76,7 +76,7 @@ model User {
   email             String      @unique
 
   password          String
-  passwordHashFn    String      @map("password_hash_fn")
+  hashFn            String      @map("hash_fn")
 
   createdAt         DateTime    @db.Timestamptz() @default(now()) @map("created_at")
   updatedAt         DateTime    @db.Timestamptz() @updatedAt @map("updated_at")

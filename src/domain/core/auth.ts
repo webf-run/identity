@@ -25,7 +25,7 @@ export async function authenticate(ctx: Context, input: TokenInput): DomainResul
     return R.ofError(ErrorCode.INVALID_CRD, 'Invalid user credentials');
   }
 
-  const verified = await verifyPassword(user.password, password, user.passwordHashFn);
+  const verified = await verifyPassword(user.password, password, user.hashFn);
 
   // Use with given email found but not password match.
   if (!verified) {
@@ -88,13 +88,13 @@ export async function resetPassword(ctx: Context, code: string, newPassword: str
     return R.ofError(ErrorCode.INVALID_AUTH_REQUEST, '');
   }
 
-  const [password, passwordHashFn] = await hashPassword(newPassword);
+  const [password, hashFn] = await hashPassword(newPassword);
 
   const changePasswordT = ctx.db.user.update({
     where: {
       id: resetReqeust.userId
     },
-    data: { password, passwordHashFn }
+    data: { password, hashFn }
   });
 
   const deleteRequestT = ctx.db.resetPasswordRequest.delete({
@@ -171,5 +171,5 @@ function verifyPassword(hash: string, password: string, algo: string): Promise<b
     return argon2.verify(hash, password, { type: argon2.argon2id })
   }
 
-  throw 'argon2id supported';
+  throw 'Only argon2id hashing is supported';
 }

@@ -10,7 +10,7 @@ export const QuotaInput = inputObjectType({
   name: 'QuotaInput',
   description: 'Project/Publication quota',
   definition(t) {
-    t.int('assetSize');
+    t.int('assetSize', { description: 'Maximum storage space allowed for assets in MBs.' });
     t.int('staffCapacity');
   }
 });

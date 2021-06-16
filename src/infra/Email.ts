@@ -3,7 +3,7 @@ import sgMail from '@sendgrid/mail';
 
 
 export interface MailData {
-  from: { name?: string; email: string; };
+  from?: { name?: string; email: string; };
   to: { name?: string; email: string; };
   subject: string;
   text?: string;
@@ -38,7 +38,19 @@ export class EmailService {
     if (!config) {
       return false;
     } else if (config.service === 'sendgrid') {
-      const [response, _] = await sgMail.send(email);
+
+      const merged = {
+        ...email,
+        from: email.from || {
+          email: config.fromEmail,
+          name: config.fromEmail
+        }
+      };
+
+      // TODO: Should this be here? Is this right place?
+      sgMail.setApiKey(config.apiKey);
+
+      const [response, _] = await sgMail.send(merged);
 
       return response.statusCode >= 200
         && response.statusCode <= 300;

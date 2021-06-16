@@ -1,6 +1,4 @@
-import { Prisma } from '@prisma/client';
-
-import { generateInviteCode, hashPassword } from '../../data/code';
+import * as c from '../../data/newPublication';
 import { findUserByEmail } from '../../data/user';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
@@ -13,26 +11,9 @@ export async function createNewPublication(ctx: Context, input: PublicationInput
 
   const { db } = ctx;
 
-  const { firstUser, quota } = input;
+  const { firstUser } = input;
 
   // TODO: Input validation and authorization
-
-  const request: Prisma.PublicationCreateInput = {
-    publicUrl: input.publicUrl,
-    project: {
-      create: {
-        name: input.name,
-        fromEmail: input.fromEmail,
-        quota: {
-          create: {
-            occupied: 1,
-            sizeInBytes: quota.assetSize,
-            staffCapacity: quota.staffCapacity
-          }
-        }
-      }
-    }
-  };
 
   // Decide if we should invite user or generate a user?
   // If the user exists, invite the user.
@@ -41,44 +22,27 @@ export async function createNewPublication(ctx: Context, input: PublicationInput
 
   const existingUser = await findUserByEmail(db, firstUser.email);
 
-  const { firstName, lastName, email } = firstUser;
 
+  try {
+    if (existingUser) {
+      // Invite the existing user
+      const [publication, code] = await c.createWithExistingUser(db, input, existingUser);
 
-  if (existingUser) {
-    // Invite the existing user
-    const code = generateInviteCode();
+      return R.of(publication);
 
-    request.project.create!.invitations = {
-      create: { firstName, lastName, code, email }
-    };
+    } else if (firstUser.password) {
+      // Create a new user
+      const publication = await c.createWithCredentials(db, input, firstUser.password);
 
-  } else if (firstUser.password) {
-    // Create a new user
-    const [password, passwordHashFn] = await hashPassword(firstUser.password);
+      return R.of(publication);
+    } else {
+      // Invite the new user
+      const [publication, code] = await c.createWithInvitation(db, input);
 
-    request.staff = {
-      create: {
-        user: {
-          create: { firstName, lastName, email, password, passwordHashFn }
-        }
-      }
-    };
-  } else {
-    // Invite the new user
-    const code = generateInviteCode();
-
-    request.project.create!.invitations = {
-      create: { firstName, lastName, code, email }
-    };
-  }
-
-
-  return db.publication.create({
-    data: request,
-    include: {
-      project: true
+      return R.of(publication);
     }
-  })
-  .then((x) => R.of(x))
-  .catch(R.liftDbError('P2002', ErrorCode.UNIQUE_URL, 'Publication URL is already taken'));
+
+  } catch (e) {
+    return R.liftDbError('P2002', ErrorCode.UNIQUE_URL, 'Publication URL is already taken')(e);
+  }
 }
