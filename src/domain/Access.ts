@@ -31,3 +31,7 @@ export function isUser(access: Access): access is UserAccess {
 export function makePublicAccess(): PublicAccess {
   return { type: 'public', publications: [] };
 }
+
+export function findUniqueScope(access: UserAccess): Publication | null {
+  return access.scope || (access.publications.length === 1 ? access.publications[0] : null);
+}

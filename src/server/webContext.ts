@@ -9,7 +9,7 @@ import { Either } from '../util/Either';
 
 
 const BEARER_REGEX = /^(Bearer)(\s)(.+)$/;
-const SCOPE_HEADER = 'x-bisa-scope';
+const SCOPE_HEADER = 'x-rano-scope';
 
 
 export async function makeContextFromWeb(db: PrismaClient, webContext: ExpressContext): Promise<Context> {

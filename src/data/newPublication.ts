@@ -1,13 +1,13 @@
 import { Prisma, PrismaClient, Publication, User } from '@prisma/client';
 
-import { PublicationInput } from '../domain/Input';
+import { NewPublicationInput } from '../domain/Input';
 import { Publication as PublicationWithProject } from '../domain/Output';
 import { generateInviteCode, hashPassword } from './code';
 
 
 export async function createWithExistingUser(
   db: PrismaClient,
-  input: PublicationInput,
+  input: NewPublicationInput,
   user: User): Promise<[PublicationWithProject, string]> {
 
   const request = makeNewPublicationPayload(input);
@@ -27,7 +27,7 @@ export async function createWithExistingUser(
 
 export async function createWithCredentials(
   db: PrismaClient,
-  input: PublicationInput,
+  input: NewPublicationInput,
   password: string): Promise<PublicationWithProject> {
 
   const { firstName, lastName, email } = input.firstUser;
@@ -52,7 +52,7 @@ export async function createWithCredentials(
 
 export async function createWithInvitation(
   db: PrismaClient,
-  input: PublicationInput): Promise<[PublicationWithProject, string]> {
+  input: NewPublicationInput): Promise<[PublicationWithProject, string]> {
 
   const data = makeNewPublicationPayload(input);
   const code = generateInviteCode();
@@ -69,7 +69,7 @@ export async function createWithInvitation(
 }
 
 
-function makeNewPublicationPayload(input: PublicationInput) {
+function makeNewPublicationPayload(input: NewPublicationInput) {
 
   const { quota } = input;
 
@@ -93,7 +93,7 @@ function makeNewPublicationPayload(input: PublicationInput) {
   return request;
 }
 
-function buildPublicationWithProject(p: Publication, i: PublicationInput): PublicationWithProject {
+function buildPublicationWithProject(p: Publication, i: NewPublicationInput): PublicationWithProject {
   return {
     ...p,
     project: {

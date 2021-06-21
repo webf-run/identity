@@ -1,6 +1,6 @@
 import { extendType, inputObjectType, nullable, objectType } from 'nexus';
 
-import { createNewPublication } from '../domain/core/project';
+import { addMemberToPublication, createNewPublication } from '../domain/core/project';
 import { R } from '../domain/R';
 
 import { errorUnion } from './helper';
@@ -23,18 +23,18 @@ export const UserInput = inputObjectType({
     t.string('firstName');
     t.string('lastName');
     t.string('email');
-    t.nullable.string('password');
   }
 });
 
 
-export const PublicationInput = inputObjectType({
-  name: 'PublicationInput',
+export const NewPublicationInput = inputObjectType({
+  name: 'NewPublicationInput',
   definition(t) {
     t.string('name');
     t.string('publicUrl');
     t.string('fromEmail');
     t.field('firstUser', { type: 'UserInput' });
+    t.nullable.string('password');
     t.field('quota', { type: 'QuotaInput' });
   }
 });
@@ -76,10 +76,20 @@ export const CoreMutation = extendType({
     t.field('createPublication', {
       type: 'NewPublicationResponse',
       args: {
-        input: 'PublicationInput'
+        input: 'NewPublicationInput'
       },
       resolve(_root, args, ctx) {
         return R.unpack(createNewPublication(ctx, args.input));
+      }
+    });
+    t.field('addMemberToPublication', {
+      type: 'StatusResponse',
+      args: {
+        user: 'UserInput'
+      },
+      resolve(_root, args, ctx) {
+        addMemberToPublication(ctx, args.user);
+        throw 'not fully implemented';
       }
     });
   }

@@ -59,6 +59,14 @@ export interface NexusGenInputs {
     extension: string; // String!
     title: string; // String!
   }
+  NewPublicationInput: { // input type
+    firstUser: NexusGenInputs['UserInput']; // UserInput!
+    fromEmail: string; // String!
+    name: string; // String!
+    password?: string | null; // String
+    publicUrl: string; // String!
+    quota: NexusGenInputs['QuotaInput']; // QuotaInput!
+  }
   PostInput: { // input type
     content: NexusGenScalars['JSONObject']; // JSONObject!
     meta: NexusGenInputs['PostMetaInput']; // PostMetaInput!
@@ -68,13 +76,6 @@ export interface NexusGenInputs {
   PostMetaInput: { // input type
     description: string; // String!
     title: string; // String!
-  }
-  PublicationInput: { // input type
-    firstUser: NexusGenInputs['UserInput']; // UserInput!
-    fromEmail: string; // String!
-    name: string; // String!
-    publicUrl: string; // String!
-    quota: NexusGenInputs['QuotaInput']; // QuotaInput!
   }
   QuotaInput: { // input type
     assetSize: number; // Int!
@@ -93,7 +94,6 @@ export interface NexusGenInputs {
     email: string; // String!
     firstName: string; // String!
     lastName: string; // String!
-    password?: string | null; // String
   }
 }
 
@@ -195,6 +195,7 @@ export interface NexusGenFieldTypes {
     message: string; // String!
   }
   Mutation: { // field return type
+    addMemberToPublication: NexusGenRootTypes['StatusResponse']; // StatusResponse!
     approveTag: NexusGenRootTypes['Tag']; // Tag!
     authenticateUser: NexusGenRootTypes['AuthTokenResponse']; // AuthTokenResponse!
     createAssetSource: NexusGenRootTypes['AssetSourceResponse']; // AssetSourceResponse!
@@ -275,6 +276,7 @@ export interface NexusGenFieldTypeNames {
     message: 'String'
   }
   Mutation: { // field return type name
+    addMemberToPublication: 'StatusResponse'
     approveTag: 'Tag'
     authenticateUser: 'AuthTokenResponse'
     createAssetSource: 'AssetSourceResponse'
@@ -333,6 +335,9 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    addMemberToPublication: { // args
+      user: NexusGenInputs['UserInput']; // UserInput!
+    }
     approveTag: { // args
       approved: boolean; // Boolean!
       tagId: string; // ID!
@@ -348,7 +353,7 @@ export interface NexusGenArgTypes {
       tags: string[]; // [ID!]!
     }
     createPublication: { // args
-      input: NexusGenInputs['PublicationInput']; // PublicationInput!
+      input: NexusGenInputs['NewPublicationInput']; // NewPublicationInput!
     }
     createTag: { // args
       tag: NexusGenInputs['TagInput']; // TagInput!

@@ -1,17 +1,18 @@
 import * as c from '../../data/newPublication';
-import { findUserByEmail } from '../../data/user';
+import { findUserByEmail, isUserMemberOf } from '../../data/user';
+import { findUniqueScope, isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
-import { PublicationInput } from '../Input';
+import { NewPublicationInput, UserInput } from '../Input';
 import { Publication } from '../Output';
 import { R } from '../R';
 
 
-export async function createNewPublication(ctx: Context, input: PublicationInput): DomainResult<Publication> {
+export async function createNewPublication(ctx: Context, input: NewPublicationInput): DomainResult<Publication> {
 
   const { db } = ctx;
 
-  const { firstUser } = input;
+  const { firstUser, password } = input;
 
   // TODO: Input validation and authorization
 
@@ -30,9 +31,9 @@ export async function createNewPublication(ctx: Context, input: PublicationInput
 
       return R.of(publication);
 
-    } else if (firstUser.password) {
+    } else if (password) {
       // Create a new user
-      const publication = await c.createWithCredentials(db, input, firstUser.password);
+      const publication = await c.createWithCredentials(db, input, password);
 
       return R.of(publication);
     } else {
@@ -45,4 +46,46 @@ export async function createNewPublication(ctx: Context, input: PublicationInput
   } catch (e) {
     return R.liftDbError('P2002', ErrorCode.UNIQUE_URL, 'Publication URL is already taken')(e);
   }
+}
+
+
+export async function addMemberToPublication(ctx: Context, user: UserInput) {
+
+  const { db, access } = ctx;
+
+  if (!isUser(access)) {
+    return R.ofError(ErrorCode.FORBIDDEN, 'Forbidden');
+  }
+
+  // Access control
+  const publication = findUniqueScope(access);
+
+  if (!publication) {
+    return R.ofError(ErrorCode.INVALID_SCOPE, 'Correct scope is required to add a member');
+  }
+
+  // TODO: Validation pending
+
+  const quota = await db.quota.findFirst({
+    where: {
+      id: publication.id
+    }
+  });
+
+  if (!quota) {
+    return R.ofError(ErrorCode.NOT_FOUND, 'Quota information not found');
+  }
+
+  if (quota.occupied >= quota.staffCapacity) {
+    return R.ofError(ErrorCode.QUOTA_FULL, 'Staff capacity if full. New staff cannot be added');
+  }
+
+  const isMemberAlready = await isUserMemberOf(db, publication.id, user.email);
+
+  if (isMemberAlready) {
+    return R.ofError(ErrorCode.ALREADY_EXISTS, 'User already member of the publication');
+  }
+
+  // TODO: Pending work.
+
 }

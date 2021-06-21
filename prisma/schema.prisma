@@ -65,6 +65,8 @@ model Invitation {
   updatedAt     DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
 
   @@map("invitation")
+
+  @@unique([email, projectId])
 }
 
 

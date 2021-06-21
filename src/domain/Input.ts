@@ -9,5 +9,5 @@ export type EmailConfigInput = NexusGenInputs['EmailConfigInput'];
 export type AppConfigInput = NexusGenInputs['AppConfigInput'];
 
 export type UserInput = NexusGenInputs['UserInput'];
-export type PublicationInput = NexusGenInputs['PublicationInput'];
+export type NewPublicationInput = NexusGenInputs['NewPublicationInput'];
 export type TokenInput = NexusGenInputs['TokenInput'];
