@@ -83,13 +83,12 @@ export const CoreMutation = extendType({
       }
     });
     t.field('addMemberToPublication', {
-      type: 'StatusResponse',
+      type: 'ResultResponse',
       args: {
         user: 'UserInput'
       },
       resolve(_root, args, ctx) {
-        addMemberToPublication(ctx, args.user);
-        throw 'not fully implemented';
+        return R.unpack(addMemberToPublication(ctx, args.user));
       }
     });
   }

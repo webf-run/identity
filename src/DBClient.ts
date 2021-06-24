@@ -9,7 +9,9 @@ export function initialize(): PrismaClient {
 
   if (!obj[DB_KEY]) {
 
-    const client = new PrismaClient();
+    const client = new PrismaClient({
+      log: ['query', 'info', 'warn', 'error']
+    });
 
     obj[DB_KEY] = client;
 

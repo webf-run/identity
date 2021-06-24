@@ -34,7 +34,7 @@ export const setupMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.field('updateAppConfig', {
-      type: 'StatusResponse',
+      type: 'ResultResponse',
       args: {
         config: 'AppConfigInput'
       },

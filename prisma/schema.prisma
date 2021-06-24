@@ -66,7 +66,7 @@ model Invitation {
 
   @@map("invitation")
 
-  @@unique([email, projectId])
+  @@unique(fields: [email, projectId], name: "email_project_id")
 }
 
 

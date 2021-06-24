@@ -12,6 +12,10 @@ const postDetails = Prisma.validator<Prisma.PostArgs>()({
   }
 });
 
+export interface Result {
+  status: boolean;
+}
+
 export type Publication = Prisma.PublicationGetPayload<typeof publicationDetails>;
 export type Post = Prisma.PostGetPayload<typeof postDetails>;
 

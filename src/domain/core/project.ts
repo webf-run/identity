@@ -1,10 +1,12 @@
+import { generateInviteCode } from '../../data/code';
+import { isCheckConstraint, isUniqueConstraint } from '../../data/error';
 import * as c from '../../data/newPublication';
 import { findUserByEmail, isUserMemberOf } from '../../data/user';
 import { findUniqueScope, isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { NewPublicationInput, UserInput } from '../Input';
-import { Publication } from '../Output';
+import { Result, Publication } from '../Output';
 import { R } from '../R';
 
 
@@ -49,7 +51,7 @@ export async function createNewPublication(ctx: Context, input: NewPublicationIn
 }
 
 
-export async function addMemberToPublication(ctx: Context, user: UserInput) {
+export async function addMemberToPublication(ctx: Context, user: UserInput): DomainResult<Result> {
 
   const { db, access } = ctx;
 
@@ -77,7 +79,7 @@ export async function addMemberToPublication(ctx: Context, user: UserInput) {
   }
 
   if (quota.occupied >= quota.staffCapacity) {
-    return R.ofError(ErrorCode.QUOTA_FULL, 'Staff capacity if full. New staff cannot be added');
+    return quotaFull();
   }
 
   const isMemberAlready = await isUserMemberOf(db, publication.id, user.email);
@@ -86,6 +88,45 @@ export async function addMemberToPublication(ctx: Context, user: UserInput) {
     return R.ofError(ErrorCode.ALREADY_EXISTS, 'User already member of the publication');
   }
 
-  // TODO: Pending work.
+  const code = generateInviteCode();
 
+  try {
+    // Attempt to generate an invitation
+    const _quota = await db.quota.update({
+      where: { id: publication.id },
+      data: {
+        occupied: { increment: 1 },
+        project: {
+          update: {
+            invitations: {
+              create: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                code
+              }
+            }
+          }
+        }
+      }
+    });
+
+  } catch (e) {
+
+    if (isCheckConstraint(e, 'max_capacity', 'quota')) {
+      return quotaFull();
+    }
+
+    if (isUniqueConstraint(e, 'email', 'project_id')) {
+      return quotaFull();
+    }
+
+    throw e;
+  }
+
+  return R.of({ status: true });
+}
+
+function quotaFull() {
+  return R.ofError(ErrorCode.QUOTA_FULL, 'Staff capacity if full. New staff cannot be added.');
 }

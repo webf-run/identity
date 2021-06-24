@@ -20,12 +20,12 @@ export const AppError = objectType({
 });
 
 
-export const Status = objectType({
-  name: 'Status',
+export const Result = objectType({
+  name: 'Result',
   definition(t) {
     t.boolean('status');
   }
 });
 
 
-export const StatusResponse = errorUnion('StatusResponse', 'Status');
+export const ResultResponse = errorUnion('ResultResponse', 'Result');
