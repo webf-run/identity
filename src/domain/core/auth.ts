@@ -109,6 +109,7 @@ export async function resetPassword(ctx: Context, code: string, newPassword: str
 }
 
 
+// TODO: Rename the method name
 export async function validateToken(db: Context['db'], tokenId: string, scope?: string): DomainResult<Access> {
 
   // TODO: Do not select password related sensitive data
@@ -119,6 +120,7 @@ export async function validateToken(db: Context['db'], tokenId: string, scope?: 
     include: {
       user: {
         include: {
+          admin: true,
           staff: {
             include: {
               publication: {
@@ -146,7 +148,8 @@ export async function validateToken(db: Context['db'], tokenId: string, scope?: 
   const access: Access = {
     type: 'user',
     user: token!.user,
-    publications: publications
+    publications: publications,
+    isAdmin: !!token!.user.admin
   };
 
   // Check and find for any scope
@@ -163,7 +166,6 @@ export async function validateToken(db: Context['db'], tokenId: string, scope?: 
 
   return R.of(access);
 }
-
 
 
 function verifyPassword(hash: string, password: string, algo: string): Promise<boolean> {

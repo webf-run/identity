@@ -11,6 +11,7 @@ export interface UserAccess {
   user: UserSafe;
   scope?: Publication;
   publications: Publication[];
+  isAdmin: boolean;
 }
 
 
@@ -26,6 +27,10 @@ export type Access = UserAccess | PublicAccess;
 
 export function isUser(access: Access): access is UserAccess {
   return access.type === 'user';
+}
+
+export function isAdmin(access: Access) {
+  return isUser(access) && access.isAdmin;
 }
 
 export function makePublicAccess(): PublicAccess {
