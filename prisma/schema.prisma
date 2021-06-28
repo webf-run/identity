@@ -66,7 +66,9 @@ model Invitation {
 
   @@map("invitation")
 
-  @@unique(fields: [email, projectId], name: "email_project_id")
+  // Note: Manually create two partial unique indexes
+  // so that prisma can properly handle the error mapping
+  @@unique(fields: [email, projectId])
 }
 
 

@@ -193,6 +193,7 @@ export interface NexusGenFieldTypes {
     message: string; // String!
   }
   Mutation: { // field return type
+    addAdministrator: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     addMemberToPublication: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     approveTag: NexusGenRootTypes['Tag']; // Tag!
     authenticateUser: NexusGenRootTypes['AuthTokenResponse']; // AuthTokenResponse!
@@ -202,6 +203,7 @@ export interface NexusGenFieldTypes {
     createTag: NexusGenRootTypes['TagResponse']; // TagResponse!
     deletePost: NexusGenRootTypes['PostResponse']; // PostResponse!
     forgotPassword: boolean; // Boolean!
+    initialize: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     resetPassword: boolean; // Boolean!
     updateAppConfig: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updatePost: NexusGenRootTypes['PostResponse']; // PostResponse!
@@ -274,6 +276,7 @@ export interface NexusGenFieldTypeNames {
     message: 'String'
   }
   Mutation: { // field return type name
+    addAdministrator: 'ResultResponse'
     addMemberToPublication: 'ResultResponse'
     approveTag: 'Tag'
     authenticateUser: 'AuthTokenResponse'
@@ -283,6 +286,7 @@ export interface NexusGenFieldTypeNames {
     createTag: 'TagResponse'
     deletePost: 'PostResponse'
     forgotPassword: 'Boolean'
+    initialize: 'ResultResponse'
     resetPassword: 'Boolean'
     updateAppConfig: 'ResultResponse'
     updatePost: 'PostResponse'
@@ -333,6 +337,9 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    addAdministrator: { // args
+      admin: NexusGenInputs['UserInput']; // UserInput!
+    }
     addMemberToPublication: { // args
       user: NexusGenInputs['UserInput']; // UserInput!
     }
@@ -361,6 +368,10 @@ export interface NexusGenArgTypes {
     }
     forgotPassword: { // args
       username: string; // String!
+    }
+    initialize: { // args
+      admin: NexusGenInputs['UserInput']; // UserInput!
+      password: string; // String!
     }
     resetPassword: { // args
       code: string; // String!

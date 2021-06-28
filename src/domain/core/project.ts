@@ -85,7 +85,7 @@ export async function addMemberToPublication(ctx: Context, user: UserInput): Dom
   const isMemberAlready = await isUserMemberOf(db, publication.id, user.email);
 
   if (isMemberAlready) {
-    return R.ofError(ErrorCode.ALREADY_EXISTS, 'User already member of the publication');
+    return alreadyMember();
   }
 
   const code = generateInviteCode();
@@ -113,12 +113,14 @@ export async function addMemberToPublication(ctx: Context, user: UserInput): Dom
 
   } catch (e) {
 
+    console.log(e);
+
     if (isCheckConstraint(e, 'max_capacity', 'quota')) {
       return quotaFull();
     }
 
     if (isUniqueConstraint(e, 'email', 'project_id')) {
-      return quotaFull();
+      return alreadyMember();
     }
 
     throw e;
@@ -129,4 +131,8 @@ export async function addMemberToPublication(ctx: Context, user: UserInput): Dom
 
 function quotaFull() {
   return R.ofError(ErrorCode.QUOTA_FULL, 'Staff capacity if full. New staff cannot be added.');
+}
+
+function alreadyMember() {
+  return R.ofError(ErrorCode.ALREADY_EXISTS, 'User already member of the publication');
 }

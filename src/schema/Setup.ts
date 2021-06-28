@@ -1,5 +1,6 @@
 import { enumType, extendType, inputObjectType } from 'nexus';
-import { updateAppConfig } from '../domain/core/setup';
+
+import { initializeApp, updateAppConfig } from '../domain/core/setup';
 import { R } from '../domain/R';
 
 
@@ -33,6 +34,16 @@ export const AppConfigInput = inputObjectType({
 export const setupMutation = extendType({
   type: 'Mutation',
   definition(t) {
+    t.field('initialize', {
+      type: 'ResultResponse',
+      args: {
+        admin: 'UserInput',
+        password: 'String'
+      },
+      resolve(_root, args, ctx) {
+        return R.unpack(initializeApp(ctx, args.admin, args.password));
+      }
+    });
     t.field('updateAppConfig', {
       type: 'ResultResponse',
       args: {

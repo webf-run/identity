@@ -1,4 +1,6 @@
-import { extendType, inputObjectType, nullable, objectType } from 'nexus';
+import { extendType, inputObjectType, objectType } from 'nexus';
+
+import { addNewAdministrator } from '../domain/core/admin';
 
 import { addMemberToPublication, createNewPublication } from '../domain/core/project';
 import { R } from '../domain/R';
@@ -73,6 +75,15 @@ export const CoreQuery = extendType({
 export const CoreMutation = extendType({
   type: 'Mutation',
   definition(t) {
+    t.field('addAdministrator', {
+      type: 'ResultResponse',
+      args: {
+        admin: 'UserInput'
+      },
+      resolve(_root, args, ctx) {
+        return R.unpack(addNewAdministrator(ctx, args.admin));
+      }
+    });
     t.field('createPublication', {
       type: 'NewPublicationResponse',
       args: {
