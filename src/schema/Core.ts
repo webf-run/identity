@@ -1,6 +1,7 @@
 import { extendType, inputObjectType, objectType } from 'nexus';
 
 import { addNewAdministrator } from '../domain/core/admin';
+import { acceptInvitation, claimInvitation } from '../domain/core/claim';
 
 import { addMemberToPublication, createNewPublication } from '../domain/core/project';
 import { R } from '../domain/R';
@@ -84,6 +85,7 @@ export const CoreMutation = extendType({
         return R.unpack(addNewAdministrator(ctx, args.admin));
       }
     });
+
     t.field('createPublication', {
       type: 'NewPublicationResponse',
       args: {
@@ -93,6 +95,7 @@ export const CoreMutation = extendType({
         return R.unpack(createNewPublication(ctx, args.input));
       }
     });
+
     t.field('addMemberToPublication', {
       type: 'ResultResponse',
       args: {
@@ -102,5 +105,27 @@ export const CoreMutation = extendType({
         return R.unpack(addMemberToPublication(ctx, args.user));
       }
     });
+
+    t.field('acceptInvitation', {
+      type: 'ResultResponse',
+      args: {
+        code: 'String'
+      },
+      resolve(_root, args, ctx) {
+        return R.unpack(acceptInvitation(ctx, args.code));
+      }
+    });
+
+    t.field('claimInvitation', {
+      type: 'ResultResponse',
+      args: {
+        code: 'String',
+        password: 'String'
+      },
+      resolve(_root, args, ctx) {
+        return R.unpack(claimInvitation(ctx, args.code, args.password));
+      }
+    });
+
   }
 });

@@ -193,10 +193,12 @@ export interface NexusGenFieldTypes {
     message: string; // String!
   }
   Mutation: { // field return type
+    acceptInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     addAdministrator: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     addMemberToPublication: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     approveTag: NexusGenRootTypes['Tag']; // Tag!
     authenticateUser: NexusGenRootTypes['AuthTokenResponse']; // AuthTokenResponse!
+    claimInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     createAssetSource: NexusGenRootTypes['AssetSourceResponse']; // AssetSourceResponse!
     createPost: NexusGenRootTypes['PostResponse']; // PostResponse!
     createPublication: NexusGenRootTypes['NewPublicationResponse']; // NewPublicationResponse!
@@ -276,10 +278,12 @@ export interface NexusGenFieldTypeNames {
     message: 'String'
   }
   Mutation: { // field return type name
+    acceptInvitation: 'ResultResponse'
     addAdministrator: 'ResultResponse'
     addMemberToPublication: 'ResultResponse'
     approveTag: 'Tag'
     authenticateUser: 'AuthTokenResponse'
+    claimInvitation: 'ResultResponse'
     createAssetSource: 'AssetSourceResponse'
     createPost: 'PostResponse'
     createPublication: 'NewPublicationResponse'
@@ -337,6 +341,9 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    acceptInvitation: { // args
+      code: string; // String!
+    }
     addAdministrator: { // args
       admin: NexusGenInputs['UserInput']; // UserInput!
     }
@@ -349,6 +356,10 @@ export interface NexusGenArgTypes {
     }
     authenticateUser: { // args
       input: NexusGenInputs['TokenInput']; // TokenInput!
+    }
+    claimInvitation: { // args
+      code: string; // String!
+      password: string; // String!
     }
     createAssetSource: { // args
       source: NexusGenInputs['AssetSourceInput']; // AssetSourceInput!
