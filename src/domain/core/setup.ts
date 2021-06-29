@@ -1,7 +1,7 @@
 import { getUpdatedInitization } from '../../data/app';
-import { hashPassword } from '../../data/code';
 import { updateEmailConfig } from '../../data/email';
 import { isUniqueConstraint } from '../../data/error';
+import { createAdminWithNewUser } from '../../data/user';
 import { Either } from '../../util/Either';
 import { apply, concat, inSet, maxLen, notEmpty } from '../../util/validator';
 
@@ -38,24 +38,9 @@ export async function initializeApp(ctx: Context, admin: UserInput, password: st
 
   // TODO: Payload validation pending
 
-  const [passwordHashed, hashFn] = await hashPassword(password);
-
   try {
-    // First user would always be super admin
-    const _response = await db.admin.create({
-      data: {
-        superAdmin: true,
-        user: {
-          create: {
-            email: admin.email,
-            firstName: admin.firstName,
-            lastName: admin.lastName,
-            hashFn,
-            password: passwordHashed
-          }
-        }
-      }
-    });
+    const request = await createAdminWithNewUser(db, admin, password, true);
+    const _response = await request();
 
     return R.of({ status: true });
 

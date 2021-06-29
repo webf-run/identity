@@ -1,5 +1,6 @@
 import { generateInviteCode } from '../../data/code';
 import { isCheckConstraint, isUniqueConstraint } from '../../data/error';
+import { buildUserInvite } from '../../data/invitation';
 import * as c from '../../data/newPublication';
 import { findUserByEmail, isUserMemberOf } from '../../data/user';
 import { findUniqueScope, isUser } from '../Access';
@@ -99,12 +100,7 @@ export async function addMemberToPublication(ctx: Context, user: UserInput): Dom
         project: {
           update: {
             invitations: {
-              create: {
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                code
-              }
+              create: buildUserInvite(user)
             }
           }
         }

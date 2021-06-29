@@ -1,6 +1,6 @@
-import { generateInviteCode } from '../../data/code';
 import { isUniqueConstraint } from '../../data/error';
-import { findUserByEmail } from '../../data/user';
+import { buildAdminInvite, createAdminInvite } from '../../data/invitation';
+import { addUserToAdmin, findUserByEmail } from '../../data/user';
 import { isAdmin } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
@@ -30,12 +30,7 @@ export async function addNewAdministrator(ctx: Context, admin: UserInput): Domai
 
 async function promoteToAdmin(ctx: Context, userId: bigint) {
   try {
-    await ctx.db.admin.create({
-      data: {
-        superAdmin: false,
-        id: userId
-      }
-    });
+    await addUserToAdmin(ctx.db, userId);
 
     // TODO: Send email
 
@@ -52,17 +47,8 @@ async function promoteToAdmin(ctx: Context, userId: bigint) {
 
 
 async function generateAdminInvite(ctx: Context, admin: UserInput) {
-  const code = generateInviteCode();
-
   try {
-    const _response = await ctx.db.invitation.create({
-      data: {
-        code,
-        email: admin.email,
-        firstName: admin.firstName,
-        lastName: admin.lastName
-      }
-    });
+    const _response = await createAdminInvite(ctx.db, admin);
 
     // TODO: Send email
 

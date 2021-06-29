@@ -2,7 +2,8 @@ import { Prisma, PrismaClient, Publication, User } from '@prisma/client';
 
 import { NewPublicationInput } from '../domain/Input';
 import { Publication as PublicationWithProject } from '../domain/Output';
-import { generateInviteCode, hashPassword } from './code';
+import { hashPassword } from './code';
+import { buildUserInvite } from './invitation';
 
 
 export async function createWithExistingUser(
@@ -10,18 +11,16 @@ export async function createWithExistingUser(
   input: NewPublicationInput,
   user: User): Promise<[PublicationWithProject, string]> {
 
-  const request = makeNewPublicationPayload(input);
-  const code = generateInviteCode();
-
-  const { firstName, lastName, email } = user;
+  const request = buildNewPublication(input);
+  const invitation = buildUserInvite(input.firstUser);
 
   request.project.create!.invitations = {
-    create: { firstName, lastName, code, email }
+    create: buildUserInvite(user)
   };
 
   const response = await db.publication.create({ data: request });
 
-  return [buildPublicationWithProject(response, input), code];
+  return [buildPublicationWithProject(response, input), invitation.code];
 }
 
 
@@ -34,7 +33,7 @@ export async function createWithCredentials(
 
   const [passwordHashed, hashFn] = await hashPassword(password);
 
-  const data = makeNewPublicationPayload(input);
+  const data = buildNewPublication(input);
 
   data.staff = {
     create: {
@@ -54,22 +53,20 @@ export async function createWithInvitation(
   db: PrismaClient,
   input: NewPublicationInput): Promise<[PublicationWithProject, string]> {
 
-  const data = makeNewPublicationPayload(input);
-  const code = generateInviteCode();
-
-  const { firstName, lastName, email } = input.firstUser;
+  const data = buildNewPublication(input);
+  const invitation = buildUserInvite(input.firstUser);
 
   data.project.create!.invitations = {
-    create: { firstName, lastName, code, email }
+    create: buildUserInvite(input.firstUser)
   };
 
   const response = await db.publication.create({ data });
 
-  return [buildPublicationWithProject(response, input), code];
+  return [buildPublicationWithProject(response, input), invitation.code];
 }
 
 
-function makeNewPublicationPayload(input: NewPublicationInput) {
+function buildNewPublication(input: NewPublicationInput) {
 
   const { quota } = input;
 

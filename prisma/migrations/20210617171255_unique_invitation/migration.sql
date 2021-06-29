@@ -5,5 +5,5 @@
 
 */
 -- CreateIndex
-CREATE UNIQUE INDEX "invitation.email_project_id_unique1" ON "invitation"("email") WHERE project_id IS NULL;
-CREATE UNIQUE INDEX "invitation.email_project_id_unique2" ON "invitation"("email", "project_id") where project_id IS NOT NULL;
+CREATE UNIQUE INDEX "invitation.email_project_id_unique" ON "invitation"("email", "project_id");
+CREATE UNIQUE INDEX "invitation.email_project_id_unique_null" ON "invitation"("email") WHERE project_id IS NULL;

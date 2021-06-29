@@ -1,7 +1,8 @@
 import argon2 from 'argon2';
 import cryptoRandomString from 'crypto-random-string';
 
-import { generateAuthToken, hashPassword } from '../../data/code';
+import { generateAuthToken } from '../../data/code';
+import { changePassword, findUserByEmail } from '../../data/user';
 import { Access } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
@@ -12,13 +13,10 @@ import { R } from '../R';
 
 export async function authenticate(ctx: Context, input: TokenInput): DomainResult<AuthToken> {
 
+  const { db }= ctx;
   const { username, password } = input;
 
-  const user = await ctx.db.user.findUnique({
-    where: {
-      email: username
-    }
-  });
+  const user = await findUserByEmail(db, username);
 
   // User with given email not found.
   if (!user) {
@@ -32,7 +30,7 @@ export async function authenticate(ctx: Context, input: TokenInput): DomainResul
     return R.ofError(ErrorCode.INVALID_CRD, 'Invalid user credentials');
   }
 
-  const token = await generateAuthToken(ctx.db, user.id, 'u');
+  const token = await generateAuthToken(db, user.id, 'u');
 
   return R.of({ ...token, type: 'Bearer' });
 }
@@ -71,6 +69,7 @@ export async function forgotPassword(ctx: Context, username: string): DomainResu
 export async function resetPassword(ctx: Context, code: string, newPassword: string): DomainResult<boolean> {
 
   // Token is valid for 30 minutes only
+  const { db } = ctx;
   const validTime = new Date(Date.now() - 30 * 60000);
 
   const resetReqeust = await ctx.db.resetPasswordRequest.findFirst({
@@ -88,14 +87,8 @@ export async function resetPassword(ctx: Context, code: string, newPassword: str
     return R.ofError(ErrorCode.INVALID_AUTH_REQUEST, '');
   }
 
-  const [password, hashFn] = await hashPassword(newPassword);
 
-  const changePasswordT = ctx.db.user.update({
-    where: {
-      id: resetReqeust.userId
-    },
-    data: { password, hashFn }
-  });
+  const changePasswordT = (await changePassword(db, resetReqeust.userId, newPassword))();
 
   const deleteRequestT = ctx.db.resetPasswordRequest.delete({
     where: {
@@ -109,7 +102,7 @@ export async function resetPassword(ctx: Context, code: string, newPassword: str
 }
 
 
-// TODO: Rename the method name
+// TODO: Rename the method name to getAccessForToken or similar.
 export async function validateToken(db: Context['db'], tokenId: string, scope?: string): DomainResult<Access> {
 
   // TODO: Do not select password related sensitive data
