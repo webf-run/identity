@@ -342,7 +342,7 @@ export interface NexusGenFieldTypeNames {
 export interface NexusGenArgTypes {
   Mutation: {
     acceptInvitation: { // args
-      code: string; // String!
+      invitationId: string; // ID!
     }
     addAdministrator: { // args
       admin: NexusGenInputs['UserInput']; // UserInput!

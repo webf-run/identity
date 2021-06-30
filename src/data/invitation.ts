@@ -48,6 +48,14 @@ export function deleteInvitation(db: PrismaClient, invitationId: bigint) {
 }
 
 
+export function getInvitationById(db: PrismaClient, invitationId: bigint) {
+  return db.invitation.findUnique({
+    where: {
+      id: invitationId
+    }
+  });
+}
+
 export function findInvitation(db: PrismaClient, code: string) {
   return db.invitation.findUnique({
     where: {

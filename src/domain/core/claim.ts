@@ -1,6 +1,6 @@
 import { Invitation } from '@prisma/client';
 
-import { deleteInvitation, findInvitation } from '../../data/invitation';
+import { deleteInvitation, findInvitation, getInvitationById } from '../../data/invitation';
 import { addUserToAdmin, addUserToStaff, createAdminWithNewUser, createStaffWithNewUser, findUserByEmail } from '../../data/user';
 
 import { isUser } from '../Access';
@@ -10,7 +10,7 @@ import { Result } from '../Output';
 import { R } from '../R';
 
 
-export async function acceptInvitation(ctx: Context, code: string): DomainResult<Result> {
+export async function acceptInvitation(ctx: Context, invitationId: bigint): DomainResult<Result> {
 
   const { db, access } = ctx;
 
@@ -18,7 +18,7 @@ export async function acceptInvitation(ctx: Context, code: string): DomainResult
     return invalidInvite();
   }
 
-  const invitation = await findInvitation(db, code);
+  const invitation = await getInvitationById(db, invitationId);
 
   if (!invitation) {
     return invalidInvite();

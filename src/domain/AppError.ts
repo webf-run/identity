@@ -1,5 +1,8 @@
 import { NexusGenObjects } from '../NexusTypegen';
 
+import { R } from './R';
+
+
 export enum ErrorCode {
   ALREADY_EXISTS = 'ALREADY_EXISTS',
   INVALID_DATA = 'INVALID_DATA',
@@ -21,3 +24,6 @@ export type AppError = NexusGenObjects['AppError'];
 export function isAppError(error: any): error is AppError {
   return error?.errors instanceof Array;
 }
+
+export const noAccess = () => R.ofError(ErrorCode.FORBIDDEN, 'You do not have access');
+export const inviteNotFound = () => R.ofError(ErrorCode.NOT_FOUND, 'Invitation not found');

@@ -109,10 +109,11 @@ export const CoreMutation = extendType({
     t.field('acceptInvitation', {
       type: 'ResultResponse',
       args: {
-        code: 'String'
+        invitationId: 'ID'
       },
       resolve(_root, args, ctx) {
-        return R.unpack(acceptInvitation(ctx, args.code));
+        // TODO: Exception handling for bigint
+        return R.unpack(acceptInvitation(ctx, BigInt(args.invitationId)));
       }
     });
 
