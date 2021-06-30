@@ -85,7 +85,7 @@ async function createStaffMember(ctx: Context, invitation: Invitation, password:
     return R.of({ status: true });
   } catch (error) {
 
-    // Currently, it is not possible to cleannly map the errors occured during transaction.
+    // Currently, it is not possible to cleanly map the errors occurred during transaction.
     return R.of({ status: false });
   }
 }
@@ -104,7 +104,7 @@ async function createAdmin(ctx: Context, invitation: Invitation, password: strin
     return R.of({ status: true });
 
   } catch (error) {
-    // Currently, it is not possible to cleannly map the errors occured during transaction.
+    // Currently, it is not possible to cleanly map the errors occurred during transaction.
     return R.of({ status: false });
   }
 }

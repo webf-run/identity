@@ -1,8 +1,8 @@
-import { generateInviteCode } from '../../data/code';
 import { isCheckConstraint, isUniqueConstraint } from '../../data/error';
 import { buildUserInvite } from '../../data/invitation';
 import * as c from '../../data/newPublication';
 import { findUserByEmail, isUserMemberOf } from '../../data/user';
+
 import { findUniqueScope, isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
@@ -89,8 +89,6 @@ export async function addMemberToPublication(ctx: Context, user: UserInput): Dom
     return alreadyMember();
   }
 
-  const code = generateInviteCode();
-
   try {
     // Attempt to generate an invitation
     const _quota = await db.quota.update({
@@ -108,8 +106,6 @@ export async function addMemberToPublication(ctx: Context, user: UserInput): Dom
     });
 
   } catch (e) {
-
-    console.log(e);
 
     if (isCheckConstraint(e, 'max_capacity', 'quota')) {
       return quotaFull();
