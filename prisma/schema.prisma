@@ -58,6 +58,7 @@ model Invitation {
 
   // duration in milliseconds
   duration      Int
+  expiryAt      DateTime    @db.Timestamptz() @map("expiry_at")
 
   // If invitation is not issued against a project,
   // it means it is an admin user invitation.

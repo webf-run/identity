@@ -2,6 +2,7 @@ import { extendType, inputObjectType, objectType } from 'nexus';
 
 import { addNewAdministrator } from '../domain/core/admin';
 import { acceptInvitation, claimInvitation } from '../domain/core/claim';
+import { deleteInvitation, retryInvitation } from '../domain/core/invitation';
 
 import { addMemberToPublication, createNewPublication } from '../domain/core/project';
 import { R } from '../domain/R';
@@ -125,6 +126,29 @@ export const CoreMutation = extendType({
       },
       resolve(_root, args, ctx) {
         return R.unpack(claimInvitation(ctx, args.code, args.password));
+      }
+    });
+
+    t.field('deleteInvitation', {
+      type: 'ResultResponse',
+      args: {
+        invitationId: 'ID'
+      },
+      resolve(_root, args, ctx) {
+        // TODO: Exception handling for bigint
+        return R.unpack(deleteInvitation(ctx, BigInt(args.invitationId)));
+      }
+    });
+
+    t.field('retryInvitation', {
+      type: 'ResultResponse',
+      description: 'Extend the validity of already expired invitation',
+      args: {
+        invitationId: 'ID'
+      },
+      resolve(_root, args, ctx) {
+        // TODO: Exception handling for bigint
+        return R.unpack(retryInvitation(ctx, BigInt(args.invitationId)));
       }
     });
 

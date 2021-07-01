@@ -1,6 +1,14 @@
 # Bisa
 Backend for Chidi.
 
+## Configuration
+
+### URLs that must be configured
+
+  - Claim invitation
+  - Join invitation
+  - Reset forgotten password
+
 ## Useful commands
 
 ```bash

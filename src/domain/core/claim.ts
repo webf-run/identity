@@ -1,6 +1,6 @@
 import { Invitation } from '@prisma/client';
 
-import { deleteInvitation, findInvitation, getInvitationById } from '../../data/invitation';
+import { deleteInvitation, findInvitationByCode, getActiveInvitationById } from '../../data/invitation';
 import { addUserToAdmin, addUserToStaff, createAdminWithNewUser, createStaffWithNewUser, findUserByEmail } from '../../data/user';
 
 import { isUser } from '../Access';
@@ -18,7 +18,7 @@ export async function acceptInvitation(ctx: Context, invitationId: bigint): Doma
     return invalidInvite();
   }
 
-  const invitation = await getInvitationById(db, invitationId);
+  const invitation = await getActiveInvitationById(db, invitationId);
 
   if (!invitation) {
     return invalidInvite();
@@ -50,7 +50,7 @@ export async function acceptInvitation(ctx: Context, invitationId: bigint): Doma
 export async function claimInvitation(ctx: Context, code: string, password: string): DomainResult<Result> {
 
   const { db } = ctx;
-  const invitation = await findInvitation(db, code);
+  const invitation = await findInvitationByCode(db, code);
 
   if (!invitation) {
     return invalidInvite();

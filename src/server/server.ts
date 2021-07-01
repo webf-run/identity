@@ -26,6 +26,7 @@ function publicQuery(): ApolloServerPlugin<Context> {
     requestDidStart() {
       return {
         didResolveOperation(context) {
+          // TODO: Pending work over first level restrictions
           // context.operation.selectionSet.selections.every((x) => true);
 
           // Used for public APIs

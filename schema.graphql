@@ -90,10 +90,14 @@ type Mutation {
   ): PostResponse!
   createPublication(input: NewPublicationInput!): NewPublicationResponse!
   createTag(tag: TagInput!): TagResponse!
+  deleteInvitation(invitationId: ID!): ResultResponse!
   deletePost(postId: ID!): PostResponse!
   forgotPassword(username: String!): Boolean!
   initialize(admin: UserInput!, password: String!): ResultResponse!
   resetPassword(code: String!, password: String!): Boolean!
+
+  """Extend the validity of already expired invitation"""
+  retryInvitation(invitationId: ID!): ResultResponse!
   updateAppConfig(config: AppConfigInput!): ResultResponse!
   updatePost(
     post: PostInput!

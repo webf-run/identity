@@ -203,10 +203,12 @@ export interface NexusGenFieldTypes {
     createPost: NexusGenRootTypes['PostResponse']; // PostResponse!
     createPublication: NexusGenRootTypes['NewPublicationResponse']; // NewPublicationResponse!
     createTag: NexusGenRootTypes['TagResponse']; // TagResponse!
+    deleteInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     deletePost: NexusGenRootTypes['PostResponse']; // PostResponse!
     forgotPassword: boolean; // Boolean!
     initialize: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     resetPassword: boolean; // Boolean!
+    retryInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updateAppConfig: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updatePost: NexusGenRootTypes['PostResponse']; // PostResponse!
     updateTag: NexusGenRootTypes['TagResponse']; // TagResponse!
@@ -288,10 +290,12 @@ export interface NexusGenFieldTypeNames {
     createPost: 'PostResponse'
     createPublication: 'NewPublicationResponse'
     createTag: 'TagResponse'
+    deleteInvitation: 'ResultResponse'
     deletePost: 'PostResponse'
     forgotPassword: 'Boolean'
     initialize: 'ResultResponse'
     resetPassword: 'Boolean'
+    retryInvitation: 'ResultResponse'
     updateAppConfig: 'ResultResponse'
     updatePost: 'PostResponse'
     updateTag: 'TagResponse'
@@ -374,6 +378,9 @@ export interface NexusGenArgTypes {
     createTag: { // args
       tag: NexusGenInputs['TagInput']; // TagInput!
     }
+    deleteInvitation: { // args
+      invitationId: string; // ID!
+    }
     deletePost: { // args
       postId: string; // ID!
     }
@@ -387,6 +394,9 @@ export interface NexusGenArgTypes {
     resetPassword: { // args
       code: string; // String!
       password: string; // String!
+    }
+    retryInvitation: { // args
+      invitationId: string; // ID!
     }
     updateAppConfig: { // args
       config: NexusGenInputs['AppConfigInput']; // AppConfigInput!
