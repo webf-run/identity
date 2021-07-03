@@ -22,56 +22,94 @@ model EmailConfig {
 }
 
 
-model Project {
-  id            BigInt    @id @default(autoincrement())
-  name          String
-  fromEmail     String    @map("from_email")
+model ClientApp {
+  id              String      @id @default(cuid())
 
-  publication   Publication?
-  quota         Quota?
-  assets        Asset[]
-  invitations   Invitation[]
+  description     String
 
-  @@map("project")
+  secret          String
+  hashFn          String      @map("hash_fn")
+
+  createdAt       DateTime    @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt       DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
+
+  tokens          ClientAppToken[]
+
+  @@map("client_app")
 }
 
 
-// Allows to maintain the maximum size limits for uploaded assets
+model ProjectType {
+  // Though we do not really it need, using this
+  // as a disjoint discriminant is really helpful
+  // to ensure data integrity.
+  id              String      @id
+  description     String
+
+  projects        Project[]
+  roles           Role[]
+
+  @@map("project_type")
+}
+
+
+model Project {
+  id              BigInt          @id @default(autoincrement())
+  name            String
+  fromEmail       String          @map("from_email")
+
+  type            ProjectType     @relation(fields: [projectType], references: [id])
+  projectType     String          @map("project_type")
+
+  publication     Publication?
+  quota           Quota?
+  assets          Asset[]
+  invitations     Invitation[]
+
+  @@map("project")
+
+  @@unique([id, projectType])
+}
+
+
+// Used to maintain the maximum size limits for uploaded assets and memberships
 model Quota {
-  id              BigInt    @id
-  project         Project   @relation(fields: [id], references: [id])
-  sizeInMB        Int       @map("size_in_mb")
-  staffCapacity   Int       @map("staff_capacity")
+  id              BigInt      @id
+  project         Project     @relation(fields: [id], references: [id])
+  sizeInMB        Int         @map("size_in_mb")
+  staffCapacity   Int         @map("staff_capacity")
   occupied        Int
 
+  // Note: Add the constraint where occupied <= staffCapacity
   @@map("quota")
 }
 
 
 model Invitation {
-  id            BigInt      @id @default(autoincrement())
-  code          String      @unique
+  id            BigInt        @id @default(autoincrement())
+  code          String        @unique
 
-  firstName     String      @map("first_name")
-  lastName      String      @map("last_name")
+  firstName     String        @map("first_name")
+  lastName      String        @map("last_name")
   email         String
 
   // duration in milliseconds
   duration      Int
-  expiryAt      DateTime    @db.Timestamptz() @map("expiry_at")
+  expiryAt      DateTime      @db.Timestamptz() @map("expiry_at")
 
   // If invitation is not issued against a project,
   // it means it is an admin user invitation.
-  project       Project?    @relation(fields: [projectId], references: [id])
-  projectId     BigInt?     @map("project_id")
+  project       Project       @relation(fields: [projectId, projectType], references: [id, projectType])
+  projectId     BigInt        @map("project_id")
+  projectType   String        @map("project_type")
 
-  createdAt     DateTime    @db.Timestamptz() @default(now()) @map("created_at")
-  updatedAt     DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
+  role          Role          @relation(fields: [roleId, projectType], references: [id, projectType])
+  roleId        Int           @map("role_id")
+
+  createdAt     DateTime      @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt     DateTime      @db.Timestamptz() @updatedAt @map("updated_at")
 
   @@map("invitation")
-
-  // Note: Manually create two partial unique indexes
-  // so that prisma can properly handle the error mapping
   @@unique(fields: [email, projectId])
 }
 
@@ -81,7 +119,7 @@ model User {
 
   firstName         String      @map("first_name")
   lastName          String      @map("last_name")
-  email             String      @unique
+  email             String
 
   password          String
   hashFn            String      @map("hash_fn")
@@ -94,30 +132,36 @@ model User {
   posts             Post[]
   resetRequest      ResetPasswordRequest?
   loginAttempt      LoginAttempt?
-  admin             Admin?
 
   @@map("app_user")
+  @@index([email])
 }
 
 
-model Admin {
-  id            BigInt      @id
-  superAdmin    Boolean     @map("super_admin")
-  user          User        @relation(fields: [id], references: [id])
+model ClientAppToken {
+  id              String      @id
+  generatedAt     DateTime    @default(now()) @db.Timestamptz() @map("generated_at")
 
-  @@map("admin")
+  // duration in milliseconds
+  duration        Int
+
+  clientApp       ClientApp   @relation(fields: [clientAppId], references: [id])
+  clientAppId     String      @map("client_app_id")
+
+  @@map("client_app_token")
 }
 
 
 model UserToken {
-  id            String      @id
-  generatedAt   DateTime    @default(now()) @db.Timestamptz() @map("generated_at")
+  id              String      @id
+
+  generatedAt     DateTime    @default(now()) @db.Timestamptz() @map("generated_at")
 
   // duration in milliseconds
-  duration      Int
+  duration        Int
 
-  user          User        @relation(fields: [userId], references: [id])
-  userId        BigInt      @map("user_id")
+  user            User        @relation(fields: [userId], references: [id])
+  userId          BigInt      @map("user_id")
 
   @@map("user_token")
 }
@@ -147,9 +191,14 @@ model LoginAttempt {
 
 
 model Publication {
-  id            BigInt    @id
-  project       Project   @relation(fields: [id], references: [id])
-  publicUrl     String    @unique @map("public_url")
+  id            BigInt        @id
+
+  // Note: Add check constraint for the project type
+  // to restrict project type to publication
+  projectType   String        @map("project_type")
+
+  project       Project       @relation(fields: [id, projectType], references: [id, projectType])
+  publicUrl     String        @unique @map("public_url")
 
   staff         Staff[]
   posts         Post[]
@@ -159,14 +208,35 @@ model Publication {
 
 
 model Staff {
-  publication     Publication   @relation(fields: [publicationId], references: [id])
-  publicationId   BigInt        @map("publication_id")
+  publication     Publication     @relation(fields: [publicationId], references: [id])
+  publicationId   BigInt          @map("publication_id")
 
-  user            User          @relation(fields: [userId], references: [id])
-  userId          BigInt        @map("user_id")
+  // Uniqueness over userId ensures that user would be member of only one publication ever.
+  user            User            @relation(fields: [userId], references: [id])
+  userId          BigInt          @unique @map("user_id")
+
+  role            Role            @relation(fields: [roleId], references: [id])
+  roleId          Int             @map("role_id")
 
   @@map("staff")
   @@id([publicationId, userId])
+}
+
+
+model Role {
+  id              Int             @id @default(autoincrement())
+  name            String
+  displayName     String          @map("display_name")
+
+  scope           ProjectType     @relation(fields: [projectType], references: [id])
+  projectType     String          @map("project_type")
+
+  staff           Staff[]
+  invitations     Invitation[]
+
+  @@map("role")
+  @@unique([id, projectType])
+  @@unique([name, projectType])
 }
 
 
@@ -229,13 +299,13 @@ model PostMeta {
 
 
 model PostTags {
-  post    Post    @relation(fields: [postId], references: [id])
-  postId  BigInt  @map("post_id")
+  post      Post      @relation(fields: [postId], references: [id])
+  postId    BigInt    @map("post_id")
 
-  tag     Tag     @relation(fields: [tagId], references: [id])
-  tagId   BigInt  @map("tag_id")
+  tag       Tag       @relation(fields: [tagId], references: [id])
+  tagId     BigInt    @map("tag_id")
 
-  order   Int
+  order     Int
 
   @@map("post_tags")
   @@id([postId, tagId])
