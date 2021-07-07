@@ -79,7 +79,7 @@ export interface NexusGenInputs {
   }
   QuotaInput: { // input type
     assetSize: number; // Int!
-    staffCapacity: number; // Int!
+    maxCapacity: number; // Int!
   }
   TagInput: { // input type
     description?: string | null; // String
@@ -99,6 +99,7 @@ export interface NexusGenInputs {
 
 export interface NexusGenEnums {
   EmailServiceType: "sendgrid"
+  GrantType: "CLIENT" | "USER"
 }
 
 export interface NexusGenScalars {
@@ -125,6 +126,11 @@ export interface NexusGenObjects {
     uploadUrl: string; // String!
   }
   AuthToken: Op.AuthToken;
+  ClientApp: { // root type
+    description: string; // String!
+    id: string; // ID!
+    secret: string; // String!
+  }
   Error: { // root type
     code: string; // String!
     message: string; // String!
@@ -158,6 +164,7 @@ export interface NexusGenInterfaces {
 export interface NexusGenUnions {
   AssetSourceResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AssetSource'];
   AuthTokenResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AuthToken'];
+  ClientAppResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['ClientApp'];
   NewPublicationResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Publication'];
   PostResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Post'];
   ResultResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Result'];
@@ -188,13 +195,16 @@ export interface NexusGenFieldTypes {
     id: string; // String!
     type: string; // String!
   }
+  ClientApp: { // field return type
+    description: string; // String!
+    id: string; // ID!
+    secret: string; // String!
+  }
   Error: { // field return type
     code: string; // String!
     message: string; // String!
   }
   Mutation: { // field return type
-    acceptInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
-    addAdministrator: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     addMemberToPublication: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     approveTag: NexusGenRootTypes['Tag']; // Tag!
     authenticateUser: NexusGenRootTypes['AuthTokenResponse']; // AuthTokenResponse!
@@ -206,7 +216,8 @@ export interface NexusGenFieldTypes {
     deleteInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     deletePost: NexusGenRootTypes['PostResponse']; // PostResponse!
     forgotPassword: boolean; // Boolean!
-    initialize: NexusGenRootTypes['ResultResponse']; // ResultResponse!
+    initialize: NexusGenRootTypes['ClientAppResponse']; // ClientAppResponse!
+    registerClientApp: NexusGenRootTypes['ClientAppResponse']; // ClientAppResponse!
     resetPassword: boolean; // Boolean!
     retryInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updateAppConfig: NexusGenRootTypes['ResultResponse']; // ResultResponse!
@@ -275,13 +286,16 @@ export interface NexusGenFieldTypeNames {
     id: 'String'
     type: 'String'
   }
+  ClientApp: { // field return type name
+    description: 'String'
+    id: 'ID'
+    secret: 'String'
+  }
   Error: { // field return type name
     code: 'String'
     message: 'String'
   }
   Mutation: { // field return type name
-    acceptInvitation: 'ResultResponse'
-    addAdministrator: 'ResultResponse'
     addMemberToPublication: 'ResultResponse'
     approveTag: 'Tag'
     authenticateUser: 'AuthTokenResponse'
@@ -293,7 +307,8 @@ export interface NexusGenFieldTypeNames {
     deleteInvitation: 'ResultResponse'
     deletePost: 'PostResponse'
     forgotPassword: 'Boolean'
-    initialize: 'ResultResponse'
+    initialize: 'ClientAppResponse'
+    registerClientApp: 'ClientAppResponse'
     resetPassword: 'Boolean'
     retryInvitation: 'ResultResponse'
     updateAppConfig: 'ResultResponse'
@@ -345,12 +360,6 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
-    acceptInvitation: { // args
-      invitationId: string; // ID!
-    }
-    addAdministrator: { // args
-      admin: NexusGenInputs['UserInput']; // UserInput!
-    }
     addMemberToPublication: { // args
       user: NexusGenInputs['UserInput']; // UserInput!
     }
@@ -359,6 +368,7 @@ export interface NexusGenArgTypes {
       tagId: string; // ID!
     }
     authenticateUser: { // args
+      grantType: NexusGenEnums['GrantType']; // GrantType!
       input: NexusGenInputs['TokenInput']; // TokenInput!
     }
     claimInvitation: { // args
@@ -388,8 +398,10 @@ export interface NexusGenArgTypes {
       username: string; // String!
     }
     initialize: { // args
-      admin: NexusGenInputs['UserInput']; // UserInput!
-      password: string; // String!
+      description: string; // String!
+    }
+    registerClientApp: { // args
+      description: string; // String!
     }
     resetPassword: { // args
       code: string; // String!
@@ -427,6 +439,7 @@ export interface NexusGenArgTypes {
 export interface NexusGenAbstractTypeMembers {
   AssetSourceResponse: "AppError" | "AssetSource"
   AuthTokenResponse: "AppError" | "AuthToken"
+  ClientAppResponse: "AppError" | "ClientApp"
   NewPublicationResponse: "AppError" | "Publication"
   PostResponse: "AppError" | "Post"
   ResultResponse: "AppError" | "Result"
@@ -451,7 +464,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceResponse" | "AuthTokenResponse" | "NewPublicationResponse" | "PostResponse" | "ResultResponse" | "SignedUrlResponse" | "TagResponse";
+export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceResponse" | "AuthTokenResponse" | "ClientAppResponse" | "NewPublicationResponse" | "PostResponse" | "ResultResponse" | "SignedUrlResponse" | "TagResponse";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

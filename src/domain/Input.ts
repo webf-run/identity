@@ -1,4 +1,4 @@
-import { NexusGenInputs } from '../NexusTypegen';
+import { NexusGenInputs, NexusGenEnums } from '../NexusTypegen';
 
 
 export type AssetSourceInput = NexusGenInputs['AssetSourceInput'];
@@ -11,3 +11,5 @@ export type AppConfigInput = NexusGenInputs['AppConfigInput'];
 export type UserInput = NexusGenInputs['UserInput'];
 export type NewPublicationInput = NexusGenInputs['NewPublicationInput'];
 export type TokenInput = NexusGenInputs['TokenInput'];
+
+export type GrantType = NexusGenEnums['GrantType'];

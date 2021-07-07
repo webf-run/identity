@@ -1,65 +1,26 @@
-import { Invitation, PrismaClient } from '@prisma/client';
+import { Invitation, Prisma, PrismaClient } from '@prisma/client';
 
-import { UserInput } from '../domain/Input';
 import { hashPassword } from './code';
 
 
-export function findUserByEmail(db: PrismaClient, email: string) {
+export function findUserByEmail(db: PrismaClient, email: string, projectId: bigint) {
   return db.user.findUnique({
     where: {
-      email
+      projectId_email: {
+        email, projectId
+      }
     }
   });
 }
 
 export async function isUserMemberOf(db: PrismaClient, publicationId: bigint, email: string) {
-  const user = await db.user.findFirst({
-    where: { email },
-    include: {
-      staff: {
-        where: {
-          publicationId
-        }
-      }
-    }
-  });
+  const user = await findUserByEmail(db, email, publicationId);
 
-  return !!user?.staff && user.staff.length > 0;
+  return !!user;
 }
 
 
-export function addUserToAdmin(db: PrismaClient, userId: bigint) {
-  return db.admin.create({
-    data: {
-      superAdmin: false,
-      id: userId
-    }
-  });
-}
-
-
-export function addUserToStaff(db: PrismaClient, publicationId: bigint, userId: bigint) {
-  return db.staff.create({
-    data: { publicationId, userId }
-  });
-}
-
-
-export async function createAdminWithNewUser(db: PrismaClient, input: UserInput, password: string, superAdmin: boolean = false) {
-
-  const userPayload = await buildNewUser(input, password);
-
-  return () =>
-    db.admin.create({
-      data: {
-        superAdmin,
-        user: { create: userPayload }
-      }
-    });
-}
-
-
-export async function createStaffWithNewUser(db: PrismaClient, invitation: Invitation, password: string) {
+export async function createNewUser(db: PrismaClient, invitation: Invitation, password: string) {
 
   const userPayload = await buildNewUser(invitation, password);
 
@@ -69,17 +30,8 @@ export async function createStaffWithNewUser(db: PrismaClient, invitation: Invit
       throw 'Invitation must belong to some publication';
     }
 
-    return db.staff.create({
-      data: {
-        publication: {
-          connect: {
-            id: invitation.projectId
-          }
-        },
-        user: {
-          create: userPayload
-        }
-      }
+    return db.user.create({
+      data: userPayload
     });
   };
 }
@@ -99,7 +51,7 @@ export async function changePassword(db: PrismaClient, userId: bigint, newPasswo
 }
 
 
-async function buildNewUser(invitation: UserInput, password: string) {
+async function buildNewUser(invitation: Invitation, password: string): Promise<Prisma.UserCreateInput> {
 
   // What to do with an async password?
   const [passwordHashed, hashFn] = await hashPassword(password);
@@ -109,6 +61,16 @@ async function buildNewUser(invitation: UserInput, password: string) {
     firstName: invitation.firstName,
     lastName: invitation.lastName,
     password: passwordHashed,
-    hashFn
+    hashFn,
+    project: {
+      connect: {
+        id: invitation.projectId
+      }
+    },
+    role: {
+      create: {
+        roleId: invitation.roleId
+      }
+    }
   };
 }

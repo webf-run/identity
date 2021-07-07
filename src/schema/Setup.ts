@@ -1,7 +1,8 @@
-import { enumType, extendType, inputObjectType } from 'nexus';
+import { enumType, extendType, inputObjectType, objectType } from 'nexus';
 
-import { initializeApp, updateAppConfig } from '../domain/core/setup';
+import { initializeApp, registerNewClientApp, updateAppConfig } from '../domain/core/setup';
 import { R } from '../domain/R';
+import { errorUnion } from './helper';
 
 
 export const EmailServiceType = enumType({
@@ -31,19 +32,40 @@ export const AppConfigInput = inputObjectType({
 });
 
 
+export const ClientApp = objectType({
+  name: 'ClientApp',
+  definition(t) {
+    t.id('id');
+    t.string('description');
+    t.string('secret');
+  }
+});
+
+export const ClientAppResponse = errorUnion('ClientAppResponse', 'ClientApp');
+
 export const setupMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.field('initialize', {
-      type: 'ResultResponse',
+      type: 'ClientAppResponse',
       args: {
-        admin: 'UserInput',
-        password: 'String'
+        description: 'String'
       },
       resolve(_root, args, ctx) {
-        return R.unpack(initializeApp(ctx, args.admin, args.password));
+        return R.unpack(initializeApp(ctx, args.description));
       }
     });
+
+    t.field('registerClientApp', {
+      type: 'ClientAppResponse',
+      args: {
+        description: 'String'
+      },
+      resolve(_root, args, ctx) {
+        return R.unpack(registerNewClientApp(ctx, args.description));
+      }
+    });
+
     t.field('updateAppConfig', {
       type: 'ResultResponse',
       args: {

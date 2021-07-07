@@ -1,50 +1,12 @@
 import { Invitation } from '@prisma/client';
 
-import { deleteInvitation, findInvitationByCode, getActiveInvitationById } from '../../data/invitation';
-import { addUserToAdmin, addUserToStaff, createAdminWithNewUser, createStaffWithNewUser, findUserByEmail } from '../../data/user';
+import { deleteInvitation, findInvitationByCode } from '../../data/invitation';
+import { createNewUser, findUserByEmail } from '../../data/user';
 
-import { isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { Result } from '../Output';
 import { R } from '../R';
-
-
-export async function acceptInvitation(ctx: Context, invitationId: bigint): DomainResult<Result> {
-
-  const { db, access } = ctx;
-
-  if (!isUser(access)) {
-    return invalidInvite();
-  }
-
-  const invitation = await getActiveInvitationById(db, invitationId);
-
-  if (!invitation) {
-    return invalidInvite();
-  }
-
-  const { user } = access;
-  const canClaim = user.email === invitation.email;
-
-  if (!canClaim) {
-    return invalidInvite();
-  }
-
-  if (invitation.projectId) {
-    const request = addUserToStaff(db, invitation.projectId, user.id);
-    const cleanup = deleteInvitation(db, invitation.id);
-
-    await db.$transaction([request, cleanup]);
-  } else {
-    const request = addUserToAdmin(db, user.id);
-    const cleanup = deleteInvitation(db, invitation.id);
-
-    await db.$transaction([request, cleanup]);
-  }
-
-  return R.of({ status: true });
-}
 
 
 export async function claimInvitation(ctx: Context, code: string, password: string): DomainResult<Result> {
@@ -56,7 +18,7 @@ export async function claimInvitation(ctx: Context, code: string, password: stri
     return invalidInvite();
   }
 
-  const user = await findUserByEmail(db, invitation.email);
+  const user = await findUserByEmail(db, invitation.email, invitation.projectId);
 
   if (user) {
     return userExists();
@@ -64,11 +26,7 @@ export async function claimInvitation(ctx: Context, code: string, password: stri
 
   // TODO: Password validation pending
 
-  if (invitation.projectId) {
-    return (await createStaffMember(ctx, invitation, password));
-  } else {
-    return (await createAdmin(ctx, invitation, password));
-  }
+  return (await createStaffMember(ctx, invitation, password));
 }
 
 
@@ -77,7 +35,7 @@ async function createStaffMember(ctx: Context, invitation: Invitation, password:
   const { db } = ctx;
 
   try {
-    const request = (await createStaffWithNewUser(db, invitation, password))();
+    const request = (await createNewUser(db, invitation, password))();
     const cleanup = deleteInvitation(db, invitation.id);
 
     await db.$transaction([request, cleanup]);
@@ -90,24 +48,6 @@ async function createStaffMember(ctx: Context, invitation: Invitation, password:
   }
 }
 
-
-async function createAdmin(ctx: Context, invitation: Invitation, password: string) {
-
-  const { db } = ctx;
-
-  try {
-    const request = (await createAdminWithNewUser(db, invitation, password))();
-    const cleanup = deleteInvitation(db, invitation.id);
-
-    await db.$transaction([request, cleanup]);
-
-    return R.of({ status: true });
-
-  } catch (error) {
-    // Currently, it is not possible to cleanly map the errors occurred during transaction.
-    return R.of({ status: false });
-  }
-}
 
 
 function invalidInvite() {

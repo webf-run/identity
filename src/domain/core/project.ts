@@ -1,9 +1,10 @@
+import { PublicationRole } from '../../data/constant';
 import { isCheckConstraint, isUniqueConstraint } from '../../data/error';
-import { buildUserInvite } from '../../data/invitation';
+import { inviteUser } from '../../data/invitation';
 import * as c from '../../data/newPublication';
-import { findUserByEmail, isUserMemberOf } from '../../data/user';
+import { isUserMemberOf } from '../../data/user';
 
-import { findUniqueScope, isUser } from '../Access';
+import { isClientApp, isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { NewPublicationInput, UserInput } from '../Input';
@@ -13,28 +14,22 @@ import { R } from '../R';
 
 export async function createNewPublication(ctx: Context, input: NewPublicationInput): DomainResult<Publication> {
 
-  const { db } = ctx;
+  const { db, access } = ctx;
 
-  const { firstUser, password } = input;
+  if (!isClientApp(access)) {
+    return R.ofError(ErrorCode.FORBIDDEN, '');
+  }
+
+  const { password } = input;
 
   // TODO: Input validation and authorization
 
   // Decide if we should invite user or generate a user?
-  // If the user exists, invite the user.
   // If password is provided, create a user.
   // Otherwise, invite as a new user.
 
-  const existingUser = await findUserByEmail(db, firstUser.email);
-
-
   try {
-    if (existingUser) {
-      // Invite the existing user
-      const [publication, code] = await c.createWithExistingUser(db, input, existingUser);
-
-      return R.of(publication);
-
-    } else if (password) {
+    if (password) {
       // Create a new user
       const publication = await c.createWithCredentials(db, input, password);
 
@@ -61,7 +56,7 @@ export async function addMemberToPublication(ctx: Context, user: UserInput): Dom
   }
 
   // Access control
-  const publication = findUniqueScope(access);
+  const publication = access.scope;
 
   if (!publication) {
     return R.ofError(ErrorCode.INVALID_SCOPE, 'Correct scope is required to add a member');
@@ -79,7 +74,7 @@ export async function addMemberToPublication(ctx: Context, user: UserInput): Dom
     return R.ofError(ErrorCode.NOT_FOUND, 'Quota information not found');
   }
 
-  if (quota.occupied >= quota.staffCapacity) {
+  if (quota.occupied >= quota.maxCapacity) {
     return quotaFull();
   }
 
@@ -91,23 +86,11 @@ export async function addMemberToPublication(ctx: Context, user: UserInput): Dom
 
   try {
     // Attempt to generate an invitation
-    const _quota = await db.quota.update({
-      where: { id: publication.id },
-      data: {
-        occupied: { increment: 1 },
-        project: {
-          update: {
-            invitations: {
-              create: buildUserInvite(user)
-            }
-          }
-        }
-      }
-    });
+    const _quota = await inviteUser(db, user, publication.id, PublicationRole.Author);
 
   } catch (e) {
 
-    if (isCheckConstraint(e, 'max_capacity', 'quota')) {
+    if (isCheckConstraint(e, 'max_capacity_check', 'quota')) {
       return quotaFull();
     }
 

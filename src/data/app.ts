@@ -16,7 +16,7 @@ export async function getUpdatedInitization(db: PrismaClient): Promise<AppCache>
 
 
 async function checkAppInitialized(db: PrismaClient): Promise<boolean> {
-  const admins = await db.admin.count();
+  const apps = await db.clientApp.count();
 
-  return admins > 0;
+  return apps > 0;
 }

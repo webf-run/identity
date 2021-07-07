@@ -65,6 +65,7 @@ model Project {
   quota           Quota?
   assets          Asset[]
   invitations     Invitation[]
+  users           User[]
 
   @@map("project")
 
@@ -77,10 +78,10 @@ model Quota {
   id              BigInt      @id
   project         Project     @relation(fields: [id], references: [id])
   sizeInMB        Int         @map("size_in_mb")
-  staffCapacity   Int         @map("staff_capacity")
+  maxCapacity     Int         @map("max_capacity")
   occupied        Int
 
-  // Note: Add the constraint where occupied <= staffCapacity
+  // Note: Add the constraint where occupied <= maxCapacity
   @@map("quota")
 }
 
@@ -97,8 +98,6 @@ model Invitation {
   duration      Int
   expiryAt      DateTime      @db.Timestamptz() @map("expiry_at")
 
-  // If invitation is not issued against a project,
-  // it means it is an admin user invitation.
   project       Project       @relation(fields: [projectId, projectType], references: [id, projectType])
   projectId     BigInt        @map("project_id")
   projectType   String        @map("project_type")
@@ -124,17 +123,20 @@ model User {
   password          String
   hashFn            String      @map("hash_fn")
 
+  project           Project     @relation(fields: [projectId], references: [id])
+  projectId         BigInt      @map("project_id")
+
   createdAt         DateTime    @db.Timestamptz() @default(now()) @map("created_at")
   updatedAt         DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
 
-  staff             Staff[]
+  role              UserRole?
   tokens            UserToken[]
   posts             Post[]
   resetRequest      ResetPasswordRequest?
   loginAttempt      LoginAttempt?
 
   @@map("app_user")
-  @@index([email])
+  @@unique([projectId, email])
 }
 
 
@@ -200,38 +202,32 @@ model Publication {
   project       Project       @relation(fields: [id, projectType], references: [id, projectType])
   publicUrl     String        @unique @map("public_url")
 
-  staff         Staff[]
   posts         Post[]
 
   @@map("publication")
 }
 
 
-model Staff {
-  publication     Publication     @relation(fields: [publicationId], references: [id])
-  publicationId   BigInt          @map("publication_id")
-
-  // Uniqueness over userId ensures that user would be member of only one publication ever.
+model UserRole {
   user            User            @relation(fields: [userId], references: [id])
-  userId          BigInt          @unique @map("user_id")
+  userId          BigInt          @id @map("user_id")
 
   role            Role            @relation(fields: [roleId], references: [id])
   roleId          Int             @map("role_id")
 
-  @@map("staff")
-  @@id([publicationId, userId])
+  @@map("user_role")
 }
 
 
 model Role {
-  id              Int             @id @default(autoincrement())
+  id              Int             @id
   name            String
   displayName     String          @map("display_name")
 
   scope           ProjectType     @relation(fields: [projectType], references: [id])
   projectType     String          @map("project_type")
 
-  staff           Staff[]
+  users           UserRole[]
   invitations     Invitation[]
 
   @@map("role")

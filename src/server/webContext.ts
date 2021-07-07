@@ -6,6 +6,7 @@ import { ApolloError, AuthenticationError, ExpressContext, ForbiddenError } from
 import { ErrorCode } from '../domain/AppError';
 import { Context, makeContext } from '../domain/Context';
 import { Either } from '../util/Either';
+import { tryBigInt } from '../util/unit';
 
 
 const BEARER_REGEX = /^(Bearer)(\s)(.+)$/;
@@ -15,10 +16,19 @@ const SCOPE_HEADER = 'x-rano-scope';
 export async function makeContextFromWeb(db: PrismaClient, webContext: ExpressContext): Promise<Context> {
 
   const headers = webContext.req.headers;
-  const rawScope = headers[SCOPE_HEADER];
+  const scopeHeader = headers[SCOPE_HEADER];
   const tokenId = parseAuthHeader(headers);
-  const scope = rawScope instanceof Array ? rawScope[0] : rawScope;
+  const rawScope = scopeHeader instanceof Array ? scopeHeader[0] : scopeHeader;
 
+  let scope: bigint | null | undefined;
+
+  if (rawScope) {
+    scope = tryBigInt(rawScope);
+  }
+
+  if (scope === null) {
+    throw new ForbiddenError('Invalid scope is provided');
+  }
 
   const result = await makeContext(db, tokenId, scope);
 

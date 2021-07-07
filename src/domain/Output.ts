@@ -1,4 +1,4 @@
-import { AssetSource, PostMeta, Prisma, UserToken } from '@prisma/client';
+import { AssetSource, ClientApp, PostMeta, Prisma } from '@prisma/client';
 
 
 const publicationDetails = Prisma.validator<Prisma.PublicationArgs>()({
@@ -19,8 +19,13 @@ export interface Result {
 export type Publication = Prisma.PublicationGetPayload<typeof publicationDetails>;
 export type Post = Prisma.PostGetPayload<typeof postDetails>;
 
-export type AuthToken = UserToken & { type: string; };
+export interface AuthToken {
+  id: string;
+  generatedAt: Date;
+  duration: number;
+  type: string;
+};
 
 // export type PostMeta = X & {};
 
-export { PostMeta, AssetSource };
+export { AssetSource, ClientApp, PostMeta };

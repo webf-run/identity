@@ -1,7 +1,6 @@
 import { extendType, inputObjectType, objectType } from 'nexus';
 
-import { addNewAdministrator } from '../domain/core/admin';
-import { acceptInvitation, claimInvitation } from '../domain/core/claim';
+import { claimInvitation } from '../domain/core/claim';
 import { deleteInvitation, retryInvitation } from '../domain/core/invitation';
 
 import { addMemberToPublication, createNewPublication } from '../domain/core/project';
@@ -15,7 +14,7 @@ export const QuotaInput = inputObjectType({
   description: 'Project/Publication quota',
   definition(t) {
     t.int('assetSize', { description: 'Maximum storage space allowed for assets in MBs.' });
-    t.int('staffCapacity');
+    t.int('maxCapacity');
   }
 });
 
@@ -77,15 +76,6 @@ export const CoreQuery = extendType({
 export const CoreMutation = extendType({
   type: 'Mutation',
   definition(t) {
-    t.field('addAdministrator', {
-      type: 'ResultResponse',
-      args: {
-        admin: 'UserInput'
-      },
-      resolve(_root, args, ctx) {
-        return R.unpack(addNewAdministrator(ctx, args.admin));
-      }
-    });
 
     t.field('createPublication', {
       type: 'NewPublicationResponse',
@@ -104,17 +94,6 @@ export const CoreMutation = extendType({
       },
       resolve(_root, args, ctx) {
         return R.unpack(addMemberToPublication(ctx, args.user));
-      }
-    });
-
-    t.field('acceptInvitation', {
-      type: 'ResultResponse',
-      args: {
-        invitationId: 'ID'
-      },
-      resolve(_root, args, ctx) {
-        // TODO: Exception handling for bigint
-        return R.unpack(acceptInvitation(ctx, BigInt(args.invitationId)));
       }
     });
 

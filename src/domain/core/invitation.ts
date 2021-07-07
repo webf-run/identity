@@ -1,5 +1,5 @@
 import * as repo from '../../data/invitation';
-import { isAdmin, isUser } from '../Access';
+import { isUser } from '../Access';
 import { inviteNotFound, inviteNotYetExpired, noAccess } from '../AppError';
 import { Context } from '../Context';
 import { Result } from '../Output';
@@ -21,11 +21,7 @@ export async function deleteInvitation(ctx: Context, invitationId: bigint): Doma
   }
 
   try {
-    if (access.publications.some((x) => x.id === invitation.projectId)) {
-      // This is a project level invitation
-      await repo.deleteInvitation(db, invitation.id);
-    } else if (!invitation.projectId && isAdmin(access)) {
-      // This is an admin invite.
+    if (access.scope?.id === invitation.projectId) {
       await repo.deleteInvitation(db, invitation.id);
     } else {
       return inviteNotFound();
@@ -59,13 +55,10 @@ export async function retryInvitation(ctx: Context, invitationId: bigint): Domai
 
   // TODO: Pending work.
   try {
-    if (access.publications.some((x) => x.id === invitation.projectId)) {
+    if (access.scope?.id === invitation.projectId) {
       // This is a project level invitation
       await repo.extendInvitationExpiry(db, invitation);
 
-    } else if (!invitation.projectId && isAdmin(access)) {
-      // This is an admin invite.
-      await repo.extendInvitationExpiry(db, invitation);
     } else {
       return inviteNotFound();
     }

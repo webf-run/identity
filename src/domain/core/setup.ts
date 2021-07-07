@@ -1,14 +1,14 @@
 import { getUpdatedInitization } from '../../data/app';
+import { createClientApp } from '../../data/client';
 import { updateEmailConfig } from '../../data/email';
-import { isUniqueConstraint } from '../../data/error';
-import { createAdminWithNewUser } from '../../data/user';
 import { Either } from '../../util/Either';
 import { apply, concat, inSet, maxLen, notEmpty } from '../../util/validator';
+import { isClientApp } from '../Access';
 
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
-import { AppConfigInput, EmailConfigInput, UserInput } from '../Input';
-import { Result } from '../Output';
+import { AppConfigInput, EmailConfigInput } from '../Input';
+import { ClientApp } from '../Output';
 import { R } from '../R';
 
 
@@ -26,7 +26,7 @@ const emailConfigVal = apply<EmailConfigInput>({
 });
 
 
-export async function initializeApp(ctx: Context, admin: UserInput, password: string): DomainResult<Result> {
+export async function initializeApp(ctx: Context, description: string): DomainResult<ClientApp> {
 
   const { db } = ctx;
   const cache = await getUpdatedInitization(db);
@@ -38,19 +38,9 @@ export async function initializeApp(ctx: Context, admin: UserInput, password: st
 
   // TODO: Payload validation pending
 
-  try {
-    const request = await createAdminWithNewUser(db, admin, password, true);
-    const _response = await request();
+  const app = await createClientApp(db, description);
 
-    return R.of({ status: true });
-
-  } catch (error) {
-    if (isUniqueConstraint(error, 'email')) {
-      return R.ofError(ErrorCode.ALREADY_EXISTS, 'Application is already initialized');
-    }
-
-    throw error;
-  }
+  return R.of(app);
 }
 
 
@@ -76,4 +66,18 @@ export async function updateAppConfig(ctx: Context, config: AppConfigInput): Dom
   await updateEmailConfig(db, email);
 
   return R.of(true);
+}
+
+
+export async function registerNewClientApp(ctx: Context, description: string): DomainResult<ClientApp> {
+
+  const { db, access } = ctx;
+
+  if (!isClientApp(access)) {
+    return R.ofError(ErrorCode.FORBIDDEN, '');
+  }
+
+  const app = await createClientApp(db, description);
+
+  return R.of(app);
 }

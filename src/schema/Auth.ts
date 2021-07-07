@@ -1,9 +1,16 @@
-import { extendType, inputObjectType, objectType } from 'nexus';
+import { enumType, extendType, inputObjectType, objectType } from 'nexus';
 
 import { authenticate, forgotPassword, resetPassword } from '../domain/core/auth';
 import { R } from '../domain/R';
 
 import { errorUnion } from './helper';
+
+
+export const GrantType = enumType({
+  name: 'GrantType',
+  description: 'Access token request type',
+  members: ['USER', 'CLIENT']
+});
 
 
 export const TokenInput = inputObjectType({
@@ -34,9 +41,12 @@ export const AuthMutation = extendType({
   definition(t) {
     t.field('authenticateUser', {
       type: 'AuthTokenResponse',
-      args: { input: TokenInput },
+      args: {
+        grantType: 'GrantType',
+        input: 'TokenInput'
+      },
       resolve(_root, args, ctx) {
-        return R.unpack(authenticate(ctx, args.input));
+        return R.unpack(authenticate(ctx, args.grantType, args.input));
       }
     });
 

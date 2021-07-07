@@ -1,27 +1,10 @@
-import { Prisma, PrismaClient, Publication, User } from '@prisma/client';
+import { Prisma, PrismaClient, Publication } from '@prisma/client';
 
 import { NewPublicationInput } from '../domain/Input';
 import { Publication as PublicationWithProject } from '../domain/Output';
 import { hashPassword } from './code';
+import { ProjectType, PublicationRole } from './constant';
 import { buildUserInvite } from './invitation';
-
-
-export async function createWithExistingUser(
-  db: PrismaClient,
-  input: NewPublicationInput,
-  user: User): Promise<[PublicationWithProject, string]> {
-
-  const request = buildNewPublication(input);
-  const invitation = buildUserInvite(input.firstUser);
-
-  request.project.create!.invitations = {
-    create: buildUserInvite(user)
-  };
-
-  const response = await db.publication.create({ data: request });
-
-  return [buildPublicationWithProject(response, input), invitation.code];
-}
 
 
 export async function createWithCredentials(
@@ -35,10 +18,18 @@ export async function createWithCredentials(
 
   const data = buildNewPublication(input);
 
-  data.staff = {
+  data.project.create!.users = {
     create: {
-      user: {
-        create: { firstName, lastName, email, password: passwordHashed, hashFn }
+      firstName, lastName, email,
+      password: passwordHashed, hashFn,
+      role: {
+        create: {
+          role: {
+            connect: {
+              id: PublicationRole.Owner
+            }
+          }
+        }
       }
     }
   };
@@ -54,10 +45,10 @@ export async function createWithInvitation(
   input: NewPublicationInput): Promise<[PublicationWithProject, string]> {
 
   const data = buildNewPublication(input);
-  const invitation = buildUserInvite(input.firstUser);
+  const invitation = buildUserInvite(input.firstUser, PublicationRole.Owner);
 
   data.project.create!.invitations = {
-    create: buildUserInvite(input.firstUser)
+    create: invitation
   };
 
   const response = await db.publication.create({ data });
@@ -72,15 +63,18 @@ function buildNewPublication(input: NewPublicationInput) {
 
   const request: Prisma.PublicationCreateInput = {
     publicUrl: input.publicUrl,
+    // projectType: ProjectType.PUBLICATION,
     project: {
       create: {
         name: input.name,
         fromEmail: input.fromEmail,
+        projectType: ProjectType.Publication,
+
         quota: {
           create: {
             occupied: 1,
             sizeInMB: quota.assetSize,
-            staffCapacity: quota.staffCapacity
+            maxCapacity: quota.maxCapacity
           }
         }
       }
@@ -95,8 +89,9 @@ function buildPublicationWithProject(p: Publication, i: NewPublicationInput): Pu
     ...p,
     project: {
       id: p.id,
-    fromEmail: i.fromEmail,
-    name: i.name
+      fromEmail: i.fromEmail,
+      name: i.name,
+      projectType: p.projectType
     }
   };
 }

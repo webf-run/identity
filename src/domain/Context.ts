@@ -4,7 +4,7 @@ import { getEmailConfig } from '../data/email';
 import { EmailService } from '../infra/Email';
 import { Either } from '../util/Either';
 import { Access, makePublicAccess } from './Access';
-import { validateToken } from './core/auth';
+import { getAccessForToken } from './core/auth';
 import { R } from './R';
 
 
@@ -15,7 +15,7 @@ export interface Context {
 }
 
 
-export async function makeContext(db: PrismaClient, tokenId?: string, scope?: string): DomainResult<Context> {
+export async function makeContext(db: PrismaClient, tokenId?: string, scope?: bigint): DomainResult<Context> {
 
   const emailConfigCb = () => getEmailConfig(db);
   const email = new EmailService(emailConfigCb);
@@ -23,12 +23,12 @@ export async function makeContext(db: PrismaClient, tokenId?: string, scope?: st
   if (!tokenId) {
     return R.of({
       db,
-      access: makePublicAccess(),
+      access: makePublicAccess(scope),
       email
     });
   }
 
-  const result = await validateToken(db, tokenId, scope);
+  const result = await getAccessForToken(db, tokenId, scope);
 
   if (Either.isRight(result)) {
     const access = result.value;

@@ -43,7 +43,7 @@ CREATE TABLE "project" (
 CREATE TABLE "quota" (
     "id" BIGINT NOT NULL,
     "size_in_mb" INTEGER NOT NULL,
-    "staff_capacity" INTEGER NOT NULL,
+    "max_capacity" INTEGER NOT NULL,
     "occupied" INTEGER NOT NULL,
 
     PRIMARY KEY ("id")
@@ -75,6 +75,7 @@ CREATE TABLE "app_user" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "hash_fn" TEXT NOT NULL,
+    "project_id" BIGINT NOT NULL,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL,
 
@@ -131,17 +132,16 @@ CREATE TABLE "publication" (
 );
 
 -- CreateTable
-CREATE TABLE "staff" (
-    "publication_id" BIGINT NOT NULL,
+CREATE TABLE "user_role" (
     "user_id" BIGINT NOT NULL,
     "role_id" INTEGER NOT NULL,
 
-    PRIMARY KEY ("publication_id","user_id")
+    PRIMARY KEY ("user_id")
 );
 
 -- CreateTable
 CREATE TABLE "role" (
-    "id" SERIAL NOT NULL,
+    "id" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
     "display_name" TEXT NOT NULL,
     "project_type" TEXT NOT NULL,
@@ -254,7 +254,7 @@ CREATE UNIQUE INDEX "invitation.code_unique" ON "invitation"("code");
 CREATE UNIQUE INDEX "invitation.email_project_id_unique" ON "invitation"("email", "project_id");
 
 -- CreateIndex
-CREATE INDEX "app_user.email_index" ON "app_user"("email");
+CREATE UNIQUE INDEX "app_user.project_id_email_unique" ON "app_user"("project_id", "email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "reset_password_request.code_unique" ON "reset_password_request"("code");
@@ -267,9 +267,6 @@ CREATE UNIQUE INDEX "publication.public_url_unique" ON "publication"("public_url
 
 -- CreateIndex
 CREATE UNIQUE INDEX "publication_id_project_type_unique" ON "publication"("id", "project_type");
-
--- CreateIndex
-CREATE UNIQUE INDEX "staff.user_id_unique" ON "staff"("user_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "role.id_project_type_unique" ON "role"("id", "project_type");
@@ -311,6 +308,9 @@ ALTER TABLE "invitation" ADD FOREIGN KEY ("project_id", "project_type") REFERENC
 ALTER TABLE "invitation" ADD FOREIGN KEY ("role_id", "project_type") REFERENCES "role"("id", "project_type") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "app_user" ADD FOREIGN KEY ("project_id") REFERENCES "project"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "client_app_token" ADD FOREIGN KEY ("client_app_id") REFERENCES "client_app"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -326,13 +326,10 @@ ALTER TABLE "login_attempt" ADD FOREIGN KEY ("user_id") REFERENCES "app_user"("i
 ALTER TABLE "publication" ADD FOREIGN KEY ("id", "project_type") REFERENCES "project"("id", "project_type") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "staff" ADD FOREIGN KEY ("publication_id") REFERENCES "publication"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "user_role" ADD FOREIGN KEY ("user_id") REFERENCES "app_user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "staff" ADD FOREIGN KEY ("user_id") REFERENCES "app_user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "staff" ADD FOREIGN KEY ("role_id") REFERENCES "role"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "user_role" ADD FOREIGN KEY ("role_id") REFERENCES "role"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "role" ADD FOREIGN KEY ("project_type") REFERENCES "project_type"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -370,9 +367,10 @@ ALTER TABLE "post_image" ADD FOREIGN KEY ("image_id") REFERENCES "image"("id") O
 -- AddForeignKey
 ALTER TABLE "post_image" ADD FOREIGN KEY ("project_id") REFERENCES "post"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
+
 -- CUSTOM MIGRATION STARTS
 ALTER TABLE "quota"
-    ADD CONSTRAINT "max_capacity" CHECK ("occupied" <= "staff_capacity");
+    ADD CONSTRAINT "max_capacity_check" CHECK ("occupied" <= "max_capacity");
 
 INSERT INTO "project_type"("id", "description")
     VALUES('publication', 'Blog or Publication');
@@ -380,12 +378,12 @@ INSERT INTO "project_type"("id", "description")
 ALTER TABLE "publication"
     ADD CONSTRAINT "project_must_be_publication" CHECK ("project_type" = 'publication');
 
-INSERT INTO "role"("name", "display_name", "project_type")
-    VALUES ('owner', 'Owner', 'publication');
+INSERT INTO "role"("id", "name", "display_name", "project_type")
+    VALUES (101, 'owner', 'Owner', 'publication');
 
-INSERT INTO "role"("name", "display_name", "project_type")
-    VALUES ('editor', 'Editor', 'publication');
+INSERT INTO "role"("id", "name", "display_name", "project_type")
+    VALUES (102, 'editor', 'Editor', 'publication');
 
-INSERT INTO "role"("name", "display_name", "project_type")
-    VALUES ('author', 'Author', 'publication');
+INSERT INTO "role"("id", "name", "display_name", "project_type")
+    VALUES (103, 'author', 'Author', 'publication');
 -- CUSTOM MIGRATION ENDS
