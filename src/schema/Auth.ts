@@ -13,11 +13,12 @@ export const GrantType = enumType({
 });
 
 
-export const TokenInput = inputObjectType({
-  name: 'TokenInput',
+export const Credentials = inputObjectType({
+  name: 'Credentials',
+  description: `For USER grant, use email and password. For CLIENT grant, use client id and client secret.`,
   definition(t) {
-    t.string('username');
-    t.string('password');
+    t.string('id');
+    t.string('secret');
   }
 });
 
@@ -39,11 +40,12 @@ export const AuthTokenResponse = errorUnion('AuthTokenResponse', 'AuthToken');
 export const AuthMutation = extendType({
   type: 'Mutation',
   definition(t) {
-    t.field('authenticateUser', {
+    t.field('authenticate', {
+      description: 'Generate a token using user or client credentials',
       type: 'AuthTokenResponse',
       args: {
         grantType: 'GrantType',
-        input: 'TokenInput'
+        input: 'Credentials'
       },
       resolve(_root, args, ctx) {
         return R.unpack(authenticate(ctx, args.grantType, args.input));

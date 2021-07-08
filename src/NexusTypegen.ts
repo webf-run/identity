@@ -49,6 +49,10 @@ export interface NexusGenInputs {
     secret: string; // String!
     uploadUrl: string; // String!
   }
+  Credentials: { // input type
+    id: string; // String!
+    secret: string; // String!
+  }
   EmailConfigInput: { // input type
     apiKey: string; // String!
     fromEmail: string; // String!
@@ -85,10 +89,6 @@ export interface NexusGenInputs {
     description?: string | null; // String
     name: string; // String!
     slug?: string | null; // String
-  }
-  TokenInput: { // input type
-    password: string; // String!
-    username: string; // String!
   }
   UserInput: { // input type
     email: string; // String!
@@ -207,7 +207,7 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     addMemberToPublication: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     approveTag: NexusGenRootTypes['Tag']; // Tag!
-    authenticateUser: NexusGenRootTypes['AuthTokenResponse']; // AuthTokenResponse!
+    authenticate: NexusGenRootTypes['AuthTokenResponse']; // AuthTokenResponse!
     claimInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     createAssetSource: NexusGenRootTypes['AssetSourceResponse']; // AssetSourceResponse!
     createPost: NexusGenRootTypes['PostResponse']; // PostResponse!
@@ -298,7 +298,7 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     addMemberToPublication: 'ResultResponse'
     approveTag: 'Tag'
-    authenticateUser: 'AuthTokenResponse'
+    authenticate: 'AuthTokenResponse'
     claimInvitation: 'ResultResponse'
     createAssetSource: 'AssetSourceResponse'
     createPost: 'PostResponse'
@@ -367,9 +367,9 @@ export interface NexusGenArgTypes {
       approved: boolean; // Boolean!
       tagId: string; // ID!
     }
-    authenticateUser: { // args
+    authenticate: { // args
       grantType: NexusGenEnums['GrantType']; // GrantType!
-      input: NexusGenInputs['TokenInput']; // TokenInput!
+      input: NexusGenInputs['Credentials']; // Credentials!
     }
     claimInvitation: { // args
       code: string; // String!

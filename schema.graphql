@@ -51,6 +51,14 @@ type ClientApp {
 union ClientAppResponse = AppError | ClientApp
 
 """
+For USER grant, use email and password. For CLIENT grant, use client id and client secret.
+"""
+input Credentials {
+  id: String!
+  secret: String!
+}
+
+"""
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
@@ -91,7 +99,9 @@ scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publicati
 type Mutation {
   addMemberToPublication(user: UserInput!): ResultResponse!
   approveTag(approved: Boolean!, tagId: ID!): Tag!
-  authenticateUser(grantType: GrantType!, input: TokenInput!): AuthTokenResponse!
+
+  """Generate a token using user or client credentials"""
+  authenticate(grantType: GrantType!, input: Credentials!): AuthTokenResponse!
   claimInvitation(code: String!, password: String!): ResultResponse!
   createAssetSource(source: AssetSourceInput!): AssetSourceResponse!
   createPost(
@@ -209,11 +219,6 @@ input TagInput {
 }
 
 union TagResponse = AppError | Tag
-
-input TokenInput {
-  password: String!
-  username: String!
-}
 
 """Form fields to be submitted along with Signed URL"""
 type UrlFormField {

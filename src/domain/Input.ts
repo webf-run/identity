@@ -10,6 +10,6 @@ export type AppConfigInput = NexusGenInputs['AppConfigInput'];
 
 export type UserInput = NexusGenInputs['UserInput'];
 export type NewPublicationInput = NexusGenInputs['NewPublicationInput'];
-export type TokenInput = NexusGenInputs['TokenInput'];
+export type Credentials = NexusGenInputs['Credentials'];
 
 export type GrantType = NexusGenEnums['GrantType'];

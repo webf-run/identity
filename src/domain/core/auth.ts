@@ -10,15 +10,15 @@ import { changePassword, findUserByEmail } from '../../data/user';
 import { Access, ClientAppAccess, UserAccess } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
-import { GrantType, TokenInput } from '../Input';
+import { GrantType, Credentials } from '../Input';
 import { AuthToken } from '../Output';
 import { R } from '../R';
 
 
-export async function authenticate(ctx: Context, grantType: GrantType, input: TokenInput): DomainResult<AuthToken> {
+export async function authenticate(ctx: Context, grantType: GrantType, input: Credentials): DomainResult<AuthToken> {
 
   const { db, access } = ctx;
-  const { username, password } = input;
+  const { id, secret } = input;
 
   if (grantType === 'USER') {
 
@@ -26,14 +26,14 @@ export async function authenticate(ctx: Context, grantType: GrantType, input: To
       return R.ofError(ErrorCode.INVALID_SCOPE, 'Correct scope is required to authenticate');
     }
 
-    const user = await findUserByEmail(db, username, access.scopeId);
+    const user = await findUserByEmail(db, id, access.scopeId);
 
     // User with given email not found.
     if (!user) {
       return R.ofError(ErrorCode.INVALID_CRD, 'Invalid user credentials');
     }
 
-    const verified = await verifyPassword(user.password, password, user.hashFn);
+    const verified = await verifyPassword(user.password, secret, user.hashFn);
 
     // Use with given email found but not password match.
     if (!verified) {
@@ -46,14 +46,14 @@ export async function authenticate(ctx: Context, grantType: GrantType, input: To
 
   } else if (grantType === 'CLIENT') {
 
-    const app = await findClientApp(db, username);
+    const app = await findClientApp(db, id);
 
     // User with given email not found.
     if (!app) {
       return R.ofError(ErrorCode.INVALID_CRD, 'Invalid client credentials');
     }
 
-    const verified = await verifyPassword(app.secret, password, app.hashFn);
+    const verified = await verifyPassword(app.secret, secret, app.hashFn);
 
     // Use with given email found but not password match.
     if (!verified) {
