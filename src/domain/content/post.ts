@@ -6,7 +6,7 @@ import { Post } from '../Output';
 import { R } from '../R';
 
 
-export async function createNewPost(ctx: Context, post: PostInput, tags: bigint[]): DomainResult<Post> {
+export async function createNewPost(ctx: Context, post: PostInput): DomainResult<Post> {
 
   const { db, access } = ctx;
 
@@ -15,31 +15,8 @@ export async function createNewPost(ctx: Context, post: PostInput, tags: bigint[
   }
 
   const user = access.user;
-  const scope = access.scope;
+  const publicationId = user.projectId;
 
-  if (!scope) {
-    return R.ofError(ErrorCode.INVALID_SCOPE, 'Scope is required to create a post');
-  }
 
-  const newPost = await db.post.create({
-    data: {
-      slug: 'abc',
-      content: post.content,
-      title: post.title,
-      ownerId: user.id,
-      publicationId: scope.id,
-      tags: {
-        createMany: {
-          data: tags.map((tagId, order) => ({ tagId, order })),
-          skipDuplicates: true
-        }
-      }
-    },
-    include: {
-      tags: true,
-      postMeta: true
-    }
-  });
-
-  return R.of(newPost);
+  throw 'err';
 }

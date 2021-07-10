@@ -104,12 +104,7 @@ type Mutation {
   authenticate(grantType: GrantType!, input: Credentials!): AuthTokenResponse!
   claimInvitation(code: String!, password: String!): ResultResponse!
   createAssetSource(source: AssetSourceInput!): AssetSourceResponse!
-  createPost(
-    post: PostInput!
-
-    """Ids of the tags that you want to associate"""
-    tags: [ID!]!
-  ): PostResponse!
+  createPost(post: PostInput!): PostResponse!
   createPublication(input: NewPublicationInput!): NewPublicationResponse!
   createTag(tag: TagInput!): TagResponse!
   deleteInvitation(invitationId: ID!): ResultResponse!
@@ -124,6 +119,12 @@ type Mutation {
   updateAppConfig(config: AppConfigInput!): ResultResponse!
   updatePost(
     post: PostInput!
+    postId: ID!
+
+    """Ids of the tags that you want to associate"""
+    tags: [ID!]!
+  ): PostResponse!
+  updatePostSettings(
     postId: ID!
 
     """Ids of the tags that you want to associate"""
@@ -145,23 +146,16 @@ input NewPublicationInput {
 union NewPublicationResponse = AppError | Publication
 
 type Post {
-  content: JSONObject!
   id: ID!
-  meta: PostMeta
-  slug: String!
-  title: String!
 }
 
 input PostInput {
   content: JSONObject!
-  meta: PostMetaInput!
-  slug: String
   title: String!
 }
 
 type PostMeta {
   description: String!
-  postId: ID!
   title: String!
 }
 
@@ -171,6 +165,12 @@ input PostMetaInput {
 }
 
 union PostResponse = AppError | Post
+
+input PostSettingsInput {
+  meta: PostMetaInput
+  slug: String
+  tags: [ID!]
+}
 
 type Publication {
   fromEmail: String!

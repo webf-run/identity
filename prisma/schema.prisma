@@ -253,42 +253,58 @@ model Tag {
 
 
 model Post {
-  id              BigInt        @id @default(autoincrement())
-  title           String
+  id              BigInt          @id @default(autoincrement())
+  owner           User            @relation(fields: [ownerId], references: [id])
+  ownerId         BigInt          @map("owner_id")
+
   slug            String
+  canonicalUrl    String?         @map("canonical_url")
 
-  content         Json          @db.JsonB
+  publication     Publication     @relation(fields: [publicationId], references: [id])
+  publicationId   BigInt          @map("publication_id")
 
-  owner           User          @relation(fields: [ownerId], references: [id])
-  ownerId         BigInt        @map("owner_id")
+  createdAt       DateTime        @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt       DateTime        @db.Timestamptz() @updatedAt @map("updated_at")
+  publishedAt     DateTime?       @db.Timestamptz() @map("published_at")
 
-  publication     Publication   @relation(fields: [publicationId], references: [id])
-  publicationId   BigInt        @map("publication_id")
-
-  base            Post?         @relation("DraftCopy", fields: [baseId], references: [id])
-  baseId          BigInt?       @unique @map("base_id")
-
-  draft           Post?         @relation("DraftCopy")
-
-  createdAt       DateTime      @db.Timestamptz() @default(now()) @map("created_at")
-  updatedAt       DateTime      @db.Timestamptz() @updatedAt @map("updated_at")
-  publishedAt     DateTime?     @db.Timestamptz() @map("published_at")
+  versions        PostVersion[]
 
   tags            PostTags[]
   postMeta        PostMeta?
-  postImage       PostImage[]
 
   @@map("post")
-  @@unique([slug, baseId])
+  @@unique([publicationId, slug])
+}
+
+
+// Relationship is 1 --> 2
+// One Post will have at max two versions.
+model PostVersion {
+  id              BigInt        @id @default(autoincrement())
+
+  post            Post          @relation(fields: [postId], references: [id])
+  postId          BigInt        @map("post_id")
+
+  version         Int
+
+  title           String
+  content         Json          @db.JsonB
+
+  postImage       PostImage[]
+
+  @@unique([postId, version])
 }
 
 
 model PostMeta {
-  id              BigInt      @id
-  post            Post        @relation(fields: [id], references: [id])
+  id                BigInt    @id
+  post              Post      @relation(fields: [id], references: [id])
 
-  title           String
-  description     String
+  title             String
+  description       String
+
+  featuredImage     Image?    @relation(fields: [imageId], references: [id])
+  imageId           BigInt    @map("image_id")
 
   @@map("post_meta")
 }
@@ -373,18 +389,19 @@ model Image {
   altText     String      @map("alt_text")
 
   postImage   PostImage?
+  postMeta    PostMeta[]
 
   @@map("image")
 }
 
 
 model PostImage {
-  image       Image     @relation(fields: [imageId], references: [id])
-  imageId     BigInt    @map("image_id")
+  image         Image           @relation(fields: [imageId], references: [id])
+  imageId       BigInt          @map("image_id")
 
-  post        Post      @relation(fields: [postId], references: [id])
-  postId      BigInt    @map("project_id")
+  revision      PostVersion     @relation(fields: [revisionId], references: [id])
+  revisionId    BigInt          @map("revision_id")
 
-  @@id([imageId, postId])
+  @@id([imageId, revisionId])
   @@map("post_image")
 }

@@ -73,13 +73,16 @@ export interface NexusGenInputs {
   }
   PostInput: { // input type
     content: NexusGenScalars['JSONObject']; // JSONObject!
-    meta: NexusGenInputs['PostMetaInput']; // PostMetaInput!
-    slug?: string | null; // String
     title: string; // String!
   }
   PostMetaInput: { // input type
     description: string; // String!
     title: string; // String!
+  }
+  PostSettingsInput: { // input type
+    meta?: NexusGenInputs['PostMetaInput'] | null; // PostMetaInput
+    slug?: string | null; // String
+    tags?: string[] | null; // [ID!]
   }
   QuotaInput: { // input type
     assetSize: number; // Int!
@@ -137,7 +140,10 @@ export interface NexusGenObjects {
   }
   Mutation: {};
   Post: Op.Post;
-  PostMeta: Op.PostMeta;
+  PostMeta: { // root type
+    description: string; // String!
+    title: string; // String!
+  }
   Publication: Op.Publication;
   Query: {};
   Result: Op.Result;
@@ -222,19 +228,15 @@ export interface NexusGenFieldTypes {
     retryInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updateAppConfig: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updatePost: NexusGenRootTypes['PostResponse']; // PostResponse!
+    updatePostSettings: NexusGenRootTypes['PostResponse']; // PostResponse!
     updateTag: NexusGenRootTypes['TagResponse']; // TagResponse!
     uploadImage: NexusGenRootTypes['SignedUrlResponse']; // SignedUrlResponse!
   }
   Post: { // field return type
-    content: NexusGenScalars['JSONObject']; // JSONObject!
     id: string; // ID!
-    meta: NexusGenRootTypes['PostMeta'] | null; // PostMeta
-    slug: string; // String!
-    title: string; // String!
   }
   PostMeta: { // field return type
     description: string; // String!
-    postId: string; // ID!
     title: string; // String!
   }
   Publication: { // field return type
@@ -313,19 +315,15 @@ export interface NexusGenFieldTypeNames {
     retryInvitation: 'ResultResponse'
     updateAppConfig: 'ResultResponse'
     updatePost: 'PostResponse'
+    updatePostSettings: 'PostResponse'
     updateTag: 'TagResponse'
     uploadImage: 'SignedUrlResponse'
   }
   Post: { // field return type name
-    content: 'JSONObject'
     id: 'ID'
-    meta: 'PostMeta'
-    slug: 'String'
-    title: 'String'
   }
   PostMeta: { // field return type name
     description: 'String'
-    postId: 'ID'
     title: 'String'
   }
   Publication: { // field return type name
@@ -380,7 +378,6 @@ export interface NexusGenArgTypes {
     }
     createPost: { // args
       post: NexusGenInputs['PostInput']; // PostInput!
-      tags: string[]; // [ID!]!
     }
     createPublication: { // args
       input: NexusGenInputs['NewPublicationInput']; // NewPublicationInput!
@@ -415,6 +412,10 @@ export interface NexusGenArgTypes {
     }
     updatePost: { // args
       post: NexusGenInputs['PostInput']; // PostInput!
+      postId: string; // ID!
+      tags: string[]; // [ID!]!
+    }
+    updatePostSettings: { // args
       postId: string; // ID!
       tags: string[]; // [ID!]!
     }

@@ -18,7 +18,6 @@ export interface ClientAppAccess {
   scopeId?: bigint;
 }
 
-
 export interface PublicAccess {
   type: 'public';
   scope?: Publication;
