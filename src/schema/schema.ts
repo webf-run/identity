@@ -40,7 +40,7 @@ export const schema = makeSchema({
     }],
     mapping: {
       // DateTime: 'Date',
-      // JSONObject: 'object'
+      JSONObject: 'object'
     }
   }
 });

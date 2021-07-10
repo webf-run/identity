@@ -80,6 +80,7 @@ export interface NexusGenInputs {
     title: string; // String!
   }
   PostSettingsInput: { // input type
+    canonicalUrl?: string | null; // String
     meta?: NexusGenInputs['PostMetaInput'] | null; // PostMetaInput
     slug?: string | null; // String
     tags?: string[] | null; // [ID!]
@@ -112,7 +113,7 @@ export interface NexusGenScalars {
   Boolean: boolean
   ID: string
   DateTime: Date
-  JSONObject: any
+  JSONObject: object
 }
 
 export interface NexusGenObjects {
@@ -233,7 +234,12 @@ export interface NexusGenFieldTypes {
     uploadImage: NexusGenRootTypes['SignedUrlResponse']; // SignedUrlResponse!
   }
   Post: { // field return type
+    content: NexusGenScalars['JSONObject']; // JSONObject!
     id: string; // ID!
+    meta: NexusGenRootTypes['PostMeta']; // PostMeta!
+    slug: string; // String!
+    tags: NexusGenRootTypes['Tag'][]; // [Tag!]!
+    title: string; // String!
   }
   PostMeta: { // field return type
     description: string; // String!
@@ -320,7 +326,12 @@ export interface NexusGenFieldTypeNames {
     uploadImage: 'SignedUrlResponse'
   }
   Post: { // field return type name
+    content: 'JSONObject'
     id: 'ID'
+    meta: 'PostMeta'
+    slug: 'String'
+    tags: 'Tag'
+    title: 'String'
   }
   PostMeta: { // field return type name
     description: 'String'
@@ -413,11 +424,9 @@ export interface NexusGenArgTypes {
     updatePost: { // args
       post: NexusGenInputs['PostInput']; // PostInput!
       postId: string; // ID!
-      tags: string[]; // [ID!]!
     }
     updatePostSettings: { // args
       postId: string; // ID!
-      tags: string[]; // [ID!]!
     }
     updateTag: { // args
       tag: NexusGenInputs['TagInput']; // TagInput!

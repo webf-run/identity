@@ -292,19 +292,20 @@ model PostVersion {
 
   postImage       PostImage[]
 
+  @@map("post_version")
   @@unique([postId, version])
 }
 
 
 model PostMeta {
-  id                BigInt    @id
-  post              Post      @relation(fields: [id], references: [id])
+  id                BigInt      @id
+  post              Post        @relation(fields: [id], references: [id])
 
   title             String
   description       String
 
-  featuredImage     Image?    @relation(fields: [imageId], references: [id])
-  imageId           BigInt    @map("image_id")
+  featuredImage     Image?      @relation(fields: [imageId], references: [id])
+  imageId           BigInt?     @map("image_id")
 
   @@map("post_meta")
 }

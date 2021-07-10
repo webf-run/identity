@@ -9,7 +9,10 @@ const publicationDetails = Prisma.validator<Prisma.PublicationArgs>()({
 
 
 export type Post = PostBase & {
-  meta: PostMeta;
+  meta: {
+    title: string;
+    description: string;
+  };
   tags: Tag[];
   title: PostVersion['title'];
   content: Prisma.JsonObject;

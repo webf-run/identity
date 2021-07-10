@@ -1,6 +1,8 @@
-import argon2 from 'argon2';
 import { ClientAppToken, PrismaClient, UserToken } from '@prisma/client';
+import slugify from '@sindresorhus/slugify';
+import argon2 from 'argon2';
 import cryptoRandomString from 'crypto-random-string';
+import cuid from 'cuid';
 
 import { ONE_HOUR_MS } from './invitation';
 
@@ -12,6 +14,17 @@ export function generateInviteCode() {
 
 export function generateClientSecret() {
   return cryptoRandomString({ length: 64, type: 'url-safe' });
+}
+
+
+export function generateSlug(title: string) {
+  // If the title is available slugify it,
+  // otherwise use cuid() to generate random URL.
+  if (title) {
+    return `${slugify(title)}-${cuid.slug()}`;
+  } else {
+    return cuid();
+  }
 }
 
 
