@@ -229,7 +229,7 @@ export interface NexusGenFieldTypes {
     retryInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updateAppConfig: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updatePost: NexusGenRootTypes['PostResponse']; // PostResponse!
-    updatePostSettings: NexusGenRootTypes['PostResponse']; // PostResponse!
+    updatePostSettings: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updateTag: NexusGenRootTypes['TagResponse']; // TagResponse!
     uploadImage: NexusGenRootTypes['SignedUrlResponse']; // SignedUrlResponse!
   }
@@ -321,7 +321,7 @@ export interface NexusGenFieldTypeNames {
     retryInvitation: 'ResultResponse'
     updateAppConfig: 'ResultResponse'
     updatePost: 'PostResponse'
-    updatePostSettings: 'PostResponse'
+    updatePostSettings: 'ResultResponse'
     updateTag: 'TagResponse'
     uploadImage: 'SignedUrlResponse'
   }
@@ -427,6 +427,7 @@ export interface NexusGenArgTypes {
     }
     updatePostSettings: { // args
       postId: string; // ID!
+      settings: NexusGenInputs['PostSettingsInput']; // PostSettingsInput!
     }
     updateTag: { // args
       tag: NexusGenInputs['TagInput']; // TagInput!

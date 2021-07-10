@@ -25,6 +25,10 @@ export function isAppError(error: any): error is AppError {
   return error?.errors instanceof Array;
 }
 
+export function makeAppError(code: string, message: string): AppError {
+  return { errors: [{ code, message }]};
+}
+
 export const noAccess = () => R.ofError(ErrorCode.FORBIDDEN, 'You do not have access');
 export const inviteNotFound = () => R.ofError(ErrorCode.NOT_FOUND, 'Invitation not found');
 export const inviteNotYetExpired = () => R.ofError(ErrorCode.INVALID_DATA, 'Invitation is yet to be expired');

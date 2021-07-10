@@ -1,7 +1,9 @@
 import { extendType, inputObjectType, objectType } from 'nexus';
+import { ErrorCode, makeAppError } from '../domain/AppError';
 
-import { createNewPost } from '../domain/content/post';
+import { createNewPost, updatePostSettings } from '../domain/content/post';
 import { R } from '../domain/R';
+import { tryBigInt } from '../util/unit';
 import { errorUnion } from './helper';
 
 
@@ -85,12 +87,27 @@ export const PostMutation = extendType({
     });
 
     t.field('updatePostSettings', {
-      type: 'PostResponse',
+      type: 'ResultResponse',
       args: {
-        postId: 'ID'
+        postId: 'ID',
+        settings: 'PostSettingsInput'
       },
-      resolve(_root, _args, _ctx) {
-        throw 'not implemented';
+      resolve(_root, args, ctx) {
+        const postId = tryBigInt(args.postId);
+        const tags = args.settings.tags?.map(tryBigInt);
+
+        if (!postId) {
+          return makeAppError(ErrorCode.NOT_FOUND, 'Post not found');
+        }
+
+        if (tags && !sanitizeTags(tags)) {
+          return makeAppError(ErrorCode.INVALID_DATA, 'Invalid tags');
+        }
+
+        return R.unpack(updatePostSettings(ctx, postId, {
+          ...args.settings,
+          tags
+        }));
       }
     });
 
@@ -103,3 +120,8 @@ export const PostMutation = extendType({
     });
   }
 });
+
+
+function sanitizeTags(tags: (bigint | null)[]): tags is bigint[] {
+  return tags.every((x) => !!x);
+}

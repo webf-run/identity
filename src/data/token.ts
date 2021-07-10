@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 
+
 export function findUserToken(db: PrismaClient, tokenId: string) {
   return db.userToken.findUnique({
     where: {
@@ -7,7 +8,14 @@ export function findUserToken(db: PrismaClient, tokenId: string) {
     },
     include: {
       user: {
-        include: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          createdAt: true,
+          email: true,
+          projectId: true,
+          updatedAt: true,
           role: {
             include: {
               role: true
@@ -22,6 +30,7 @@ export function findUserToken(db: PrismaClient, tokenId: string) {
               }
             }
           }
+
         }
       }
     }

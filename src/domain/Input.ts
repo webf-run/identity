@@ -4,8 +4,10 @@ import { NexusGenInputs, NexusGenEnums } from '../NexusTypegen';
 export type AssetSourceInput = NexusGenInputs['AssetSourceInput'];
 export type ImageInput = NexusGenInputs['ImageInput'];
 
-export type PostSettingsInput = NexusGenInputs['PostSettingsInput'];
 export type PostInput = NexusGenInputs['PostInput'];
+export type PostSettingsInput = Omit<NexusGenInputs['PostSettingsInput'], 'tags'> & {
+  tags?: bigint[];
+};
 
 export type TagInput = NexusGenInputs['TagInput'];
 export type EmailConfigInput = NexusGenInputs['EmailConfigInput'];

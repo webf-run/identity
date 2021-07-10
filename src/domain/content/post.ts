@@ -1,10 +1,13 @@
-import { generateSlug } from '../../data/code';
+import { Prisma } from '@prisma/client';
 
-import { isUser } from '../Access';
+import { generateSlug } from '../../data/code';
+import { findPostByOwner, findPostByPublication } from '../../data/post';
+
+import { isAuthor, isEditor, isOwner, isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { PostInput, PostSettingsInput } from '../Input';
-import { Post } from '../Output';
+import { Post, Result } from '../Output';
 import { R } from '../R';
 
 
@@ -60,22 +63,79 @@ export async function createNewPost(ctx: Context, post: PostInput): DomainResult
 }
 
 
-// export function updatePostSettings(ctx: Context, postId: bigint, settings: PostSettingsInput) {
+export async function updatePostSettings(ctx: Context, postId: bigint, settings: PostSettingsInput): DomainResult<Result> {
 
-//   const { db, access } = ctx;
+  const { db, access } = ctx;
 
-//   if (!isUser(access)) {
-//     return R.ofError(ErrorCode.FORBIDDEN, '');
-//   }
+  if (!isUser(access)) {
+    return R.ofError(ErrorCode.FORBIDDEN, '');
+  }
 
-//   db.post.findFirst({
-//     where: {
-//       id: postId,
-//       ownerId: access.user.id
-//     },
-//     include: {
-//       postMeta: true
-//     }
-//   })
+  const postRq = isEditor(access) || isOwner(access)
+    ? findPostByPublication(db, postId, access.user.projectId)
+    : isAuthor(access)
+      ? findPostByOwner(db, postId, access.user.id)
+      : Promise.resolve(null);
 
-// }
+  const post = await postRq;
+
+  if (!post?.postMeta) {
+    return R.ofError(ErrorCode.NOT_FOUND, 'Post not found');
+  }
+
+  const { tags } = post;
+
+  const request: Prisma.PostUpdateInput = {};
+
+  if (settings.slug) {
+    request.slug = settings.slug;
+  }
+
+  if (typeof settings.canonicalUrl === 'string') {
+    // If canonical URL is blank, then set to null
+    request.canonicalUrl = settings.canonicalUrl.trim() || null;
+  }
+
+  if (settings.meta) {
+    request.postMeta = {
+      update: {
+        title: settings.meta.title,
+        description: settings.meta.description
+      }
+    };
+  }
+
+  if (settings.tags) {
+
+    const tagsToDelete = tags.filter((x) => !settings.tags?.find((y) => x.tagId === y));
+
+    request.tags = {
+      deleteMany: {
+        postId,
+        tagId: {
+          in: tagsToDelete.map((x) => x.tagId)
+        }
+      },
+      upsert: settings.tags.map((tagId, order) => ({
+        update: { tagId, order },
+        create: { tagId, order },
+        where: {
+          postId_tagId: {
+            postId,
+            tagId
+          }
+        }
+      }))
+    };
+  }
+
+  const response = await db.post.update({
+    data: request,
+    where: {
+      id: postId
+    }
+  });
+
+  return R.of({ status: true });
+
+}

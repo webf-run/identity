@@ -7,7 +7,7 @@ import { generateClientToken, generateUserToken } from '../../data/code';
 import { findUserToken } from '../../data/token';
 import { changePassword, findUserByEmail } from '../../data/user';
 
-import { Access, ClientAppAccess, UserAccess } from '../Access';
+import { Access, ClientAppAccess, UserAccess, UserInfo } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { GrantType, Credentials } from '../Input';
@@ -165,15 +165,22 @@ async function getUserAccess(db: Context['db'], tokenId: string, scope?: bigint)
     return invalidToken();
   }
 
-  const publication = token.user.project.publication ?? undefined;
+  const { user } = token;
+
+  const publication = user.project.publication ?? undefined;
 
   if (scope && scope !== publication?.id) {
     return R.ofError(ErrorCode.FORBIDDEN, 'Trying to access unknown publication');
   }
 
+  const userInfo: UserInfo = {
+    ...user,
+    role: token.user.role?.role
+  };
+
   const access: UserAccess = {
     type: 'user',
-    user: token.user,
+    user: userInfo,
     scope: publication
   };
 

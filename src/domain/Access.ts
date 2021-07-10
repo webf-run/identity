@@ -1,13 +1,16 @@
-import { User } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 
+import { PublicationRole } from '../data/constant';
 import { Publication } from './Output';
 
 
-export type UserSafe = Omit<User, 'password' | 'passwordHash'>;
+export type UserInfo =
+  Omit<User, 'password' | 'passwordHash' | 'hashFn'>
+  & { role?: Role; };
 
 export interface UserAccess {
   type: 'user';
-  user: UserSafe;
+  user: UserInfo;
   scope?: Publication;
   scopeId?: bigint;
 }
@@ -38,4 +41,16 @@ export function isClientApp(access: Access) {
 
 export function makePublicAccess(scopeId?: bigint): PublicAccess {
   return { type: 'public', scopeId };
+}
+
+export function isAuthor(access: UserAccess) {
+  return access.user.role?.id === PublicationRole.Author;
+}
+
+export function isEditor(access: UserAccess) {
+  return access.user.role?.id === PublicationRole.Editor;
+}
+
+export function isOwner(access: UserAccess) {
+  return access.user.role?.id === PublicationRole.Owner;
 }

@@ -118,7 +118,7 @@ type Mutation {
   retryInvitation(invitationId: ID!): ResultResponse!
   updateAppConfig(config: AppConfigInput!): ResultResponse!
   updatePost(post: PostInput!, postId: ID!): PostResponse!
-  updatePostSettings(postId: ID!): PostResponse!
+  updatePostSettings(postId: ID!, settings: PostSettingsInput!): ResultResponse!
   updateTag(tag: TagInput!, tagId: ID!): TagResponse!
   uploadImage(image: ImageInput!): SignedUrlResponse!
 }
