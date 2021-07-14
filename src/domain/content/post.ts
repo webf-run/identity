@@ -7,7 +7,7 @@ import { isAuthor, isEditor, isOwner, isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { PostInput, PostSettingsInput } from '../Input';
-import { Post, Result } from '../Output';
+import { Post, PostSettings } from '../Output';
 import { R } from '../R';
 
 
@@ -63,7 +63,7 @@ export async function createNewPost(ctx: Context, post: PostInput): DomainResult
 }
 
 
-export async function updatePostSettings(ctx: Context, postId: bigint, settings: PostSettingsInput): DomainResult<Result> {
+export async function updatePostSettings(ctx: Context, postId: bigint, settings: PostSettingsInput): DomainResult<PostSettings> {
 
   const { db, access } = ctx;
 
@@ -133,9 +133,22 @@ export async function updatePostSettings(ctx: Context, postId: bigint, settings:
     data: request,
     where: {
       id: postId
+    },
+    include: {
+      postMeta: true,
+      tags: {
+        include: {
+          tag: true
+        }
+      }
     }
   });
 
-  return R.of({ status: true });
+  return R.of({
+    slug: response.slug,
+    canonicalUrl: response.canonicalUrl,
+    meta: response.postMeta!,
+    tags: response.tags.map((x) => x.tag)
+   });
 
 }

@@ -1,6 +1,6 @@
 import { extendType, inputObjectType, objectType } from 'nexus';
-import { ErrorCode, makeAppError } from '../domain/AppError';
 
+import { ErrorCode, makeAppError } from '../domain/AppError';
 import { createNewPost, updatePostSettings } from '../domain/content/post';
 import { R } from '../domain/R';
 import { tryBigInt } from '../util/unit';
@@ -25,6 +25,17 @@ export const Post = objectType({
     t.string('title');
     t.json('content');
     t.field('meta', { type: 'PostMeta' });
+    t.list.field('tags', { type: 'Tag' });
+  }
+});
+
+
+export const PostSettings = objectType({
+  name: 'PostSettings',
+  definition(t) {
+    t.nullable.string('canonicalUrl');
+    t.field('meta', { type: 'PostMeta' });
+    t.string('slug');
     t.list.field('tags', { type: 'Tag' });
   }
 });
@@ -60,6 +71,7 @@ export const PostInput = inputObjectType({
 
 
 export const PostResponse = errorUnion('PostResponse', 'Post');
+export const PostSettingsResponse = errorUnion('PostSettingsResponse', 'PostSettings');
 
 
 export const PostMutation = extendType({
@@ -87,7 +99,7 @@ export const PostMutation = extendType({
     });
 
     t.field('updatePostSettings', {
-      type: 'ResultResponse',
+      type: 'PostSettingsResponse',
       args: {
         postId: 'ID',
         settings: 'PostSettingsInput'

@@ -26,6 +26,13 @@ export interface Result {
 
 export type Publication = Prisma.PublicationGetPayload<typeof publicationDetails>;
 
+export type PostSettings = {
+  canonicalUrl?: string | null;
+  meta: PostMeta;
+  slug: string;
+  tags: Tag[];
+};
+
 
 export interface AuthToken {
   id: string;

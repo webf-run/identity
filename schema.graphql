@@ -118,7 +118,7 @@ type Mutation {
   retryInvitation(invitationId: ID!): ResultResponse!
   updateAppConfig(config: AppConfigInput!): ResultResponse!
   updatePost(post: PostInput!, postId: ID!): PostResponse!
-  updatePostSettings(postId: ID!, settings: PostSettingsInput!): ResultResponse!
+  updatePostSettings(postId: ID!, settings: PostSettingsInput!): PostSettingsResponse!
   updateTag(tag: TagInput!, tagId: ID!): TagResponse!
   uploadImage(image: ImageInput!): SignedUrlResponse!
 }
@@ -160,12 +160,21 @@ input PostMetaInput {
 
 union PostResponse = AppError | Post
 
+type PostSettings {
+  canonicalUrl: String
+  meta: PostMeta!
+  slug: String!
+  tags: [Tag!]!
+}
+
 input PostSettingsInput {
   canonicalUrl: String
   meta: PostMetaInput
   slug: String
   tags: [ID!]
 }
+
+union PostSettingsResponse = AppError | PostSettings
 
 type Publication {
   fromEmail: String!

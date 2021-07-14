@@ -145,6 +145,7 @@ export interface NexusGenObjects {
     description: string; // String!
     title: string; // String!
   }
+  PostSettings: Op.PostSettings;
   Publication: Op.Publication;
   Query: {};
   Result: Op.Result;
@@ -174,6 +175,7 @@ export interface NexusGenUnions {
   ClientAppResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['ClientApp'];
   NewPublicationResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Publication'];
   PostResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Post'];
+  PostSettingsResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['PostSettings'];
   ResultResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Result'];
   SignedUrlResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['SignedUrl'];
   TagResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Tag'];
@@ -229,7 +231,7 @@ export interface NexusGenFieldTypes {
     retryInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updateAppConfig: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updatePost: NexusGenRootTypes['PostResponse']; // PostResponse!
-    updatePostSettings: NexusGenRootTypes['ResultResponse']; // ResultResponse!
+    updatePostSettings: NexusGenRootTypes['PostSettingsResponse']; // PostSettingsResponse!
     updateTag: NexusGenRootTypes['TagResponse']; // TagResponse!
     uploadImage: NexusGenRootTypes['SignedUrlResponse']; // SignedUrlResponse!
   }
@@ -244,6 +246,12 @@ export interface NexusGenFieldTypes {
   PostMeta: { // field return type
     description: string; // String!
     title: string; // String!
+  }
+  PostSettings: { // field return type
+    canonicalUrl: string | null; // String
+    meta: NexusGenRootTypes['PostMeta']; // PostMeta!
+    slug: string; // String!
+    tags: NexusGenRootTypes['Tag'][]; // [Tag!]!
   }
   Publication: { // field return type
     fromEmail: string; // String!
@@ -321,7 +329,7 @@ export interface NexusGenFieldTypeNames {
     retryInvitation: 'ResultResponse'
     updateAppConfig: 'ResultResponse'
     updatePost: 'PostResponse'
-    updatePostSettings: 'ResultResponse'
+    updatePostSettings: 'PostSettingsResponse'
     updateTag: 'TagResponse'
     uploadImage: 'SignedUrlResponse'
   }
@@ -336,6 +344,12 @@ export interface NexusGenFieldTypeNames {
   PostMeta: { // field return type name
     description: 'String'
     title: 'String'
+  }
+  PostSettings: { // field return type name
+    canonicalUrl: 'String'
+    meta: 'PostMeta'
+    slug: 'String'
+    tags: 'Tag'
   }
   Publication: { // field return type name
     fromEmail: 'String'
@@ -453,6 +467,7 @@ export interface NexusGenAbstractTypeMembers {
   ClientAppResponse: "AppError" | "ClientApp"
   NewPublicationResponse: "AppError" | "Publication"
   PostResponse: "AppError" | "Post"
+  PostSettingsResponse: "AppError" | "PostSettings"
   ResultResponse: "AppError" | "Result"
   SignedUrlResponse: "AppError" | "SignedUrl"
   TagResponse: "AppError" | "Tag"
@@ -475,7 +490,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceResponse" | "AuthTokenResponse" | "ClientAppResponse" | "NewPublicationResponse" | "PostResponse" | "ResultResponse" | "SignedUrlResponse" | "TagResponse";
+export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceResponse" | "AuthTokenResponse" | "ClientAppResponse" | "NewPublicationResponse" | "PostResponse" | "PostSettingsResponse" | "ResultResponse" | "SignedUrlResponse" | "TagResponse";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
