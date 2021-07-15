@@ -24,11 +24,7 @@ export async function createWithCredentials(
       password: passwordHashed, hashFn,
       role: {
         create: {
-          role: {
-            connect: {
-              id: PublicationRole.Owner
-            }
-          }
+          roleId: PublicationRole.Owner
         }
       }
     }

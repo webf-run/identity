@@ -175,7 +175,7 @@ async function getUserAccess(db: Context['db'], tokenId: string, scope?: bigint)
 
   const userInfo: UserInfo = {
     ...user,
-    role: token.user.role?.role
+    role: token.user.role?.roleId
   };
 
   const access: UserAccess = {

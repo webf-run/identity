@@ -16,11 +16,7 @@ export function findUserToken(db: PrismaClient, tokenId: string) {
           email: true,
           projectId: true,
           updatedAt: true,
-          role: {
-            include: {
-              role: true
-            }
-          },
+          role: true,
           project: {
             include: {
               publication: {

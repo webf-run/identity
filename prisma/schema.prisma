@@ -243,7 +243,7 @@ model Tag {
   description   String
   approved      Boolean     @default(false)
 
-  posts         PostTags[]
+  posts         PostTag[]
 
   createdAt     DateTime    @db.Timestamptz() @default(now()) @map("created_at")
   updatedAt     DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
@@ -269,7 +269,7 @@ model Post {
 
   versions        PostVersion[]
 
-  tags            PostTags[]
+  tags            PostTag[]
   postMeta        PostMeta?
 
   @@map("post")
@@ -311,7 +311,7 @@ model PostMeta {
 }
 
 
-model PostTags {
+model PostTag {
   post      Post      @relation(fields: [postId], references: [id])
   postId    BigInt    @map("post_id")
 
@@ -320,7 +320,7 @@ model PostTags {
 
   order     Int
 
-  @@map("post_tags")
+  @@map("post_tag")
   @@id([postId, tagId])
 }
 
