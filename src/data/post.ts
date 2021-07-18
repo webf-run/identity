@@ -14,6 +14,7 @@ export function findPostByOwner(db: PrismaClient, postId: bigint, ownerId: bigin
   });
 }
 
+
 export function findPostByPublication(db: PrismaClient, postId: bigint, publicationId: bigint) {
   return db.post.findFirst({
     where: {

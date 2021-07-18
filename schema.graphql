@@ -111,11 +111,13 @@ type Mutation {
   deletePost(postId: ID!): PostResponse!
   forgotPassword(username: String!): Boolean!
   initialize(description: String!): ClientAppResponse!
+  publishPost(postId: ID!): ResultResponse!
   registerClientApp(description: String!): ClientAppResponse!
   resetPassword(code: String!, password: String!): Boolean!
 
   """Extend the validity of already expired invitation"""
   retryInvitation(invitationId: ID!): ResultResponse!
+  unpublishPost(postId: ID!): ResultResponse!
   updateAppConfig(config: AppConfigInput!): ResultResponse!
   updatePost(post: PostInput!, postId: ID!): PostResponse!
   updatePostSettings(postId: ID!, settings: PostSettingsInput!): PostSettingsResponse!

@@ -226,9 +226,11 @@ export interface NexusGenFieldTypes {
     deletePost: NexusGenRootTypes['PostResponse']; // PostResponse!
     forgotPassword: boolean; // Boolean!
     initialize: NexusGenRootTypes['ClientAppResponse']; // ClientAppResponse!
+    publishPost: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     registerClientApp: NexusGenRootTypes['ClientAppResponse']; // ClientAppResponse!
     resetPassword: boolean; // Boolean!
     retryInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
+    unpublishPost: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updateAppConfig: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updatePost: NexusGenRootTypes['PostResponse']; // PostResponse!
     updatePostSettings: NexusGenRootTypes['PostSettingsResponse']; // PostSettingsResponse!
@@ -324,9 +326,11 @@ export interface NexusGenFieldTypeNames {
     deletePost: 'PostResponse'
     forgotPassword: 'Boolean'
     initialize: 'ClientAppResponse'
+    publishPost: 'ResultResponse'
     registerClientApp: 'ClientAppResponse'
     resetPassword: 'Boolean'
     retryInvitation: 'ResultResponse'
+    unpublishPost: 'ResultResponse'
     updateAppConfig: 'ResultResponse'
     updatePost: 'PostResponse'
     updatePostSettings: 'PostSettingsResponse'
@@ -422,6 +426,9 @@ export interface NexusGenArgTypes {
     initialize: { // args
       description: string; // String!
     }
+    publishPost: { // args
+      postId: string; // ID!
+    }
     registerClientApp: { // args
       description: string; // String!
     }
@@ -431,6 +438,9 @@ export interface NexusGenArgTypes {
     }
     retryInvitation: { // args
       invitationId: string; // ID!
+    }
+    unpublishPost: { // args
+      postId: string; // ID!
     }
     updateAppConfig: { // args
       config: NexusGenInputs['AppConfigInput']; // AppConfigInput!

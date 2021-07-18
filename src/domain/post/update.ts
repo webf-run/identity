@@ -1,66 +1,12 @@
 import { Prisma } from '@prisma/client';
 
-import { generateSlug } from '../../data/code';
-import { findPostByOwner, findPostByPublication } from '../../data/post';
-
-import { isAuthor, isEditor, isOwner, isUser } from '../Access';
+import { isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { PostInput, PostSettingsInput } from '../Input';
 import { Post, PostSettings } from '../Output';
 import { R } from '../R';
-
-
-export async function createNewPost(ctx: Context, post: PostInput): DomainResult<Post> {
-
-  const { db, access } = ctx;
-
-  if (!isUser(access)) {
-    return R.ofError(ErrorCode.FORBIDDEN, '');
-  }
-
-  const user = access.user;
-  const publicationId = user.projectId;
-
-  // TODO: Validation
-
-  const slug = generateSlug(post.title);
-
-  // TODO: Attempt to derive the description from the content.
-
-  const meta = {
-    title: post.title,
-    description: ''
-  };
-
-  const response = await db.post.create({
-    data: {
-      slug,
-      ownerId: user.id,
-      publicationId,
-      versions: {
-        create: {
-          title: post.title,
-          content: post.content,
-          version: 0
-        }
-      },
-      postMeta: {
-        create: meta
-      }
-    }
-  });
-
-  const newPost: Post = {
-    ...response,
-    meta,
-    tags: [],
-    title: post.title,
-    content: post.content
-  };
-
-  return R.of(newPost);
-}
+import { getPostForAccess } from './find';
 
 
 export async function updatePostSettings(ctx: Context, postId: bigint, settings: PostSettingsInput): DomainResult<PostSettings> {
@@ -71,13 +17,7 @@ export async function updatePostSettings(ctx: Context, postId: bigint, settings:
     return R.ofError(ErrorCode.FORBIDDEN, '');
   }
 
-  const postRq = isEditor(access) || isOwner(access)
-    ? findPostByPublication(db, postId, access.user.projectId)
-    : isAuthor(access)
-      ? findPostByOwner(db, postId, access.user.id)
-      : Promise.resolve(null);
-
-  const post = await postRq;
+  const post = await getPostForAccess(db, postId, access);
 
   if (!post?.postMeta) {
     return R.ofError(ErrorCode.NOT_FOUND, 'Post not found');
@@ -149,6 +89,58 @@ export async function updatePostSettings(ctx: Context, postId: bigint, settings:
     canonicalUrl: response.canonicalUrl,
     meta: response.postMeta!,
     tags: response.tags.map((x) => x.tag)
-   });
+  });
 
+}
+
+
+export async function updatePost(ctx: Context, postId: bigint, postInput: PostInput): DomainResult<Post> {
+
+  const { db, access } = ctx;
+
+  if (!isUser(access)) {
+    return R.ofError(ErrorCode.FORBIDDEN, '');
+  }
+
+  const post = await getPostForAccess(db, postId, access);
+
+  if (!post) {
+    return R.ofError(ErrorCode.NOT_FOUND, 'Post not found');
+  }
+
+  // TODO: Image extraction
+  const version = post.publishedAt ? 1 : 0;
+
+  const response = await db.post.update({
+    data: {
+      versions: {
+        connectOrCreate: {
+          create: {
+            title: postInput.title,
+            content: postInput.content,
+            version
+          },
+          where: {
+            postId_version: { postId, version }
+          }
+        }
+      }
+    },
+    where: {
+      id: postId
+    }
+  });
+
+  const updatedPost: Post = {
+    ...response,
+    title: postInput.title,
+    content: postInput.content,
+    meta: {
+      title: '',
+      description: ''
+    },
+    tags: []
+  };
+
+  return R.of(updatedPost);
 }

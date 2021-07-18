@@ -1,7 +1,9 @@
 import { extendType, inputObjectType, objectType } from 'nexus';
 
 import { ErrorCode, makeAppError } from '../domain/AppError';
-import { createNewPost, updatePostSettings } from '../domain/content/post';
+import { createNewPost } from '../domain/post/new';
+import { publishPost, unpublishPost } from '../domain/post/publish';
+import { updatePost, updatePostSettings } from '../domain/post/update';
 import { R } from '../domain/R';
 import { tryBigInt } from '../util/unit';
 import { errorUnion } from './helper';
@@ -10,7 +12,6 @@ import { errorUnion } from './helper';
 export const PostMeta = objectType({
   name: 'PostMeta',
   definition(t) {
-    // t.id('postId', { resolve: (x) => x.id.toString() });
     t.string('title');
     t.string('description');
   }
@@ -93,8 +94,46 @@ export const PostMutation = extendType({
         postId: 'ID',
         post: 'PostInput'
       },
-      resolve(_root, _args, _ctx) {
-        throw 'not implemented';
+      resolve(_root, args, ctx) {
+        const postId = tryBigInt(args.postId);
+
+        if (!postId) {
+          return makeAppError(ErrorCode.NOT_FOUND, 'Post not found');
+        }
+
+        return R.unpack(updatePost(ctx, postId, args.post));
+      }
+    });
+
+    t.field('publishPost', {
+      type: 'ResultResponse',
+      args: {
+        postId: 'ID',
+      },
+      resolve(_root, args, ctx) {
+        const postId = tryBigInt(args.postId);
+
+        if (!postId) {
+          return makeAppError(ErrorCode.NOT_FOUND, 'Post not found');
+        }
+
+        return R.unpack(publishPost(ctx, postId));
+      }
+    });
+
+    t.field('unpublishPost', {
+      type: 'ResultResponse',
+      args: {
+        postId: 'ID',
+      },
+      resolve(_root, args, ctx) {
+        const postId = tryBigInt(args.postId);
+
+        if (!postId) {
+          return makeAppError(ErrorCode.NOT_FOUND, 'Post not found');
+        }
+
+        return R.unpack(unpublishPost(ctx, postId));
       }
     });
 
