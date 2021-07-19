@@ -104,7 +104,7 @@ type Mutation {
   authenticate(grantType: GrantType!, input: Credentials!): AuthTokenResponse!
   claimInvitation(code: String!, password: String!): ResultResponse!
   createAssetSource(source: AssetSourceInput!): AssetSourceResponse!
-  createPost(post: PostInput!): PostResponse!
+  createPost(post: PostInput!): UpdatePostPayloadResponse!
   createPublication(input: NewPublicationInput!): NewPublicationResponse!
   createTag(tag: TagInput!): TagResponse!
   deleteInvitation(invitationId: ID!): ResultResponse!
@@ -119,7 +119,7 @@ type Mutation {
   retryInvitation(invitationId: ID!): ResultResponse!
   unpublishPost(postId: ID!): ResultResponse!
   updateAppConfig(config: AppConfigInput!): ResultResponse!
-  updatePost(post: PostInput!, postId: ID!): PostResponse!
+  updatePost(post: PostInput!, postId: ID!): UpdatePostPayloadResponse!
   updatePostSettings(postId: ID!, settings: PostSettingsInput!): PostSettingsResponse!
   updateTag(tag: TagInput!, tagId: ID!): TagResponse!
   uploadImage(image: ImageInput!): SignedUrlResponse!
@@ -137,6 +137,15 @@ input NewPublicationInput {
 union NewPublicationResponse = AppError | Publication
 
 type Post {
+  content: JSONObject!
+  id: ID!
+  meta: PostMeta!
+  slug: String!
+  tags: [Tag!]!
+  title: String!
+}
+
+type Post2 {
   content: JSONObject!
   id: ID!
   meta: PostMeta!
@@ -225,6 +234,16 @@ input TagInput {
 }
 
 union TagResponse = AppError | Tag
+
+type UpdatePostPayload {
+  content: JSONObject!
+  id: ID!
+  meta: PostMeta!
+  slug: String!
+  title: String!
+}
+
+union UpdatePostPayloadResponse = AppError | UpdatePostPayload
 
 """Form fields to be submitted along with Signed URL"""
 type UrlFormField {

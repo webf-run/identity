@@ -4,12 +4,15 @@ import { isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { PostInput, PostSettingsInput } from '../Input';
-import { Post, PostSettings } from '../Output';
+import { PostSettings, UpdatePostPayload } from '../Output';
 import { R } from '../R';
 import { getPostForAccess } from './find';
 
 
-export async function updatePostSettings(ctx: Context, postId: bigint, settings: PostSettingsInput): DomainResult<PostSettings> {
+export async function updatePostSettings(
+  ctx: Context,
+  postId: bigint,
+  settings: PostSettingsInput): DomainResult<PostSettings> {
 
   const { db, access } = ctx;
 
@@ -94,7 +97,8 @@ export async function updatePostSettings(ctx: Context, postId: bigint, settings:
 }
 
 
-export async function updatePost(ctx: Context, postId: bigint, postInput: PostInput): DomainResult<Post> {
+export async function updatePost(
+  ctx: Context, postId: bigint, postInput: PostInput): DomainResult<UpdatePostPayload> {
 
   const { db, access } = ctx;
 
@@ -131,15 +135,11 @@ export async function updatePost(ctx: Context, postId: bigint, postInput: PostIn
     }
   });
 
-  const updatedPost: Post = {
+  const updatedPost: UpdatePostPayload = {
     ...response,
     title: postInput.title,
     content: postInput.content,
-    meta: {
-      title: '',
-      description: ''
-    },
-    tags: []
+    meta: post.postMeta!
   };
 
   return R.of(updatedPost);

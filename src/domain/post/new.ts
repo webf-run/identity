@@ -5,12 +5,11 @@ import { isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { PostInput } from '../Input';
-import { Post, Result } from '../Output';
+import { Post, UpdatePostPayload } from '../Output';
 import { R } from '../R';
-import { getPostForAccess } from './find';
 
 
-export async function createNewPost(ctx: Context, post: PostInput): DomainResult<Post> {
+export async function createNewPost(ctx: Context, post: PostInput): DomainResult<UpdatePostPayload> {
 
   const { db, access } = ctx;
 
@@ -50,10 +49,9 @@ export async function createNewPost(ctx: Context, post: PostInput): DomainResult
     }
   });
 
-  const newPost: Post = {
+  const newPost: UpdatePostPayload = {
     ...response,
     meta,
-    tags: [],
     title: post.title,
     content: post.content
   };

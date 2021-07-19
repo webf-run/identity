@@ -18,14 +18,31 @@ export const PostMeta = objectType({
 });
 
 
-export const Post = objectType({
-  name: 'Post',
+export const UpdatePostPayload = objectType({
+  name: 'UpdatePostPayload',
   definition(t) {
     t.id('id', { resolve: (x) => x.id.toString() });
     t.string('slug');
     t.string('title');
     t.json('content');
     t.field('meta', { type: 'PostMeta' });
+  }
+});
+
+
+export const Post = objectType({
+  name: 'Post',
+  definition(t) {
+    UpdatePostPayload.value.definition(t as any);
+    t.list.field('tags', { type: 'Tag' });
+  }
+});
+
+
+export const Post2 = objectType({
+  name: 'Post2',
+  definition(t) {
+    UpdatePostPayload.value.definition(t as any);
     t.list.field('tags', { type: 'Tag' });
   }
 });
@@ -72,6 +89,7 @@ export const PostInput = inputObjectType({
 
 
 export const PostResponse = errorUnion('PostResponse', 'Post');
+export const UpdatePostPayloadResponse = errorUnion('UpdatePostPayloadResponse', 'UpdatePostPayload');
 export const PostSettingsResponse = errorUnion('PostSettingsResponse', 'PostSettings');
 
 
@@ -79,7 +97,7 @@ export const PostMutation = extendType({
   type: 'Mutation',
   definition(t) {
     t.field('createPost', {
-      type: 'PostResponse',
+      type: 'UpdatePostPayloadResponse',
       args: {
         post: 'PostInput'
       },
@@ -89,7 +107,7 @@ export const PostMutation = extendType({
     });
 
     t.field('updatePost', {
-      type: 'PostResponse',
+      type: 'UpdatePostPayloadResponse',
       args: {
         postId: 'ID',
         post: 'PostInput'

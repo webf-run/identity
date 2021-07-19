@@ -1,6 +1,6 @@
 import { EmailConfig, Prisma, PrismaClient } from '@prisma/client';
 
-import { EmailConfigInput } from '../domain/Input';
+import type { EmailConfigInput } from '../domain/Input';
 
 
 export async function getEmailConfig(db: PrismaClient): Promise<EmailConfig | null> {

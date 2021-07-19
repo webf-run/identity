@@ -120,31 +120,23 @@ export interface NexusGenObjects {
   AppError: { // root type
     errors: NexusGenRootTypes['Error'][]; // [Error!]!
   }
-  AssetSource: { // root type
-    bucket: string; // String!
-    cloudType: string; // String!
-    id: string; // ID!
-    key: string; // String!
-    publicUrl: string; // String!
-    region: string; // String!
-    uploadUrl: string; // String!
-  }
+  AssetSource: Op.AssetSource;
   AuthToken: Op.AuthToken;
-  ClientApp: { // root type
-    description: string; // String!
-    id: string; // ID!
-    secret: string; // String!
-  }
+  ClientApp: Op.ClientApp;
   Error: { // root type
     code: string; // String!
     message: string; // String!
   }
   Mutation: {};
   Post: Op.Post;
-  PostMeta: { // root type
-    description: string; // String!
+  Post2: { // root type
+    content: NexusGenScalars['JSONObject']; // JSONObject!
+    meta: NexusGenRootTypes['PostMeta']; // PostMeta!
+    slug: string; // String!
+    tags: NexusGenRootTypes['Tag'][]; // [Tag!]!
     title: string; // String!
   }
+  PostMeta: Op.PostMeta;
   PostSettings: Op.PostSettings;
   Publication: Op.Publication;
   Query: {};
@@ -160,6 +152,7 @@ export interface NexusGenObjects {
     name: string; // String!
     slug: string; // String!
   }
+  UpdatePostPayload: Op.UpdatePostPayload;
   UrlFormField: { // root type
     key: string; // String!
     value: string; // String!
@@ -179,6 +172,7 @@ export interface NexusGenUnions {
   ResultResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Result'];
   SignedUrlResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['SignedUrl'];
   TagResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Tag'];
+  UpdatePostPayloadResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['UpdatePostPayload'];
 }
 
 export type NexusGenRootTypes = NexusGenObjects & NexusGenUnions
@@ -219,7 +213,7 @@ export interface NexusGenFieldTypes {
     authenticate: NexusGenRootTypes['AuthTokenResponse']; // AuthTokenResponse!
     claimInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     createAssetSource: NexusGenRootTypes['AssetSourceResponse']; // AssetSourceResponse!
-    createPost: NexusGenRootTypes['PostResponse']; // PostResponse!
+    createPost: NexusGenRootTypes['UpdatePostPayloadResponse']; // UpdatePostPayloadResponse!
     createPublication: NexusGenRootTypes['NewPublicationResponse']; // NewPublicationResponse!
     createTag: NexusGenRootTypes['TagResponse']; // TagResponse!
     deleteInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
@@ -232,12 +226,20 @@ export interface NexusGenFieldTypes {
     retryInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     unpublishPost: NexusGenRootTypes['ResultResponse']; // ResultResponse!
     updateAppConfig: NexusGenRootTypes['ResultResponse']; // ResultResponse!
-    updatePost: NexusGenRootTypes['PostResponse']; // PostResponse!
+    updatePost: NexusGenRootTypes['UpdatePostPayloadResponse']; // UpdatePostPayloadResponse!
     updatePostSettings: NexusGenRootTypes['PostSettingsResponse']; // PostSettingsResponse!
     updateTag: NexusGenRootTypes['TagResponse']; // TagResponse!
     uploadImage: NexusGenRootTypes['SignedUrlResponse']; // SignedUrlResponse!
   }
   Post: { // field return type
+    content: NexusGenScalars['JSONObject']; // JSONObject!
+    id: string; // ID!
+    meta: NexusGenRootTypes['PostMeta']; // PostMeta!
+    slug: string; // String!
+    tags: NexusGenRootTypes['Tag'][]; // [Tag!]!
+    title: string; // String!
+  }
+  Post2: { // field return type
     content: NexusGenScalars['JSONObject']; // JSONObject!
     id: string; // ID!
     meta: NexusGenRootTypes['PostMeta']; // PostMeta!
@@ -279,6 +281,13 @@ export interface NexusGenFieldTypes {
     name: string; // String!
     slug: string; // String!
   }
+  UpdatePostPayload: { // field return type
+    content: NexusGenScalars['JSONObject']; // JSONObject!
+    id: string; // ID!
+    meta: NexusGenRootTypes['PostMeta']; // PostMeta!
+    slug: string; // String!
+    title: string; // String!
+  }
   UrlFormField: { // field return type
     key: string; // String!
     value: string; // String!
@@ -319,7 +328,7 @@ export interface NexusGenFieldTypeNames {
     authenticate: 'AuthTokenResponse'
     claimInvitation: 'ResultResponse'
     createAssetSource: 'AssetSourceResponse'
-    createPost: 'PostResponse'
+    createPost: 'UpdatePostPayloadResponse'
     createPublication: 'NewPublicationResponse'
     createTag: 'TagResponse'
     deleteInvitation: 'ResultResponse'
@@ -332,12 +341,20 @@ export interface NexusGenFieldTypeNames {
     retryInvitation: 'ResultResponse'
     unpublishPost: 'ResultResponse'
     updateAppConfig: 'ResultResponse'
-    updatePost: 'PostResponse'
+    updatePost: 'UpdatePostPayloadResponse'
     updatePostSettings: 'PostSettingsResponse'
     updateTag: 'TagResponse'
     uploadImage: 'SignedUrlResponse'
   }
   Post: { // field return type name
+    content: 'JSONObject'
+    id: 'ID'
+    meta: 'PostMeta'
+    slug: 'String'
+    tags: 'Tag'
+    title: 'String'
+  }
+  Post2: { // field return type name
     content: 'JSONObject'
     id: 'ID'
     meta: 'PostMeta'
@@ -378,6 +395,13 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     name: 'String'
     slug: 'String'
+  }
+  UpdatePostPayload: { // field return type name
+    content: 'JSONObject'
+    id: 'ID'
+    meta: 'PostMeta'
+    slug: 'String'
+    title: 'String'
   }
   UrlFormField: { // field return type name
     key: 'String'
@@ -481,6 +505,7 @@ export interface NexusGenAbstractTypeMembers {
   ResultResponse: "AppError" | "Result"
   SignedUrlResponse: "AppError" | "SignedUrl"
   TagResponse: "AppError" | "Tag"
+  UpdatePostPayloadResponse: "AppError" | "UpdatePostPayload"
 }
 
 export interface NexusGenTypeInterfaces {
@@ -500,7 +525,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceResponse" | "AuthTokenResponse" | "ClientAppResponse" | "NewPublicationResponse" | "PostResponse" | "PostSettingsResponse" | "ResultResponse" | "SignedUrlResponse" | "TagResponse";
+export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceResponse" | "AuthTokenResponse" | "ClientAppResponse" | "NewPublicationResponse" | "PostResponse" | "PostSettingsResponse" | "ResultResponse" | "SignedUrlResponse" | "TagResponse" | "UpdatePostPayloadResponse";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
