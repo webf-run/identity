@@ -23,5 +23,5 @@ prisma migrate dev --create-only -name some-migration-name
 
 Create an `.env` file at the root of the repository. Set environment variable DATABASE_URL as per the following.
 ```
-DATABASE_URL postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
 ```

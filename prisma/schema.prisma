@@ -5,12 +5,12 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["selectRelationCount", "orderByAggregateGroup"]
+  previewFeatures = []
 }
 
 
 model EmailConfig {
-  id            BigInt    @id @default(autoincrement())
+  id            String    @id @default(uuid()) @db.Uuid
   fromName      String    @map("from_name")
   fromEmail     String    @map("from_email")
   apiKey        String    @map("api_key")
@@ -23,7 +23,7 @@ model EmailConfig {
 
 
 model ClientApp {
-  id              String      @id @default(cuid())
+  id              String      @id @default(uuid()) @db.Uuid
 
   description     String
 
@@ -39,104 +39,78 @@ model ClientApp {
 }
 
 
-model ProjectType {
-  // Though we do not really it need, using this
-  // as a disjoint discriminant is really helpful
-  // to ensure data integrity.
-  id              String      @id
-  description     String
-
-  projects        Project[]
-  roles           Role[]
-
-  @@map("project_type")
-}
-
-
-model Project {
-  id              BigInt          @id @default(autoincrement())
+model Tenant {
+  id              String          @id @default(cuid())
   name            String
-  fromEmail       String          @map("from_email")
 
-  type            ProjectType     @relation(fields: [projectType], references: [id])
-  projectType     String          @map("project_type")
+  publication     Publication[]
+  users           TenantUsers[]
 
-  publication     Publication?
-  quota           Quota?
-  assets          Asset[]
-  invitations     Invitation[]
-  users           User[]
-
-  @@map("project")
-
-  @@unique([id, projectType])
-}
-
-
-// Used to maintain the maximum size limits for uploaded assets and memberships
-model Quota {
-  id              BigInt      @id
-  project         Project     @relation(fields: [id], references: [id])
-  sizeInMB        Int         @map("size_in_mb")
-  maxCapacity     Int         @map("max_capacity")
-  occupied        Int
-
-  // Note: Add the constraint where occupied <= maxCapacity
-  @@map("quota")
+  @@map("tenant")
 }
 
 
 model Invitation {
-  id            BigInt        @id @default(autoincrement())
-  code          String        @unique
+  id              String        @id @default(uuid()) @db.Uuid
+  code            String        @unique
 
-  firstName     String        @map("first_name")
-  lastName      String        @map("last_name")
-  email         String
+  firstName       String        @map("first_name")
+  lastName        String        @map("last_name")
+  email           String
 
   // duration in milliseconds
-  duration      Int
-  expiryAt      DateTime      @db.Timestamptz() @map("expiry_at")
+  duration        Int
+  expiryAt        DateTime      @db.Timestamptz() @map("expiry_at")
 
-  project       Project       @relation(fields: [projectId, projectType], references: [id, projectType])
-  projectId     BigInt        @map("project_id")
-  projectType   String        @map("project_type")
+  publication     Publication   @relation(fields: [publicationId], references: [id])
+  publicationId   BigInt        @map("publication_id")
 
-  role          Role          @relation(fields: [roleId, projectType], references: [id, projectType])
-  roleId        Int           @map("role_id")
+  role            Role          @relation(fields: [roleId], references: [id])
+  roleId          Int           @map("role_id")
 
-  createdAt     DateTime      @db.Timestamptz() @default(now()) @map("created_at")
-  updatedAt     DateTime      @db.Timestamptz() @updatedAt @map("updated_at")
+  createdAt       DateTime      @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt       DateTime      @db.Timestamptz() @updatedAt @map("updated_at")
 
   @@map("invitation")
-  @@unique(fields: [email, projectId])
+  @@unique(fields: [email, publicationId])
 }
 
 
 model User {
-  id                BigInt      @id @default(autoincrement())
+  id              String                  @id @default(cuid())
 
-  firstName         String      @map("first_name")
-  lastName          String      @map("last_name")
-  email             String
+  firstName       String                  @map("first_name")
+  lastName        String                  @map("last_name")
+  email           String                  @unique
 
-  password          String
-  hashFn            String      @map("hash_fn")
+  password        String
+  hashFn          String                  @map("hash_fn")
 
-  project           Project     @relation(fields: [projectId], references: [id])
-  projectId         BigInt      @map("project_id")
+  posts           Post[]
 
-  createdAt         DateTime    @db.Timestamptz() @default(now()) @map("created_at")
-  updatedAt         DateTime    @db.Timestamptz() @updatedAt @map("updated_at")
+  tenants         TenantUsers[]
+  publication     PublicationUser[]
+  roles           UserPublicationRole[]
 
-  role              UserRole?
-  tokens            UserToken[]
-  posts             Post[]
-  resetRequest      ResetPasswordRequest?
-  loginAttempt      LoginAttempt?
+  createdAt       DateTime                @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt       DateTime                @db.Timestamptz() @updatedAt @map("updated_at")
+
+  tokens          UserToken[]
+  loginAttempt    LoginAttempt?
+  resetRequest    ResetPasswordRequest?
 
   @@map("app_user")
-  @@unique([projectId, email])
+}
+
+
+model TenantUsers {
+  id          String    @id @default(uuid()) @db.Uuid
+
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String    @map("user_id")
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  tenantId    String    @map("tenant_id")
 }
 
 
@@ -148,7 +122,7 @@ model ClientAppToken {
   duration        Int
 
   clientApp       ClientApp   @relation(fields: [clientAppId], references: [id])
-  clientAppId     String      @map("client_app_id")
+  clientAppId     String      @map("client_app_id") @db.Uuid
 
   @@map("client_app_token")
 }
@@ -163,17 +137,18 @@ model UserToken {
   duration        Int
 
   user            User        @relation(fields: [userId], references: [id])
-  userId          BigInt      @map("user_id")
+  userId          String      @map("user_id")
 
   @@map("user_token")
 }
 
 
 model ResetPasswordRequest {
-  id          BigInt    @id @default(autoincrement())
+  id          String    @id @default(uuid()) @db.Uuid
+
   code        String    @unique
   user        User      @relation(fields: [userId], references: [id])
-  userId      BigInt    @unique @map("user_id")
+  userId      String    @unique @map("user_id")
 
   createdAt   DateTime  @db.Timestamptz() @default(now()) @map("created_at")
   updatedAt   DateTime  @db.Timestamptz() @updatedAt @map("updated_at")
@@ -184,7 +159,7 @@ model ResetPasswordRequest {
 
 model LoginAttempt {
   user          User      @relation(fields: [userId], references: [id])
-  userId        BigInt    @id @map("user_id")
+  userId        String    @id @map("user_id")
   attempts      Int
   lastAttempt   DateTime  @db.Timestamptz() @updatedAt @map("last_attempt")
 
@@ -193,51 +168,87 @@ model LoginAttempt {
 
 
 model Publication {
-  id            BigInt        @id
+  id            BigInt                  @id @default(autoincrement())
 
-  // Note: Add check constraint for the project type
-  // to restrict project type to publication
-  projectType   String        @map("project_type")
+  fromEmail     String                  @map("from_email")
+  publicUrl     String                  @unique @map("public_url")
 
-  project       Project       @relation(fields: [id, projectType], references: [id, projectType])
-  publicUrl     String        @unique @map("public_url")
+  quota         Quota?
+  assets        Asset[]
 
+  tenant        Tenant                  @relation(fields: [tenantId], references: [id])
+  tenantId      String                  @map("tenant_id")
+
+  invitations   Invitation[]
+  users         PublicationUser[]
+  roles         UserPublicationRole[]
   posts         Post[]
 
   @@map("publication")
 }
 
 
-model UserRole {
+// Used to maintain the maximum size limits for uploaded assets and memberships
+model Quota {
+  id              BigInt        @id
+
+  publication     Publication   @relation(fields: [id], references: [id])
+
+  sizeInMB        Int           @map("size_in_mb")
+  maxCapacity     Int           @map("max_capacity")
+  occupied        Int
+
+  // TODO: Add the constraint where occupied <= maxCapacity
+  @@map("quota")
+}
+
+
+model PublicationUser {
+  id              String        @id @default(uuid()) @db.Uuid
+
+  user            User          @relation(fields: [userId], references: [id])
+  userId          String        @map("user_id")
+
+  publication     Publication   @relation(fields: [publicationId], references: [id])
+  publicationId   BigInt        @map("publication_id")
+
+  @@map("publication_user")
+  @@unique([userId, publicationId])
+}
+
+
+model UserPublicationRole {
+  id              String          @id @default(uuid()) @db.Uuid
+
   user            User            @relation(fields: [userId], references: [id])
-  userId          BigInt          @id @map("user_id")
+  userId          String          @map("user_id")
+
+  publication     Publication     @relation(fields: [publicationId], references: [id])
+  publicationId   BigInt          @map("publication_id")
 
   role            Role            @relation(fields: [roleId], references: [id])
   roleId          Int             @map("role_id")
 
-  @@map("user_role")
+  @@map("user_publication_role")
+  @@unique([userId, publicationId, roleId])
 }
 
 
 model Role {
-  id              Int             @id
+  id              Int                     @id
   name            String
-  displayName     String          @map("display_name")
+  displayName     String                  @map("display_name")
 
-  scope           ProjectType     @relation(fields: [projectType], references: [id])
-  projectType     String          @map("project_type")
-
-  users           UserRole[]
+  users           UserPublicationRole[]
   invitations     Invitation[]
 
   @@map("role")
-  @@unique([id, projectType])
-  @@unique([name, projectType])
 }
 
 
 model Tag {
-  id            BigInt      @id @default(autoincrement())
+  id            String      @id @default(uuid()) @db.Uuid
+
   name          String
   slug          String      @unique()
   description   String
@@ -254,8 +265,9 @@ model Tag {
 
 model Post {
   id              BigInt          @id @default(autoincrement())
+
   owner           User            @relation(fields: [ownerId], references: [id])
-  ownerId         BigInt          @map("owner_id")
+  ownerId         String          @map("owner_id")
 
   slug            String
   canonicalUrl    String?         @map("canonical_url")
@@ -280,7 +292,7 @@ model Post {
 // Relationship is 1 --> 2
 // One Post will have at max two versions.
 model PostVersion {
-  id              BigInt        @id @default(autoincrement())
+  id              String        @id @default(uuid()) @db.Uuid
 
   post            Post          @relation(fields: [postId], references: [id])
   postId          BigInt        @map("post_id")
@@ -305,7 +317,7 @@ model PostMeta {
   description       String
 
   featuredImage     Image?      @relation(fields: [imageId], references: [id])
-  imageId           BigInt?     @map("image_id")
+  imageId           String?     @map("image_id") @db.Uuid
 
   @@map("post_meta")
 }
@@ -316,7 +328,7 @@ model PostTag {
   postId    BigInt    @map("post_id")
 
   tag       Tag       @relation(fields: [tagId], references: [id])
-  tagId     BigInt    @map("tag_id")
+  tagId     String    @map("tag_id") @db.Uuid
 
   order     Int
 
@@ -325,7 +337,7 @@ model PostTag {
 }
 
 
-model AssetSource {
+model AssetStorage {
   id          Int       @id @default(autoincrement())
 
   // do, aws, azure, google
@@ -349,47 +361,47 @@ model AssetSource {
 
   assets      Asset[]
 
-  @@map("asset_source")
+  @@map("asset_storage")
   @@unique([cloudType, region, bucket])
 }
 
 
 model Asset {
-  id            BigInt        @id @default(autoincrement())
+  id              String        @id @default(uuid()) @db.Uuid
 
-  source        AssetSource   @relation(fields: [sourceId], references: [id])
-  sourceId      Int           @map("source_id")
+  storage         AssetStorage  @relation(fields: [storageId], references: [id])
+  storageId       Int           @map("source_id")
 
-  title         String
-  fileName      String        @map("file_name") @unique()
-  contentType   String        @map("content_type")
+  title           String
+  fileName        String        @map("file_name") @unique()
+  contentType     String        @map("content_type")
 
-  size          Int
-  sizeUnit      String        @map("size_unit")
+  size            Int
+  sizeUnit        String        @map("size_unit")
 
-  createdAt     DateTime      @db.Timestamptz() @default(now()) @map("created_at")
-  updatedAt     DateTime      @db.Timestamptz() @updatedAt @map("updated_at")
+  createdAt       DateTime      @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt       DateTime      @db.Timestamptz() @updatedAt @map("updated_at")
 
-  verified      Boolean       @default(false)
+  verified        Boolean       @default(false)
 
-  project       Project       @relation(fields: [projectId], references: [id])
-  projectId     BigInt        @map("project_id")
+  publication     Publication   @relation(fields: [publicationId], references: [id])
+  publicationId   BigInt        @map("publication_id")
 
   image         Image?
 
   @@map("asset")
-  @@index([sourceId])
+  @@index([storageId])
 }
 
 
 model Image {
-  id          BigInt      @id
+  id          String      @id @db.Uuid
   asset       Asset       @relation(fields: [id], references: [id])
 
   caption     Json        @db.JsonB
   altText     String      @map("alt_text")
 
-  postImage   PostImage?
+  postImage   PostImage[]
   postMeta    PostMeta[]
 
   @@map("image")
@@ -398,10 +410,10 @@ model Image {
 
 model PostImage {
   image         Image           @relation(fields: [imageId], references: [id])
-  imageId       BigInt          @map("image_id")
+  imageId       String          @map("image_id") @db.Uuid
 
   revision      PostVersion     @relation(fields: [revisionId], references: [id])
-  revisionId    BigInt          @map("revision_id")
+  revisionId    String          @map("revision_id") @db.Uuid
 
   @@id([imageId, revisionId])
   @@map("post_image")
