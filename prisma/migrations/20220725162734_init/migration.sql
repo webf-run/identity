@@ -23,7 +23,7 @@ CREATE TABLE "client_app" (
 
 -- CreateTable
 CREATE TABLE "tenant" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
 
     CONSTRAINT "tenant_pkey" PRIMARY KEY ("id")
@@ -48,7 +48,7 @@ CREATE TABLE "invitation" (
 
 -- CreateTable
 CREATE TABLE "app_user" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -61,12 +61,12 @@ CREATE TABLE "app_user" (
 );
 
 -- CreateTable
-CREATE TABLE "TenantUsers" (
+CREATE TABLE "tenant_user" (
     "id" UUID NOT NULL,
-    "user_id" TEXT NOT NULL,
-    "tenant_id" TEXT NOT NULL,
+    "user_id" UUID NOT NULL,
+    "tenant_id" UUID NOT NULL,
 
-    CONSTRAINT "TenantUsers_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "tenant_user_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -84,7 +84,7 @@ CREATE TABLE "user_token" (
     "id" TEXT NOT NULL,
     "generated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "duration" INTEGER NOT NULL,
-    "user_id" TEXT NOT NULL,
+    "user_id" UUID NOT NULL,
 
     CONSTRAINT "user_token_pkey" PRIMARY KEY ("id")
 );
@@ -93,7 +93,7 @@ CREATE TABLE "user_token" (
 CREATE TABLE "reset_password_request" (
     "id" UUID NOT NULL,
     "code" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
+    "user_id" UUID NOT NULL,
     "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ NOT NULL,
 
@@ -102,7 +102,7 @@ CREATE TABLE "reset_password_request" (
 
 -- CreateTable
 CREATE TABLE "login_attempt" (
-    "user_id" TEXT NOT NULL,
+    "user_id" UUID NOT NULL,
     "attempts" INTEGER NOT NULL,
     "last_attempt" TIMESTAMPTZ NOT NULL,
 
@@ -114,7 +114,7 @@ CREATE TABLE "publication" (
     "id" BIGSERIAL NOT NULL,
     "from_email" TEXT NOT NULL,
     "public_url" TEXT NOT NULL,
-    "tenant_id" TEXT NOT NULL,
+    "tenant_id" UUID NOT NULL,
 
     CONSTRAINT "publication_pkey" PRIMARY KEY ("id")
 );
@@ -132,7 +132,7 @@ CREATE TABLE "quota" (
 -- CreateTable
 CREATE TABLE "publication_user" (
     "id" UUID NOT NULL,
-    "user_id" TEXT NOT NULL,
+    "user_id" UUID NOT NULL,
     "publication_id" BIGINT NOT NULL,
 
     CONSTRAINT "publication_user_pkey" PRIMARY KEY ("id")
@@ -141,7 +141,7 @@ CREATE TABLE "publication_user" (
 -- CreateTable
 CREATE TABLE "user_publication_role" (
     "id" UUID NOT NULL,
-    "user_id" TEXT NOT NULL,
+    "user_id" UUID NOT NULL,
     "publication_id" BIGINT NOT NULL,
     "role_id" INTEGER NOT NULL,
 
@@ -173,7 +173,7 @@ CREATE TABLE "tag" (
 -- CreateTable
 CREATE TABLE "post" (
     "id" BIGSERIAL NOT NULL,
-    "owner_id" TEXT NOT NULL,
+    "owner_id" UUID NOT NULL,
     "slug" TEXT NOT NULL,
     "canonical_url" TEXT,
     "publication_id" BIGINT NOT NULL,
@@ -311,10 +311,10 @@ ALTER TABLE "invitation" ADD CONSTRAINT "invitation_publication_id_fkey" FOREIGN
 ALTER TABLE "invitation" ADD CONSTRAINT "invitation_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TenantUsers" ADD CONSTRAINT "TenantUsers_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "app_user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "tenant_user" ADD CONSTRAINT "tenant_user_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "app_user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TenantUsers" ADD CONSTRAINT "TenantUsers_tenant_id_fkey" FOREIGN KEY ("tenant_id") REFERENCES "tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "tenant_user" ADD CONSTRAINT "tenant_user_tenant_id_fkey" FOREIGN KEY ("tenant_id") REFERENCES "tenant"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "client_app_token" ADD CONSTRAINT "client_app_token_client_app_id_fkey" FOREIGN KEY ("client_app_id") REFERENCES "client_app"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
