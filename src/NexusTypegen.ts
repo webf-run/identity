@@ -40,7 +40,7 @@ export interface NexusGenInputs {
   AppConfigInput: { // input type
     email?: NexusGenInputs['EmailConfigInput'] | null; // EmailConfigInput
   }
-  AssetSourceInput: { // input type
+  AssetStoreInput: { // input type
     bucket: string; // String!
     cloudType: string; // String!
     key: string; // String!
@@ -120,7 +120,15 @@ export interface NexusGenObjects {
   AppError: { // root type
     errors: NexusGenRootTypes['Error'][]; // [Error!]!
   }
-  AssetSource: Op.AssetSource;
+  AssetStore: { // root type
+    bucket: string; // String!
+    cloudType: string; // String!
+    id: string; // ID!
+    key: string; // String!
+    publicUrl: string; // String!
+    region: string; // String!
+    uploadUrl: string; // String!
+  }
   AuthToken: Op.AuthToken;
   ClientApp: Op.ClientApp;
   Error: { // root type
@@ -163,7 +171,7 @@ export interface NexusGenInterfaces {
 }
 
 export interface NexusGenUnions {
-  AssetSourceResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AssetSource'];
+  AssetStoreResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AssetStore'];
   AuthTokenResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['AuthToken'];
   ClientAppResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['ClientApp'];
   NewPublicationResponse: NexusGenRootTypes['AppError'] | NexusGenRootTypes['Publication'];
@@ -183,7 +191,7 @@ export interface NexusGenFieldTypes {
   AppError: { // field return type
     errors: NexusGenRootTypes['Error'][]; // [Error!]!
   }
-  AssetSource: { // field return type
+  AssetStore: { // field return type
     bucket: string; // String!
     cloudType: string; // String!
     id: string; // ID!
@@ -212,7 +220,7 @@ export interface NexusGenFieldTypes {
     approveTag: NexusGenRootTypes['Tag']; // Tag!
     authenticate: NexusGenRootTypes['AuthTokenResponse']; // AuthTokenResponse!
     claimInvitation: NexusGenRootTypes['ResultResponse']; // ResultResponse!
-    createAssetSource: NexusGenRootTypes['AssetSourceResponse']; // AssetSourceResponse!
+    createAssetStore: NexusGenRootTypes['AssetStoreResponse']; // AssetStoreResponse!
     createPost: NexusGenRootTypes['UpdatePostPayloadResponse']; // UpdatePostPayloadResponse!
     createPublication: NexusGenRootTypes['NewPublicationResponse']; // NewPublicationResponse!
     createTag: NexusGenRootTypes['TagResponse']; // TagResponse!
@@ -298,7 +306,7 @@ export interface NexusGenFieldTypeNames {
   AppError: { // field return type name
     errors: 'Error'
   }
-  AssetSource: { // field return type name
+  AssetStore: { // field return type name
     bucket: 'String'
     cloudType: 'String'
     id: 'ID'
@@ -327,7 +335,7 @@ export interface NexusGenFieldTypeNames {
     approveTag: 'Tag'
     authenticate: 'AuthTokenResponse'
     claimInvitation: 'ResultResponse'
-    createAssetSource: 'AssetSourceResponse'
+    createAssetStore: 'AssetStoreResponse'
     createPost: 'UpdatePostPayloadResponse'
     createPublication: 'NewPublicationResponse'
     createTag: 'TagResponse'
@@ -426,8 +434,8 @@ export interface NexusGenArgTypes {
       code: string; // String!
       password: string; // String!
     }
-    createAssetSource: { // args
-      source: NexusGenInputs['AssetSourceInput']; // AssetSourceInput!
+    createAssetStore: { // args
+      store: NexusGenInputs['AssetStoreInput']; // AssetStoreInput!
     }
     createPost: { // args
       post: NexusGenInputs['PostInput']; // PostInput!
@@ -496,7 +504,7 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  AssetSourceResponse: "AppError" | "AssetSource"
+  AssetStoreResponse: "AppError" | "AssetStore"
   AuthTokenResponse: "AppError" | "AuthToken"
   ClientAppResponse: "AppError" | "ClientApp"
   NewPublicationResponse: "AppError" | "Publication"
@@ -525,7 +533,7 @@ export type NexusGenUnionNames = keyof NexusGenUnions;
 
 export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
 
-export type NexusGenAbstractsUsingStrategyResolveType = "AssetSourceResponse" | "AuthTokenResponse" | "ClientAppResponse" | "NewPublicationResponse" | "PostResponse" | "PostSettingsResponse" | "ResultResponse" | "SignedUrlResponse" | "TagResponse" | "UpdatePostPayloadResponse";
+export type NexusGenAbstractsUsingStrategyResolveType = "AssetStoreResponse" | "AuthTokenResponse" | "ClientAppResponse" | "NewPublicationResponse" | "PostResponse" | "PostSettingsResponse" | "ResultResponse" | "SignedUrlResponse" | "TagResponse" | "UpdatePostPayloadResponse";
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {

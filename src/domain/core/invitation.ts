@@ -6,7 +6,7 @@ import { Result } from '../Output';
 import { R } from '../R';
 
 
-export async function deleteInvitation(ctx: Context, invitationId: bigint): DomainResult<Result> {
+export async function deleteInvitation(ctx: Context, invitationId: string): DomainResult<Result> {
 
   const { db, access } = ctx;
 
@@ -21,7 +21,7 @@ export async function deleteInvitation(ctx: Context, invitationId: bigint): Doma
   }
 
   try {
-    if (access.scope?.id === invitation.projectId) {
+    if (access.scope?.id === invitation.publicationId) {
       await repo.deleteInvitation(db, invitation.id);
     } else {
       return inviteNotFound();
@@ -35,7 +35,7 @@ export async function deleteInvitation(ctx: Context, invitationId: bigint): Doma
 }
 
 
-export async function retryInvitation(ctx: Context, invitationId: bigint): DomainResult<Result> {
+export async function retryInvitation(ctx: Context, invitationId: string): DomainResult<Result> {
 
   const { db, access } = ctx;
 
@@ -55,7 +55,7 @@ export async function retryInvitation(ctx: Context, invitationId: bigint): Domai
 
   // TODO: Pending work.
   try {
-    if (access.scope?.id === invitation.projectId) {
+    if (access.scope?.id === invitation.publicationId) {
       // This is a project level invitation
       await repo.extendInvitationExpiry(db, invitation);
 

@@ -1,14 +1,14 @@
 import { extendType, inputObjectType, objectType } from 'nexus';
 
 import { isAppError } from '../domain/AppError';
-import { createAssetSource } from '../domain/content/assetSource';
+import { createAssetStorage } from '../domain/content/assetStore';
 import { createImageUploadIntent } from '../domain/content/image';
 import { R } from '../domain/R';
 import { errorUnion, serializeId } from './helper';
 
 
-export const AssetSourceInput = inputObjectType({
-  name: 'AssetSourceInput',
+export const AssetStoreInput = inputObjectType({
+  name: 'AssetStoreInput',
   definition(t) {
     t.string('cloudType');
     t.string('region');
@@ -21,8 +21,8 @@ export const AssetSourceInput = inputObjectType({
 });
 
 
-export const AssetSource = objectType({
-  name: 'AssetSource',
+export const AssetStore = objectType({
+  name: 'AssetStore',
   definition(t) {
     t.id('id');
     t.string('cloudType');
@@ -63,7 +63,7 @@ export const SignedUrl = objectType({
 });
 
 
-export const AssetSourceResponse = errorUnion('AssetSourceResponse', 'AssetSource');
+export const AssetStoreResponse = errorUnion('AssetStoreResponse', 'AssetStore');
 export const SignedUrlResponse = errorUnion('SignedUrlResponse', 'SignedUrl');
 
 
@@ -72,13 +72,13 @@ export const AssetMutation = extendType({
 
   definition(t) {
 
-    t.field('createAssetSource', {
-      type: 'AssetSourceResponse',
+    t.field('createAssetStore', {
+      type: 'AssetStoreResponse',
       args: {
-        source: 'AssetSourceInput'
+        store: 'AssetStoreInput'
       },
       resolve(_root, args, ctx) {
-        return R.unpack(R.map(serializeId, createAssetSource(ctx, args.source)));
+        return R.unpack(R.map(serializeId, createAssetStorage(ctx, args.store)));
       }
     });
 

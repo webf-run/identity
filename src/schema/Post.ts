@@ -163,13 +163,13 @@ export const PostMutation = extendType({
       },
       resolve(_root, args, ctx) {
         const postId = tryBigInt(args.postId);
-        const tags = args.settings.tags?.map(tryBigInt);
+        const tags = args.settings.tags || [];
 
         if (!postId) {
           return makeAppError(ErrorCode.NOT_FOUND, 'Post not found');
         }
 
-        if (tags && !sanitizeTags(tags)) {
+        if (!sanitizeTags(tags)) {
           return makeAppError(ErrorCode.INVALID_DATA, 'Invalid tags');
         }
 
@@ -191,6 +191,6 @@ export const PostMutation = extendType({
 });
 
 
-function sanitizeTags(tags: (bigint | null)[]): tags is bigint[] {
+function sanitizeTags(tags: (string | null)[]): tags is string[] {
   return tags.every((x) => !!x);
 }

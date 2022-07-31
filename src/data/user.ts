@@ -1,35 +1,40 @@
-import { Invitation, Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 import { hashPassword } from './code';
+import { InvitationAndPub } from './invitation';
 
 
-export function findUserByEmail(db: PrismaClient, email: string, projectId: bigint) {
+export function findUserByEmail(db: PrismaClient, email: string) {
   return db.user.findUnique({
     where: {
-      projectId_email: {
-        email, projectId
-      }
+      email
     }
   });
 }
 
-export async function isUserMemberOf(db: PrismaClient, publicationId: bigint, email: string) {
-  const user = await findUserByEmail(db, email, publicationId);
+
+export async function isUserMemberOf(db: PrismaClient, publicationId: bigint, userId: string) {
+
+  const user = await db.publicationUser.findUnique({
+    where: {
+      userId_publicationId: {
+        userId,
+        publicationId
+      }
+    }
+  });
 
   return !!user;
 }
 
 
-export async function createNewUser(db: PrismaClient, invitation: Invitation, password: string) {
-
+export async function createNewUser(db: PrismaClient, invitation: InvitationAndPub, password: string) {
+  // The await here is not compatible with Prisma's transaction API.
+  // Thus, we need to return a function which then returns Prisma compatible
+  // promise that $transaction API can consume.
   const userPayload = await buildNewUser(invitation, password);
 
   return () => {
-
-    if (!invitation.projectId) {
-      throw 'Invitation must belong to some publication';
-    }
-
     return db.user.create({
       data: userPayload
     });
@@ -37,7 +42,7 @@ export async function createNewUser(db: PrismaClient, invitation: Invitation, pa
 }
 
 
-export async function changePassword(db: PrismaClient, userId: bigint, newPassword: string) {
+export async function changePassword(db: PrismaClient, userId: string, newPassword: string) {
 
   const [password, hashFn] = await hashPassword(newPassword);
 
@@ -51,9 +56,9 @@ export async function changePassword(db: PrismaClient, userId: bigint, newPasswo
 }
 
 
-async function buildNewUser(invitation: Invitation, password: string): Promise<Prisma.UserCreateInput> {
+async function buildNewUser(invitation: InvitationAndPub, password: string): Promise<Prisma.UserCreateInput> {
 
-  // What to do with an async password?
+  // TODO: What to do with an async password?
   const [passwordHashed, hashFn] = await hashPassword(password);
 
   return {
@@ -62,14 +67,14 @@ async function buildNewUser(invitation: Invitation, password: string): Promise<P
     lastName: invitation.lastName,
     password: passwordHashed,
     hashFn,
-    project: {
-      connect: {
-        id: invitation.projectId
+    publications: {
+      create: {
+        publicationId: invitation.publicationId
       }
     },
-    role: {
+    tenants: {
       create: {
-        roleId: invitation.roleId
+        tenantId: invitation.publication.tenantId
       }
     }
   };

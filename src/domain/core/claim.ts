@@ -1,6 +1,4 @@
-import { Invitation } from '@prisma/client';
-
-import { deleteInvitation, findInvitationByCode } from '../../data/invitation';
+import { deleteInvitation, findInvitationByCode, InvitationAndPub } from '../../data/invitation';
 import { createNewUser, findUserByEmail } from '../../data/user';
 
 import { ErrorCode } from '../AppError';
@@ -18,7 +16,7 @@ export async function claimInvitation(ctx: Context, code: string, password: stri
     return invalidInvite();
   }
 
-  const user = await findUserByEmail(db, invitation.email, invitation.projectId);
+  const user = await findUserByEmail(db, invitation.email);
 
   if (user) {
     return userExists();
@@ -30,7 +28,7 @@ export async function claimInvitation(ctx: Context, code: string, password: stri
 }
 
 
-async function createStaffMember(ctx: Context, invitation: Invitation, password: string) {
+async function createStaffMember(ctx: Context, invitation: InvitationAndPub, password: string) {
 
   const { db } = ctx;
 
@@ -47,7 +45,6 @@ async function createStaffMember(ctx: Context, invitation: Invitation, password:
     return R.of({ status: false });
   }
 }
-
 
 
 function invalidInvite() {

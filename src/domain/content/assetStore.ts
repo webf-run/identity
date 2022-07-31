@@ -4,10 +4,10 @@ import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { AssetSourceInput } from '../Input';
 import { R } from '../R';
-import { AssetSource } from '../Output';
+import { AssetStorage } from '../Output';
 
 
-const assetSourceV = apply({
+const assetSTorageV = apply({
   cloudType: inSet(['do'], 'Only Digital Ocean is supported'),
   region: notEmpty('Region is required'),
   bucket: notEmpty('Bucket is required'),
@@ -18,11 +18,11 @@ const assetSourceV = apply({
 });
 
 
-export async function createAssetSource(ctx: Context, source: AssetSourceInput): DomainResult<AssetSource> {
+export async function createAssetStorage(ctx: Context, source: AssetSourceInput): DomainResult<AssetStorage> {
 
   const { db } = ctx;
 
-  const result = assetSourceV(source);
+  const result = assetSTorageV(source);
 
   if (Either.isLeft(result)) {
     return R.ofError(ErrorCode.INVALID_DATA, result.value.join('\n'));
@@ -30,7 +30,7 @@ export async function createAssetSource(ctx: Context, source: AssetSourceInput):
 
   const value = result.value;
 
-  const newAssetSource = await db.assetSource.create({
+  const newAssetSource = await db.assetStorage.create({
     data: {
       cloudType: value.cloudType,
       region: value.region.trim(),
@@ -46,11 +46,11 @@ export async function createAssetSource(ctx: Context, source: AssetSourceInput):
 }
 
 
-export async function getLRUAssetSource(ctx: Context): Promise<AssetSource | null> {
+export async function getLRUAssetStorage(ctx: Context): Promise<AssetStorage | null> {
 
   const { db } = ctx;
 
-  const results = await db.assetSource.findMany({
+  const results = await db.assetStorage.findMany({
     include: {
       _count: {
         select: {

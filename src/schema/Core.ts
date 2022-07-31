@@ -5,6 +5,7 @@ import { deleteInvitation, retryInvitation } from '../domain/core/invitation';
 
 import { addMemberToPublication, createNewPublication } from '../domain/core/project';
 import { R } from '../domain/R';
+import { Publication as PublicationType } from '../domain/Output';
 
 import { errorUnion } from './helper';
 
@@ -47,8 +48,9 @@ export const Publication = objectType({
   name: 'Publication',
   definition(t) {
     t.id('id', { resolve: (x) => x.id.toString() });
-    t.string('name', { resolve: (x) => x.project.name });
-    t.string('fromEmail', { resolve: (x) => x.project.fromEmail });
+    // TODO: Publication should have name
+    t.string('name', { resolve: (x) => '' });
+    t.string('fromEmail', { resolve: (x) => x.fromEmail });
     t.string('publicUrl');
   }
 });
@@ -63,11 +65,7 @@ export const CoreQuery = extendType({
     t.list.field('getPublications', {
       type: 'Publication',
       resolve(_root, _args, ctx) {
-        return ctx.db.publication.findMany({
-          include: {
-            project: true
-          }
-        });
+        return ctx.db.publication.findMany();
       }
     });
   }
@@ -115,7 +113,7 @@ export const CoreMutation = extendType({
       },
       resolve(_root, args, ctx) {
         // TODO: Exception handling for bigint
-        return R.unpack(deleteInvitation(ctx, BigInt(args.invitationId)));
+        return R.unpack(deleteInvitation(ctx, args.invitationId));
       }
     });
 
@@ -127,7 +125,7 @@ export const CoreMutation = extendType({
       },
       resolve(_root, args, ctx) {
         // TODO: Exception handling for bigint
-        return R.unpack(retryInvitation(ctx, BigInt(args.invitationId)));
+        return R.unpack(retryInvitation(ctx, args.invitationId));
       }
     });
 

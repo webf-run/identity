@@ -7,15 +7,10 @@ export interface Result {
 }
 
 
-export type AssetSource = Model.AssetSource;
+export type AssetStorage = Model.AssetStorage;
 export type ClientApp = Model.ClientApp;
 export type PostMeta = Model.PostMeta;
-
-
-const publicationDetails = Prisma.validator<Prisma.PublicationArgs>()({
-  include: { project: true }
-});
-
+export type Publication = Model.Publication;
 
 export interface PostBase {
   title: Model.PostVersion['title'];
@@ -29,9 +24,6 @@ export interface PostBase {
 
 export type UpdatePostPayload = Model.Post & PostBase;
 export type Post = UpdatePostPayload & { tags: Model.Tag[]; };
-
-
-export type Publication = Prisma.PublicationGetPayload<typeof publicationDetails>;
 
 
 export interface PostSettings {

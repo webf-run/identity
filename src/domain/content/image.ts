@@ -10,7 +10,7 @@ import { generateImageUrl } from '../../infra/upload';
 import { makeClient, SignedUrl } from '../../infra/space';
 import { ImageInput } from '../Input';
 import { apply, concat, isImageExtension, maxLen, minLen, notEmpty } from '../../util/validator';
-import { getLRUAssetSource } from './assetSource';
+import { getLRUAssetStorage } from './assetStore';
 
 
 const imageV = apply<ImageInput>({
@@ -26,7 +26,7 @@ const imageV = apply<ImageInput>({
 export async function createImageUploadIntent(ctx: Context, input: ImageInput): DomainResult<SignedUrl> {
 
   const { db } = ctx;
-  const projectId = 1;
+  const publicationId = 1;
   const title = path.basename(input.title).trim();
   const extension = input.extension;
 
@@ -36,15 +36,15 @@ export async function createImageUploadIntent(ctx: Context, input: ImageInput): 
     return R.ofError(ErrorCode.INVALID_DATA, result.value.join('\n'));
   }
 
-  const source = await getLRUAssetSource(ctx);
+  const source = await getLRUAssetStorage(ctx);
 
   if (!source) {
-    return R.ofError(ErrorCode.NO_ASSET_SOURCE, 'At least one asset source is required');
+    return R.ofError(ErrorCode.NO_ASSET_STORE, 'At least one asset source is required');
   }
 
   // TODO: Allow 50 images per user per 24 hours.
 
-  const fileName = `${projectId}/${title}-${cuid()}.${extension}`;
+  const fileName = `${publicationId}/${title}-${cuid()}.${extension}`;
 
   const _image = await db.image.create({
     data: {
@@ -56,8 +56,8 @@ export async function createImageUploadIntent(ctx: Context, input: ImageInput): 
           fileName,
           size: 0,
           sizeUnit: 'byte',
-          projectId,
-          sourceId: source.id,
+          publicationId,
+          storageId: source.id,
           contentType: 'image/'
         }
       }

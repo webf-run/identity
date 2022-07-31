@@ -94,7 +94,7 @@ model User {
   posts           Post[]
 
   tenants         TenantUser[]
-  publication     PublicationUser[]
+  publications    PublicationUser[]
   roles           UserPublicationRole[]
 
   createdAt       DateTime                @db.Timestamptz() @default(now()) @map("created_at")

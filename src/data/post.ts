@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 
 
-export function findPostByOwner(db: PrismaClient, postId: bigint, ownerId: bigint) {
+export function findPostByOwner(db: PrismaClient, postId: bigint, ownerId: string) {
   return db.post.findFirst({
     where: {
       id: postId,

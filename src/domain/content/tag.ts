@@ -76,7 +76,7 @@ export async function createTag({ db }: Context, newTag: TagInput): DomainResult
 }
 
 
-export async function updateTag(ctx: Context, tagId: bigint, newTag: TagInput): DomainResult<Tag> {
+export async function updateTag(ctx: Context, tagId: string, newTag: TagInput): DomainResult<Tag> {
 
   const tag = await ctx.db.tag.findUnique({ where: { id: tagId } });
 

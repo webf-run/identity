@@ -11,7 +11,7 @@ type AppError {
   errors: [Error!]!
 }
 
-type AssetSource {
+type AssetStore {
   bucket: String!
   cloudType: String!
   id: ID!
@@ -21,7 +21,7 @@ type AssetSource {
   uploadUrl: String!
 }
 
-input AssetSourceInput {
+input AssetStoreInput {
   bucket: String!
   cloudType: String!
   key: String!
@@ -31,7 +31,7 @@ input AssetSourceInput {
   uploadUrl: String!
 }
 
-union AssetSourceResponse = AppError | AssetSource
+union AssetStoreResponse = AppError | AssetStore
 
 type AuthToken {
   duration: Int!
@@ -103,7 +103,7 @@ type Mutation {
   """Generate a token using user or client credentials"""
   authenticate(grantType: GrantType!, input: Credentials!): AuthTokenResponse!
   claimInvitation(code: String!, password: String!): ResultResponse!
-  createAssetSource(source: AssetSourceInput!): AssetSourceResponse!
+  createAssetStore(store: AssetStoreInput!): AssetStoreResponse!
   createPost(post: PostInput!): UpdatePostPayloadResponse!
   createPublication(input: NewPublicationInput!): NewPublicationResponse!
   createTag(tag: TagInput!): TagResponse!

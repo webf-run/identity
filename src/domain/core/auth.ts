@@ -17,16 +17,12 @@ import { R } from '../R';
 
 export async function authenticate(ctx: Context, grantType: GrantType, input: Credentials): DomainResult<AuthToken> {
 
-  const { db, access } = ctx;
+  const { db } = ctx;
   const { id, secret } = input;
 
   if (grantType === 'USER') {
 
-    if (!access.scopeId) {
-      return R.ofError(ErrorCode.INVALID_SCOPE, 'Correct scope is required to authenticate');
-    }
-
-    const user = await findUserByEmail(db, id, access.scopeId);
+    const user = await findUserByEmail(db, id);
 
     // User with given email not found.
     if (!user) {
@@ -35,7 +31,7 @@ export async function authenticate(ctx: Context, grantType: GrantType, input: Cr
 
     const verified = await verifyPassword(user.password, secret, user.hashFn);
 
-    // Use with given email found but not password match.
+    // User with given email found but not password match.
     if (!verified) {
       return R.ofError(ErrorCode.INVALID_CRD, 'Invalid user credentials');
     }
@@ -48,7 +44,7 @@ export async function authenticate(ctx: Context, grantType: GrantType, input: Cr
 
     const app = await findClientApp(db, id);
 
-    // User with given email not found.
+    // App with given id not found.
     if (!app) {
       return R.ofError(ErrorCode.INVALID_CRD, 'Invalid client credentials');
     }
@@ -71,18 +67,11 @@ export async function authenticate(ctx: Context, grantType: GrantType, input: Cr
 
 export async function forgotPassword(ctx: Context, username: string): DomainResult<boolean> {
 
-  const { db, access } = ctx;
-
-  if (!access.scopeId) {
-    return R.ofError(ErrorCode.INVALID_SCOPE, 'Correct scope is required to reset password');
-  }
+  const { db } = ctx;
 
   const user = await db.user.findUnique({
     where: {
-      projectId_email: {
-        email: username,
-        projectId: access.scopeId
-      }
+      email: username
     },
     include: {
       resetRequest: true
@@ -129,7 +118,6 @@ export async function resetPassword(ctx: Context, code: string, newPassword: str
     return R.ofError(ErrorCode.INVALID_AUTH_REQUEST, '');
   }
 
-
   const changePasswordT = (await changePassword(db, resetReqeust.userId, newPassword))();
 
   const deleteRequestT = ctx.db.resetPasswordRequest.delete({
@@ -167,21 +155,21 @@ async function getUserAccess(db: Context['db'], tokenId: string, scope?: bigint)
 
   const { user } = token;
 
-  const publication = user.project.publication ?? undefined;
+  const maybeRole = scope && user.roles.find((r) => r.publicationId === scope);
 
-  if (scope && scope !== publication?.id) {
+  if (!maybeRole) {
     return R.ofError(ErrorCode.FORBIDDEN, 'Trying to access unknown publication');
   }
 
   const userInfo: UserInfo = {
     ...user,
-    role: token.user.role?.roleId
+    role: maybeRole.roleId
   };
 
   const access: UserAccess = {
     type: 'user',
     user: userInfo,
-    scope: publication
+    scope: maybeRole.publication
   };
 
   return R.of(access);
@@ -208,8 +196,7 @@ async function getClientAppAccess(
 
   if (scope) {
     const publication = await db.publication.findUnique({
-      where: { id: scope },
-      include: { project: true }
+      where: { id: scope }
     });
 
     if (!publication) {

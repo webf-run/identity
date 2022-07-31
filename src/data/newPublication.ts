@@ -1,16 +1,16 @@
-import { Prisma, PrismaClient, Publication } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 import { NewPublicationInput } from '../domain/Input';
-import { Publication as PublicationWithProject } from '../domain/Output';
+import { Publication } from '../domain/Output';
 import { hashPassword } from './code';
-import { ProjectType, PublicationRole } from './constant';
+import { PublicationRole } from './constant';
 import { buildUserInvite } from './invitation';
 
 
 export async function createWithCredentials(
   db: PrismaClient,
   input: NewPublicationInput,
-  password: string): Promise<PublicationWithProject> {
+  password: string): Promise<Publication> {
 
   const { firstName, lastName, email } = input.firstUser;
 
@@ -18,13 +18,20 @@ export async function createWithCredentials(
 
   const data = buildNewPublication(input);
 
-  data.project.create!.users = {
+  data.roles = {
     create: {
-      firstName, lastName, email,
-      password: passwordHashed, hashFn,
       role: {
+        connect: {
+          id: PublicationRole.Owner
+        }
+      },
+      user: {
         create: {
-          roleId: PublicationRole.Owner
+          firstName,
+          lastName,
+          email,
+          password: passwordHashed,
+          hashFn,
         }
       }
     }
@@ -32,24 +39,24 @@ export async function createWithCredentials(
 
   const publication = await db.publication.create({ data });
 
-  return buildPublicationWithProject(publication, input);
+  return publication;
 }
 
 
 export async function createWithInvitation(
   db: PrismaClient,
-  input: NewPublicationInput): Promise<[PublicationWithProject, string]> {
+  input: NewPublicationInput): Promise<[Publication, string]> {
 
   const data = buildNewPublication(input);
   const invitation = buildUserInvite(input.firstUser, PublicationRole.Owner);
 
-  data.project.create!.invitations = {
+  data.invitations = {
     create: invitation
   };
 
   const response = await db.publication.create({ data });
 
-  return [buildPublicationWithProject(response, input), invitation.code];
+  return [response, invitation.code];
 }
 
 
@@ -59,35 +66,21 @@ function buildNewPublication(input: NewPublicationInput) {
 
   const request: Prisma.PublicationCreateInput = {
     publicUrl: input.publicUrl,
-    // projectType: ProjectType.PUBLICATION,
-    project: {
-      create: {
-        name: input.name,
-        fromEmail: input.fromEmail,
-        projectType: ProjectType.Publication,
+    fromEmail: input.fromEmail,
 
-        quota: {
-          create: {
-            occupied: 1,
-            sizeInMB: quota.assetSize,
-            maxCapacity: quota.maxCapacity
-          }
-        }
+    quota: {
+      create: {
+        occupied: 1,
+        sizeInMB: quota.assetSize,
+        maxCapacity: quota.maxCapacity
+      }
+    },
+    tenant: {
+      create: {
+        name: input.name
       }
     }
   };
 
   return request;
-}
-
-function buildPublicationWithProject(p: Publication, i: NewPublicationInput): PublicationWithProject {
-  return {
-    ...p,
-    project: {
-      id: p.id,
-      fromEmail: i.fromEmail,
-      name: i.name,
-      projectType: p.projectType
-    }
-  };
 }

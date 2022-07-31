@@ -35,7 +35,7 @@ export async function hashPassword(password: string): Promise<[string, string]> 
 }
 
 
-export function generateUserToken(db: PrismaClient, userId: bigint): Promise<UserToken> {
+export function generateUserToken(db: PrismaClient, userId: string): Promise<UserToken> {
   const tokenId = 'u-' + cryptoRandomString({ length: 128, type: 'url-safe' });
 
   return db.userToken.create({

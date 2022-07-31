@@ -13,12 +13,12 @@ export async function createNewPost(ctx: Context, post: PostInput): DomainResult
 
   const { db, access } = ctx;
 
-  if (!isUser(access)) {
+  if (!isUser(access) || !access.scopeId) {
     return R.ofError(ErrorCode.FORBIDDEN, '');
   }
 
   const user = access.user;
-  const publicationId = user.projectId;
+  const publicationId = access.scopeId;
 
   // TODO: Validation
 

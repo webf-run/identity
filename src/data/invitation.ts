@@ -1,9 +1,13 @@
-import { Invitation, Prisma, PrismaClient } from '@prisma/client';
+import { Invitation, Prisma, PrismaClient, Publication } from '@prisma/client';
 
 import { UserInput } from '../domain/Input';
 import { generateInviteCode } from './code';
 import { PublicationRole } from './constant';
 
+
+export type InvitationAndPub = Invitation & {
+  publication: Publication;
+};
 
 export const ONE_MINUTE_MS = 60 * 1000;
 export const ONE_HOUR_MS = 60 * ONE_MINUTE_MS;
@@ -15,7 +19,7 @@ export function inviteUser(db: PrismaClient, newUser: UserInput, projectId: bigi
     where: { id: projectId },
     data: {
       occupied: { increment: 1 },
-      project: {
+      publication: {
         update: {
           invitations: {
             create: buildUserInvite(newUser, role)
@@ -32,7 +36,7 @@ export function buildUserInvite(newUser: UserInput, role: PublicationRole) {
   const duration = 4 * ONE_DAY_MS;
 
   // User invitation is valid for 4 days
-  const payload: Prisma.InvitationCreateWithoutProjectInput = {
+  const payload: Prisma.InvitationCreateWithoutPublicationInput = {
     code: generateInviteCode(),
     firstName: newUser.firstName,
     lastName: newUser.lastName,
@@ -48,14 +52,14 @@ export function buildUserInvite(newUser: UserInput, role: PublicationRole) {
 }
 
 
-export function deleteInvitation(db: PrismaClient, invitationId: bigint) {
+export function deleteInvitation(db: PrismaClient, invitationId: string) {
   return db.invitation.delete({
     where: { id: invitationId }
   });
 }
 
 
-export function getInvitationById(db: PrismaClient, invitationId: bigint) {
+export function getInvitationById(db: PrismaClient, invitationId: string) {
   return db.invitation.findUnique({
     where: {
       id: invitationId
@@ -64,12 +68,19 @@ export function getInvitationById(db: PrismaClient, invitationId: bigint) {
 }
 
 
-export function findInvitationByCode(db: PrismaClient, code: string) {
+export function findInvitationByCode(db: PrismaClient, code: string): Promise<InvitationAndPub | null> {
   return db.invitation.findFirst({
     where: {
       code,
       expiryAt: {
         gt: new Date()
+      }
+    },
+    include: {
+      publication: {
+        include: {
+          tenant: true
+        }
       }
     }
   });

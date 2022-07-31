@@ -67,7 +67,7 @@ export const TagMutation = extendType({
       type: 'TagResponse',
       args: { tag: TagInput, tagId: 'ID' },
       resolve(_root, args, ctx) {
-        const tag = updateTag(ctx, BigInt(args.tagId), args.tag);
+        const tag = updateTag(ctx, args.tagId, args.tag);
         const mapped = R.map((y) => ({ ...y, id: y.id.toString() }), tag);
 
         return R.unpack(mapped);

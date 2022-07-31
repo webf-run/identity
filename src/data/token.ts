@@ -1,7 +1,16 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, UserToken, User, PublicationUser, Publication, UserPublicationRole, } from '@prisma/client';
 
 
-export function findUserToken(db: PrismaClient, tokenId: string) {
+type TokenWithUser =
+  UserToken & {
+    user: Omit<User, 'password' | 'passwordHash' | 'hashFn'> & {
+      roles: Array<UserPublicationRole & {
+        publication: Publication;
+      }>;
+    };
+  };
+
+export function findUserToken(db: PrismaClient, tokenId: string): Promise<TokenWithUser | null> {
   return db.userToken.findUnique({
     where: {
       id: tokenId
@@ -14,19 +23,12 @@ export function findUserToken(db: PrismaClient, tokenId: string) {
           lastName: true,
           createdAt: true,
           email: true,
-          projectId: true,
           updatedAt: true,
-          role: true,
-          project: {
+          roles: {
             include: {
-              publication: {
-                include: {
-                  project: true
-                }
-              }
+              publication: true
             }
           }
-
         }
       }
     }
