@@ -21,7 +21,15 @@ prisma migrate dev --create-only -name some-migration-name
 
 ## Local Setup
 
-Create an `.env` file at the root of the repository. Set environment variable DATABASE_URL as per the following.
-```
-DATABASE_URL=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+Create an `.env` file at the root of the repository. Copy the content of `.env.backup` and set appropriate values.
+
+### Sample postgres docker command
+
+```bash
+docker run -d --rm --name postgres-db \
+  -p 5432:5432 \
+  -e POSTGRES_PASSWORD=postgres \
+  -e PGDATA=/var/lib/postgresql/data/pgdata \
+  --mount source=pg-data-vol,target=/var/lib/postgresql/data \
+  postgres:14.4
 ```
