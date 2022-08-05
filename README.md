@@ -32,4 +32,7 @@ docker run -d --rm --name postgres-db \
   -e PGDATA=/var/lib/postgresql/data/pgdata \
   --mount source=pg-data-vol,target=/var/lib/postgresql/data \
   postgres:14.4
+
+# Connect using PSQL
+docker run --rm -it postgres:14.4 psql -h localhost -U postgres
 ```
