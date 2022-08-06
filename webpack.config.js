@@ -5,51 +5,60 @@ const nodeExternals = require('webpack-node-externals');
 
 const SITE_DIST = path.join(__dirname, './dist');
 
-module.exports = {
-  context: __dirname,
-  target: 'node',
+module.exports = (env, argv) => {
 
-  mode: 'development',
-  devtool: 'source-map',
+  const config = {
+    context: __dirname,
+    target: 'node',
 
-  entry: './src/main.ts',
+    entry: './src/main.ts',
 
-  externalsPresets: { node: true },
-  externals: [nodeExternals({
-    allowlist: [
-      'crypto-random-string',
-      '@sindresorhus/slugify',
-      '@sindresorhus/transliterate'
-    ]
-  })],
+    externalsPresets: { node: true },
+    externals: [nodeExternals({
+      allowlist: [
+        'crypto-random-string',
+        '@sindresorhus/slugify',
+        '@sindresorhus/transliterate'
+      ]
+    })],
 
-  node: {
-    __dirname: 'eval-only'
-  },
+    node: {
+      __dirname: 'eval-only'
+    },
 
-  output: {
-    path: SITE_DIST,
-    filename: 'bundle.js'
-  },
+    output: {
+      path: SITE_DIST,
+      filename: 'bundle.js'
+    },
 
-  module: {
-    rules: [
-      {
-        test: /\.(t|j)sx?$/,
-        use: {
-          loader: 'babel-loader'
+    module: {
+      rules: [
+        {
+          test: /\.(t|j)sx?$/,
+          use: {
+            loader: 'babel-loader'
+          }
         }
-      }
-    ]
-  },
+      ]
+    },
 
-  plugins: [
-    new NodemonPlugin()
-  ],
+    plugins: [],
 
-  resolve: {
-    extensions: ['.ts', '.js', '.mjs', '.cjs'],
-    mainFields: ['module', 'main'],
-    alias: {}
+    resolve: {
+      extensions: ['.ts', '.js', '.mjs', '.cjs'],
+      mainFields: ['module', 'main'],
+      alias: {}
+    }
+  };
+
+  if (env.production) {
+    config.mode = 'production';
+    config.devtool = 'source-map';
+  } else {
+    config.mode = 'development';
+    config.devtool = 'eval-source-map';
+    config.plugins.push(new NodemonPlugin());
   }
+
+  return config;
 };

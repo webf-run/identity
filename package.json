@@ -4,7 +4,7 @@
   "description": "Backend for Chidi",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && webpack",
+    "build": "tsc && webpack --env production",
     "dev": "concurrently npm:dev:server npm:dev:db",
     "dev:server": "dotenv -- webpack --watch",
     "dev:db": "dotenv -- pgtyped -w -c pgtyped.json",

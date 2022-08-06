@@ -6,7 +6,7 @@
 import { NexusGenInputs, NexusGenEnums } from '../NexusTypegen';
 
 
-export type AssetSourceInput = NexusGenInputs['AssetSourceInput'];
+export type AssetStoreInput = NexusGenInputs['AssetStoreInput'];
 export type ImageInput = NexusGenInputs['ImageInput'];
 
 export type PostInput = NexusGenInputs['PostInput'];

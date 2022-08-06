@@ -2,7 +2,7 @@ import { Either } from '../../util/Either';
 import { apply, inSet, notEmpty } from '../../util/validator';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
-import { AssetSourceInput } from '../Input';
+import { AssetStoreInput } from '../Input';
 import { R } from '../R';
 import { AssetStorage } from '../Output';
 
@@ -18,7 +18,7 @@ const assetSTorageV = apply({
 });
 
 
-export async function createAssetStorage(ctx: Context, source: AssetSourceInput): DomainResult<AssetStorage> {
+export async function createAssetStorage(ctx: Context, source: AssetStoreInput): DomainResult<AssetStorage> {
 
   const { db } = ctx;
 
