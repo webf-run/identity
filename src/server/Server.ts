@@ -1,13 +1,13 @@
-import { PrismaClient } from '@prisma/client';
 import { ApolloServer, AuthenticationError } from 'apollo-server';
 import type { ApolloServerPlugin } from 'apollo-server-plugin-base';
 
 import { Context } from '../domain/Context';
+import { DbClient } from '../domain/DbContext';
 import { schema } from '../schema/schema';
-import { makeContextFromWeb } from './webContext';
+import { makeContextFromWeb } from './WebContext';
 
 
-export function makeServer(db: PrismaClient): ApolloServer {
+export function makeServer(db: DbClient): ApolloServer {
 
   // Create GraphQL Server
   const server = new ApolloServer({

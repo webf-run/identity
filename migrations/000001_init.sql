@@ -130,15 +130,6 @@ CREATE TABLE "quota" (
 );
 
 -- CreateTable
-CREATE TABLE "publication_user" (
-    "id" UUID NOT NULL,
-    "user_id" UUID NOT NULL,
-    "publication_id" BIGINT NOT NULL,
-
-    CONSTRAINT "publication_user_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "user_publication_role" (
     "id" UUID NOT NULL,
     "user_id" UUID NOT NULL,
@@ -231,7 +222,7 @@ CREATE TABLE "asset_storage" (
 -- CreateTable
 CREATE TABLE "asset" (
     "id" UUID NOT NULL,
-    "source_id" INTEGER NOT NULL,
+    "storage_id" INTEGER NOT NULL,
     "title" TEXT NOT NULL,
     "file_name" TEXT NOT NULL,
     "content_type" TEXT NOT NULL,
@@ -281,9 +272,6 @@ CREATE UNIQUE INDEX "reset_password_request_user_id_key" ON "reset_password_requ
 CREATE UNIQUE INDEX "publication_public_url_key" ON "publication"("public_url");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "publication_user_user_id_publication_id_key" ON "publication_user"("user_id", "publication_id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "user_publication_role_user_id_publication_id_role_id_key" ON "user_publication_role"("user_id", "publication_id", "role_id");
 
 -- CreateIndex
@@ -302,7 +290,7 @@ CREATE UNIQUE INDEX "asset_storage_cloud_type_region_bucket_key" ON "asset_stora
 CREATE UNIQUE INDEX "asset_file_name_key" ON "asset"("file_name");
 
 -- CreateIndex
-CREATE INDEX "asset_source_id_idx" ON "asset"("source_id");
+CREATE INDEX "asset_storage_id_idx" ON "asset"("storage_id");
 
 -- AddForeignKey
 ALTER TABLE "invitation" ADD CONSTRAINT "invitation_publication_id_fkey" FOREIGN KEY ("publication_id") REFERENCES "publication"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -335,12 +323,6 @@ ALTER TABLE "publication" ADD CONSTRAINT "publication_tenant_id_fkey" FOREIGN KE
 ALTER TABLE "quota" ADD CONSTRAINT "quota_id_fkey" FOREIGN KEY ("id") REFERENCES "publication"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "publication_user" ADD CONSTRAINT "publication_user_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "app_user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "publication_user" ADD CONSTRAINT "publication_user_publication_id_fkey" FOREIGN KEY ("publication_id") REFERENCES "publication"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "user_publication_role" ADD CONSTRAINT "user_publication_role_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "app_user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -371,7 +353,7 @@ ALTER TABLE "post_tag" ADD CONSTRAINT "post_tag_post_id_fkey" FOREIGN KEY ("post
 ALTER TABLE "post_tag" ADD CONSTRAINT "post_tag_tag_id_fkey" FOREIGN KEY ("tag_id") REFERENCES "tag"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "asset" ADD CONSTRAINT "asset_source_id_fkey" FOREIGN KEY ("source_id") REFERENCES "asset_storage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "asset" ADD CONSTRAINT "asset_storage_id_fkey" FOREIGN KEY ("storage_id") REFERENCES "asset_storage"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "asset" ADD CONSTRAINT "asset_publication_id_fkey" FOREIGN KEY ("publication_id") REFERENCES "publication"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

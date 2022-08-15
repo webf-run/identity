@@ -145,15 +145,6 @@ type Post {
   title: String!
 }
 
-type Post2 {
-  content: JSONObject!
-  id: ID!
-  meta: PostMeta!
-  slug: String!
-  tags: [Tag!]!
-  title: String!
-}
-
 input PostInput {
   content: JSONObject!
   title: String!

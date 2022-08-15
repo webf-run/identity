@@ -9,7 +9,6 @@ generator client {
 }
 
 
-
 model EmailConfig {
   id            String    @id @default(uuid()) @db.Uuid
   fromName      String    @map("from_name")
@@ -46,6 +45,9 @@ model Tenant {
 
   publication     Publication[]
   users           TenantUser[]
+
+  createdAt       DateTime        @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt       DateTime        @db.Timestamptz() @updatedAt @map("updated_at")
 
   @@map("tenant")
 }
@@ -90,7 +92,6 @@ model User {
   posts           Post[]
 
   tenants         TenantUser[]
-  publications    PublicationUser[]
   roles           UserPublicationRole[]
 
   createdAt       DateTime                @db.Timestamptz() @default(now()) @map("created_at")
@@ -183,9 +184,11 @@ model Publication {
   tenantId      String                  @map("tenant_id") @db.Uuid
 
   invitations   Invitation[]
-  users         PublicationUser[]
   roles         UserPublicationRole[]
   posts         Post[]
+
+  createdAt       DateTime              @db.Timestamptz() @default(now()) @map("created_at")
+  updatedAt       DateTime              @db.Timestamptz() @updatedAt @map("updated_at")
 
   @@map("publication")
 }
@@ -206,20 +209,6 @@ model Quota {
 }
 
 
-model PublicationUser {
-  id              String        @id @default(uuid()) @db.Uuid
-
-  user            User          @relation(fields: [userId], references: [id])
-  userId          String        @map("user_id") @db.Uuid
-
-  publication     Publication   @relation(fields: [publicationId], references: [id])
-  publicationId   BigInt        @map("publication_id")
-
-  @@map("publication_user")
-  @@unique([userId, publicationId])
-}
-
-
 model UserPublicationRole {
   id              String          @id @default(uuid()) @db.Uuid
 
@@ -233,7 +222,7 @@ model UserPublicationRole {
   roleId          Int             @map("role_id")
 
   @@map("user_publication_role")
-  @@unique([userId, publicationId, roleId])
+  @@unique([userId, publicationId])
 }
 
 
@@ -373,7 +362,7 @@ model Asset {
   id              String        @id @default(uuid()) @db.Uuid
 
   storage         AssetStorage  @relation(fields: [storageId], references: [id])
-  storageId       Int           @map("source_id")
+  storageId       Int           @map("storage_id")
 
   title           String
   fileName        String        @map("file_name") @unique()

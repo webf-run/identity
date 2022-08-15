@@ -1,6 +1,6 @@
 import { enumType, extendType, inputObjectType, objectType } from 'nexus';
 
-import { authenticate, forgotPassword, resetPassword } from '../domain/core/auth';
+import { authenticate, forgotPassword, resetPassword } from '../domain/auth/auth';
 import { R } from '../domain/R';
 
 import { errorUnion } from './helper';

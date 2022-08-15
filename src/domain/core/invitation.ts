@@ -1,7 +1,11 @@
-import * as repo from '../../data/invitation';
 import { isUser } from '../Access';
 import { inviteNotFound, inviteNotYetExpired, noAccess } from '../AppError';
 import { Context } from '../Context';
+import {
+  extendInvitationExpiry,
+  getInvitationById,
+  deleteInvitation as delInvitation
+} from '../invitation/invitation';
 import { Result } from '../Output';
 import { R } from '../R';
 
@@ -14,7 +18,7 @@ export async function deleteInvitation(ctx: Context, invitationId: string): Doma
     return noAccess();
   }
 
-  const invitation = await repo.getInvitationById(db, invitationId);
+  const invitation = await getInvitationById(db, invitationId);
 
   if (!invitation) {
     return inviteNotFound();
@@ -22,7 +26,7 @@ export async function deleteInvitation(ctx: Context, invitationId: string): Doma
 
   try {
     if (access.scope?.id === invitation.publicationId) {
-      await repo.deleteInvitation(db, invitation.id);
+      await delInvitation(db, invitation.id);
     } else {
       return inviteNotFound();
     }
@@ -43,7 +47,7 @@ export async function retryInvitation(ctx: Context, invitationId: string): Domai
     return noAccess();
   }
 
-  const invitation = await repo.getInvitationById(db, invitationId);
+  const invitation = await getInvitationById(db, invitationId);
 
   if (!invitation) {
     return inviteNotFound();
@@ -57,7 +61,7 @@ export async function retryInvitation(ctx: Context, invitationId: string): Domai
   try {
     if (access.scope?.id === invitation.publicationId) {
       // This is a project level invitation
-      await repo.extendInvitationExpiry(db, invitation);
+      await extendInvitationExpiry(db, invitation);
 
     } else {
       return inviteNotFound();

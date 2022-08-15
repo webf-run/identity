@@ -1,18 +1,19 @@
-import { ClientAppToken, UserToken } from '@prisma/client';
 import argon2 from 'argon2';
 import cryptoRandomString from 'crypto-random-string';
 
-import { findClientApp } from '../../data/client';
 import { generateClientToken, generateUserToken } from '../../data/code';
-import { findUserToken } from '../../data/token';
-import { changePassword, findUserByEmail } from '../../data/user';
 
 import { Access, ClientAppAccess, UserAccess, UserInfo } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { GrantType, Credentials } from '../Input';
-import { AuthToken } from '../Output';
+import { AuthToken, ClientAppToken, UserToken } from '../Output';
 import { R } from '../R';
+import { findClientApp } from '../infra/setup';
+
+import { changePassword, findUserByEmail, findUserToken } from './userHelper';
+import { ONE_HOUR_MS } from '../../data/invitation';
+import { v4 } from 'uuid';
 
 
 export async function authenticate(ctx: Context, grantType: GrantType, input: Credentials): DomainResult<AuthToken> {
@@ -36,9 +37,18 @@ export async function authenticate(ctx: Context, grantType: GrantType, input: Cr
       return R.ofError(ErrorCode.INVALID_CRD, 'Invalid user credentials');
     }
 
-    const token = await generateUserToken(db, user.id);
+    const tokenId = generateUserToken();
 
-    return R.of({ ...token, type: 'Bearer' });
+    const addedToken = await db.token.createUserToken({
+      id: tokenId,
+      duration: 3600 * 1000 * 72,
+      userId: user.id,
+      generatedAt: new Date()
+    });
+
+    const token = addedToken[0];
+
+    return R.of({ ...token, type: 'bearer' as const });
 
   } else if (grantType === 'CLIENT') {
 
@@ -56,9 +66,18 @@ export async function authenticate(ctx: Context, grantType: GrantType, input: Cr
       return R.ofError(ErrorCode.INVALID_CRD, 'Invalid client credentials');
     }
 
-    const token = await generateClientToken(db, app.id);
+    const tokenId = generateClientToken();
 
-    return R.of({ ...token, type: 'Bearer' });
+    const addedToken = await db.token.createClientAppToken({
+      id: tokenId,
+      clientAppId: app.id,
+      duration: ONE_HOUR_MS,
+      generatedAt: new Date()
+    });
+
+    const token = addedToken[0];
+
+    return R.of({ ...token, type: 'bearer' as const });
   }
 
   return R.ofError(ErrorCode.INVALID_AUTH_REQUEST, '');
@@ -69,25 +88,24 @@ export async function forgotPassword(ctx: Context, username: string): DomainResu
 
   const { db } = ctx;
 
-  const user = await db.user.findUnique({
-    where: {
-      email: username
-    },
-    include: {
-      resetRequest: true
-    }
+  const results = await db.token.findResetPasswordRequestByEmail({
+    email: username
   });
 
-  if (!user) {
+  const userFound = results.at(0);
+
+  // If not user is found, then return true.
+  if (!userFound) {
     return R.of(true);
   }
 
-  if (!user.resetRequest) {
-    user.resetRequest = await db.resetPasswordRequest.create({
-      data: {
-        code: cryptoRandomString({ length: 96, type: 'url-safe' }),
-        userId: user.id
-      }
+  if (userFound.count === 0) {
+    await db.token.createResetPasswordRequest({
+      id: v4(),
+      code: cryptoRandomString({ length: 96, type: 'url-safe' }),
+      userId: userFound.userId,
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
   }
 
@@ -99,35 +117,37 @@ export async function forgotPassword(ctx: Context, username: string): DomainResu
 
 export async function resetPassword(ctx: Context, code: string, newPassword: string): DomainResult<boolean> {
 
-  // Token is valid for 30 minutes only
   const { db } = ctx;
+
+  // Token is valid for 30 minutes only
   const validTime = new Date(Date.now() - 30 * 60000);
 
-  const resetReqeust = await ctx.db.resetPasswordRequest.findFirst({
-    where: {
-      AND: {
-        code,
-        updatedAt: {
-          gte: validTime
-        }
-      }
-    }
+  const results = await db.token.findResetPasswordRequestByCode({
+    code,
+    validTime
   });
 
-  if (!resetReqeust) {
+  const resetRequest = results.at(0);
+
+  if (!resetRequest) {
     return R.ofError(ErrorCode.INVALID_AUTH_REQUEST, '');
   }
 
-  const changePasswordT = (await changePassword(db, resetReqeust.userId, newPassword))();
+  try {
 
-  const deleteRequestT = ctx.db.resetPasswordRequest.delete({
-    where: {
-      id: resetReqeust.id
-    }
-  });
+    await db.transaction(async (db) => {
+      // User Repository
+      await changePassword(db, resetRequest.userId, newPassword);
 
-  await ctx.db.$transaction([changePasswordT, deleteRequestT]);
+      // Token Repository
+      await db.token.deleteResetPasswordRequest({
+        id: resetRequest.id
+      });
+    });
+  } catch (err) {
+    // Transaction has failed.
 
+  }
   return R.of(true);
 }
 
@@ -147,15 +167,13 @@ export async function getAccessForToken(db: Context['db'], tokenId: string, scop
 async function getUserAccess(db: Context['db'], tokenId: string, scope?: bigint): DomainResult<UserAccess> {
 
   // TODO: Do not select password related sensitive data
-  const token = await findUserToken(db, tokenId);
+  const user = await findUserToken(db, tokenId);
 
-  if (!isTokenValid(token)) {
+  if (!user || !isTokenValid(user.token)) {
     return invalidToken();
   }
 
-  const { user } = token;
-
-  const maybeRole = scope && user.roles.find((r) => r.publicationId === scope);
+  const maybeRole = scope && user.roles.find((r) => r.publication.id === scope);
 
   if (!maybeRole) {
     return R.ofError(ErrorCode.FORBIDDEN, 'Trying to access unknown publication');
@@ -178,12 +196,19 @@ async function getUserAccess(db: Context['db'], tokenId: string, scope?: bigint)
 async function getClientAppAccess(
   db: Context['db'], tokenId: string, scope?: bigint): DomainResult<ClientAppAccess> {
 
-  const token = await db.clientAppToken.findUnique({
-    where: { id: tokenId },
-    include: {
-      clientApp: true
-    }
-  });
+  const tokensWithClients = await db.token.findClientAppByToken({ tokenId });
+  const tokenWithClient = tokensWithClients.at(0);
+
+  if (!tokenWithClient) {
+    return invalidToken();
+  }
+
+  const token: ClientAppToken = {
+    id: tokenId,
+    clientAppId: tokenWithClient.id,
+    duration: tokenWithClient.duration,
+    generatedAt: tokenWithClient.generatedAt
+  };
 
   if (!isTokenValid(token)) {
     return invalidToken();
@@ -195,15 +220,17 @@ async function getClientAppAccess(
   };
 
   if (scope) {
-    const publication = await db.publication.findUnique({
-      where: { id: scope }
-    });
+    const publications = await db.publication.getById({ id: scope.toString() });
+    const publication = publications.at(0);
 
     if (!publication) {
       return R.ofError(ErrorCode.FORBIDDEN, 'Trying to access unknown publication');
     }
 
-    access.scope = publication;
+    access.scope = {
+      ...publication,
+      id: BigInt(publication.id)
+    };
   }
 
   return R.of(access);

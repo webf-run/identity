@@ -1,5 +1,5 @@
-import { EmailConfig } from '@prisma/client';
 import sgMail from '@sendgrid/mail';
+import { EmailConfig } from '../domain/Output';
 
 
 export interface MailData {

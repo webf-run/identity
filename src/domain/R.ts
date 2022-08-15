@@ -1,6 +1,6 @@
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 
-import { Either, EitherTag, Left } from '../util/Either';
+import { Either, Left } from '../util/Either';
 import { AppError, ErrorCode } from './AppError';
 
 
@@ -25,11 +25,7 @@ async function map<T, R>(callback: (value: T) => R, value: DomainResult<T>): Dom
 async function unpack<T>(value: DomainResult<T>) {
   const du = await value;
 
-  if (du.tag === EitherTag.Ok) {
-    return du.value;
-  } else {
-    return du.value;
-  }
+  return du.value;
 }
 
 function liftDbError(code: string, domainCode: ErrorCode, message: string) {

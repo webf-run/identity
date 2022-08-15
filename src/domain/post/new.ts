@@ -1,15 +1,16 @@
 
+import { v4 } from 'uuid';
 import { generateSlug } from '../../data/code';
 
 import { isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { PostInput } from '../Input';
-import { Post, UpdatePostPayload } from '../Output';
+import { Post } from '../Output';
 import { R } from '../R';
 
 
-export async function createNewPost(ctx: Context, post: PostInput): DomainResult<UpdatePostPayload> {
+export async function createNewPost(ctx: Context, post: PostInput): DomainResult<Post> {
 
   const { db, access } = ctx;
 
@@ -31,29 +32,40 @@ export async function createNewPost(ctx: Context, post: PostInput): DomainResult
     description: ''
   };
 
-  const response = await db.post.create({
-    data: {
-      slug,
-      ownerId: user.id,
-      publicationId,
-      versions: {
-        create: {
-          title: post.title,
-          content: post.content,
-          version: 0
-        }
-      },
-      postMeta: {
-        create: meta
-      }
-    }
+  const createdAt = new Date();
+
+  const results = await db.post.createPost({
+    title: post.title,
+    description: '',
+    slug,
+    canonicalUrl: null,
+    ownerId: user.id,
+    publicationId: publicationId.toString(),
+    createdAt,
+    updatedAt: createdAt,
+    content: post.content as any,
+    version: 0,
+    versionId: v4()
   });
 
-  const newPost: UpdatePostPayload = {
-    ...response,
-    meta,
-    title: post.title,
-    content: post.content
+  const response = results[0];
+
+  const newPost: Post = {
+    id: BigInt(response.id),
+    ownerId: user.id,
+    publicationId,
+    canonicalUrl: null,
+    createdAt,
+    updatedAt: createdAt,
+    publishedAt: null,
+    slug,
+    meta: {
+      id: BigInt(response.id),
+      description: '',
+      imageId: null,
+      title: response.title
+    },
+    tags: []
   };
 
   return R.of(newPost);

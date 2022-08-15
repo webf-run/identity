@@ -26,11 +26,9 @@ export async function publishPost(ctx: Context, postId: bigint): DomainResult<Re
     return R.of({ status: false });
   }
 
-  const _response = await db.post.update({
-    data: {
-      publishedAt: new Date()
-    },
-    where: { id: postId }
+  await db.post.setPublishDate({
+    postId: postId.toString(),
+    publishedAt: new Date()
   });
 
   return R.of({ status: true });
@@ -45,42 +43,29 @@ export async function unpublishPost(ctx: Context, postId: bigint): DomainResult<
     return R.ofError(ErrorCode.FORBIDDEN, '');
   }
 
-  const post = await getPostForAccess(db, postId, access);
+  return db.transaction(async (db) => {
+    const post = await getPostForAccess(db, postId, access);
 
-  if (!post) {
-    return R.ofError(ErrorCode.NOT_FOUND, 'Post not found');
-  }
+    if (!post) {
+      return R.ofError(ErrorCode.NOT_FOUND, 'Post not found');
+    }
 
-  const isPublished = !!post.publishedAt;
+    const isPublished = !!post.publishedAt;
 
-  if (isPublished) {
-    return R.of({ status: false });
-  }
+    if (!isPublished) {
+      return R.of({ status: false });
+    }
 
-  const versions = await db.postVersion.count({ where: { postId } });
-
-  if (versions > 1) {
-
-    const req1 = db.postVersion.deleteMany({
-      where: {
-        version: { lt: (versions - 1) }
-      }
+    await db.post.unsetPublishDate({
+      postId: postId.toString(),
+      updatedAt: new Date()
     });
 
-    const req2 = db.postVersion.updateMany({
-      data: { version: 0 },
-      where: { postId }
+    await db.post.deleteStalePostVersions({
+      postId: postId.toString()
     });
 
-    await db.$transaction([req1, req2]);
-  }
-
-  await db.post.update({
-    data: {
-      publishedAt: null
-    },
-    where: { id: postId }
+    return R.of({ status: true });
   });
 
-  return R.of({ status: true });
 }

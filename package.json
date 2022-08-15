@@ -4,7 +4,8 @@
   "description": "Backend for Chidi",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && webpack --env production",
+    "check": "tsc",
+    "build": "npm run check && webpack --env production",
     "dev": "concurrently npm:dev:server npm:dev:db",
     "dev:server": "dotenv -- webpack --watch",
     "dev:db": "dotenv -- pgtyped -w -c pgtyped.json",
@@ -29,11 +30,13 @@
     "@pgtyped/cli": "^1.0.2",
     "@pgtyped/query": "^1.0.1",
     "@types/node": "^15.0.2",
+    "@types/pg": "^8.6.5",
+    "@types/uuid": "^8.3.4",
     "babel-loader": "^8.2.2",
     "concurrently": "^7.3.0",
     "nodemon-webpack-plugin": "^4.5.2",
     "prisma": "^4.1.0",
-    "typescript": "^4.2.4",
+    "typescript": "^4.7.4",
     "webpack": "^5.37.0",
     "webpack-cli": "^4.7.0",
     "webpack-node-externals": "^3.0.0"
@@ -54,6 +57,7 @@
     "mime-types": "^2.1.31",
     "nexus": "^1.0.0",
     "pg": "^8.7.3",
-    "postgres-migrations": "^5.3.0"
+    "postgres-migrations": "^5.3.0",
+    "uuid": "^8.3.2"
   }
 }

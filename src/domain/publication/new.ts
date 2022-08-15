@@ -1,15 +1,19 @@
 import { PublicationRole } from '../../data/constant';
 import { isCheckConstraint, isUniqueConstraint } from '../../data/error';
-import { inviteUser } from '../../data/invitation';
-import * as c from '../../data/newPublication';
-import { isUserMemberOf } from '../../data/user';
+import { isUserMemberOf } from '../auth/userHelper';
 
 import { isClientApp, isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
+import { inviteUser } from '../invitation/invitation';
 import { NewPublicationInput, UserInput } from '../Input';
 import { Result, Publication } from '../Output';
 import { R } from '../R';
+import {
+  createWithCredentials,
+  createWithInvitation
+}
+from './newHelper';
 
 
 export async function createNewPublication(ctx: Context, input: NewPublicationInput): DomainResult<Publication> {
@@ -31,12 +35,12 @@ export async function createNewPublication(ctx: Context, input: NewPublicationIn
   try {
     if (password) {
       // Create a new user
-      const publication = await c.createWithCredentials(db, input, password);
+      const publication = await createWithCredentials(db, input, password);
 
       return R.of(publication);
     } else {
       // Invite the new user
-      const [publication, code] = await c.createWithInvitation(db, input);
+      const [publication, code] = await createWithInvitation(db, input);
 
       return R.of(publication);
     }
@@ -63,12 +67,8 @@ export async function addMemberToPublication(ctx: Context, user: UserInput): Dom
   }
 
   // TODO: Validation pending
-
-  const quota = await db.quota.findFirst({
-    where: {
-      id: publication.id
-    }
-  });
+  const results = await db.quota.getPublicationQuota({ publicationId: `${publication.id}` });
+  const quota = results[0];
 
   if (!quota) {
     return R.ofError(ErrorCode.NOT_FOUND, 'Quota information not found');

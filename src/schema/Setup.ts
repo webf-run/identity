@@ -1,6 +1,6 @@
 import { enumType, extendType, inputObjectType, objectType } from 'nexus';
 
-import { initializeApp, registerNewClientApp, updateAppConfig } from '../domain/core/setup';
+import { initializeApp, registerNewClientApp, updateAppConfig } from '../domain/infra/setup';
 import { R } from '../domain/R';
 import { errorUnion } from './helper';
 

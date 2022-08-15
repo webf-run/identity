@@ -1,7 +1,5 @@
-import { User } from '@prisma/client';
-
 import { PublicationRole } from '../data/constant';
-import { Publication } from './Output';
+import { Publication, User } from './Output';
 
 
 export type UserInfo =

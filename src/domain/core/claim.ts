@@ -1,9 +1,8 @@
-import { deleteInvitation, findInvitationByCode, InvitationAndPub } from '../../data/invitation';
-import { createNewUser, findUserByEmail } from '../../data/user';
-
 import { ErrorCode } from '../AppError';
+import { createNewUser, findUserByEmail } from '../auth/userHelper';
 import { Context } from '../Context';
-import { Result } from '../Output';
+import { deleteInvitation, findInvitationByCode } from '../invitation/invitation';
+import { Invitation, Result } from '../Output';
 import { R } from '../R';
 
 
@@ -28,15 +27,13 @@ export async function claimInvitation(ctx: Context, code: string, password: stri
 }
 
 
-async function createStaffMember(ctx: Context, invitation: InvitationAndPub, password: string) {
+async function createStaffMember(ctx: Context, invitation: Invitation, password: string): DomainResult<Result> {
 
   const { db } = ctx;
 
   try {
-    const request = (await createNewUser(db, invitation, password))();
-    const cleanup = deleteInvitation(db, invitation.id);
-
-    await db.$transaction([request, cleanup]);
+    await createNewUser(db, invitation, password);
+    await deleteInvitation(db, invitation.id);
 
     return R.of({ status: true });
   } catch (error) {

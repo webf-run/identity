@@ -1,10 +1,10 @@
-import { Prisma } from '@prisma/client';
+import { v4 } from 'uuid';
 
 import { isUser } from '../Access';
 import { ErrorCode } from '../AppError';
 import { Context } from '../Context';
 import { PostInput, PostSettingsInput } from '../Input';
-import { PostSettings, UpdatePostPayload } from '../Output';
+import { PostSettings, PostWithContent } from '../Output';
 import { R } from '../R';
 import { getPostForAccess } from './find';
 
@@ -20,85 +20,78 @@ export async function updatePostSettings(
     return R.ofError(ErrorCode.FORBIDDEN, '');
   }
 
-  const post = await getPostForAccess(db, postId, access);
+  return await db.transaction(async (db) => {
+    const post = await getPostForAccess(db, postId, access);
+    const postIdStr = postId.toString();
 
-  if (!post?.postMeta) {
-    return R.ofError(ErrorCode.NOT_FOUND, 'Post not found');
-  }
+    if (!post) {
+      return R.ofError(ErrorCode.NOT_FOUND, 'Post not found');
+    }
 
-  const { tags } = post;
+    const { tags } = post;
 
-  const request: Prisma.PostUpdateInput = {};
+    const toUpdate = { ...post };
 
-  if (settings.slug) {
-    request.slug = settings.slug;
-  }
+    if (settings.slug) {
+      toUpdate.slug = settings.slug;
+    }
 
-  if (typeof settings.canonicalUrl === 'string') {
-    // If canonical URL is blank, then set to null
-    request.canonicalUrl = settings.canonicalUrl.trim() || null;
-  }
+    if (typeof settings.canonicalUrl === 'string') {
+      // If canonical URL is blank, then set to null
+      toUpdate.canonicalUrl = settings.canonicalUrl.trim() || null;
+    }
 
-  if (settings.meta) {
-    request.postMeta = {
-      update: {
+    await db.post.updatePost({
+      postId: postIdStr,
+      slug: toUpdate.slug,
+      canonicalUrl: toUpdate.canonicalUrl,
+      updatedAt: new Date()
+    });
+
+    if (settings.meta) {
+      await db.post.updatePostMetadata({
+        postId: postIdStr,
         title: settings.meta.title,
         description: settings.meta.description
+      });
+    }
+
+    if (settings.tags) {
+
+      const tagsToDelete = tags.filter((x) => !settings.tags!.find((y) => x.tagId === y));
+
+      if (tagsToDelete.length > 0) {
+        await db.post.detachTags({
+          postId: postIdStr,
+          tags: tagsToDelete.map((x) => x.tagId)
+        });
       }
-    };
-  }
 
-  if (settings.tags) {
-
-    const tagsToDelete = tags.filter((x) => !settings.tags?.find((y) => x.tagId === y));
-
-    request.tags = {
-      deleteMany: {
-        postId,
-        tagId: {
-          in: tagsToDelete.map((x) => x.tagId)
-        }
-      },
-      upsert: settings.tags.map((tagId, order) => ({
-        update: { tagId, order },
-        create: { tagId, order },
-        where: {
-          postId_tagId: {
-            postId,
-            tagId
-          }
-        }
-      }))
-    };
-  }
-
-  const response = await db.post.update({
-    data: request,
-    where: {
-      id: postId
-    },
-    include: {
-      postMeta: true,
-      tags: {
-        include: {
-          tag: true
-        }
+      if (settings.tags.length > 0) {
+        await db.post.attachTags({
+          tags: settings.tags.map((tagId, order) => ({
+            postId: postIdStr,
+            tagId,
+            order
+          }))
+        });
       }
     }
-  });
 
-  return R.of({
-    slug: response.slug,
-    canonicalUrl: response.canonicalUrl,
-    meta: response.postMeta!,
-    tags: response.tags.map((x) => x.tag)
-  });
+    const result: PostSettings = {
+      canonicalUrl: toUpdate.canonicalUrl,
+      meta: toUpdate.meta,
+      slug: toUpdate.slug,
+      tags: []
+    };
 
+    return R.of(result);
+  });
 }
 
 
 export async function updatePost(
-  ctx: Context, postId: bigint, postInput: PostInput): DomainResult<UpdatePostPayload> {
+  ctx: Context, postId: bigint, postInput: PostInput): DomainResult<PostWithContent> {
 
   const { db, access } = ctx;
 
@@ -115,32 +108,25 @@ export async function updatePost(
   // TODO: Image extraction
   const version = post.publishedAt ? 1 : 0;
 
-  const response = await db.post.update({
-    data: {
-      versions: {
-        connectOrCreate: {
-          create: {
-            title: postInput.title,
-            content: postInput.content,
-            version
-          },
-          where: {
-            postId_version: { postId, version }
-          }
-        }
-      }
-    },
-    where: {
-      id: postId
-    }
+  const results = await db.post.createOrUpdatePostContent({
+    id: v4(),
+    title: postInput.title,
+    content: postInput.content as any,
+    version,
+    postId: postId.toString()
   });
 
-  const updatedPost: UpdatePostPayload = {
-    ...response,
-    title: postInput.title,
-    content: postInput.content,
-    meta: post.postMeta!
-  };
+  const result = results.at(0);
 
-  return R.of(updatedPost);
+  if (result) {
+    const updatedPost: PostWithContent = {
+      ...post,
+      title: postInput.title,
+      content: postInput.content
+    };
+
+    return R.of(updatedPost);
+  }
+
+  return R.ofError(ErrorCode.INTERNAL_ERROR, '');
 }

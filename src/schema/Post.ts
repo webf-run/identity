@@ -21,7 +21,7 @@ export const PostMeta = objectType({
 export const UpdatePostPayload = objectType({
   name: 'UpdatePostPayload',
   definition(t) {
-    t.id('id', { resolve: (x) => x.id.toString() });
+    t.id('id');
     t.string('slug');
     t.string('title');
     t.json('content');
@@ -32,15 +32,6 @@ export const UpdatePostPayload = objectType({
 
 export const Post = objectType({
   name: 'Post',
-  definition(t) {
-    UpdatePostPayload.value.definition(t as any);
-    t.list.field('tags', { type: 'Tag' });
-  }
-});
-
-
-export const Post2 = objectType({
-  name: 'Post2',
   definition(t) {
     UpdatePostPayload.value.definition(t as any);
     t.list.field('tags', { type: 'Tag' });
@@ -101,8 +92,17 @@ export const PostMutation = extendType({
       args: {
         post: 'PostInput'
       },
-      resolve(_root, args, ctx) {
-        return R.unpack(createNewPost(ctx, args.post));
+      async resolve(_root, args, ctx) {
+        const result = createNewPost(ctx, args.post);
+        const mapped = R.map((value) => ({
+          ...value,
+          id: value.id.toString(),
+          // TODO: Need actual data
+          content: {},
+          title: ''
+        }), result);
+
+        return R.unpack(mapped);
       }
     });
 
@@ -119,7 +119,14 @@ export const PostMutation = extendType({
           return makeAppError(ErrorCode.NOT_FOUND, 'Post not found');
         }
 
-        return R.unpack(updatePost(ctx, postId, args.post));
+        const response = updatePost(ctx, postId, args.post);
+
+        const mapped = R.map((value) => ({
+          ...value,
+          id: value.id.toString()
+        }), response);
+
+        return R.unpack(mapped);
       }
     });
 

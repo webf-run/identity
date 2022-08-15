@@ -30,19 +30,17 @@ export async function createAssetStorage(ctx: Context, source: AssetStoreInput):
 
   const value = result.value;
 
-  const newAssetSource = await db.assetStorage.create({
-    data: {
-      cloudType: value.cloudType,
-      region: value.region.trim(),
-      bucket: value.bucket.trim(),
-      publicUrl: value.publicUrl.trim(),
-      uploadUrl: value.uploadUrl.trim(),
-      key: value.key.trim(),
-      secret: value.secret.trim()
-    }
+  const newAssetSource = await db.asset.createAssetStorage({
+    cloudType: value.cloudType,
+    region: value.region.trim(),
+    bucket: value.bucket.trim(),
+    publicUrl: value.publicUrl.trim(),
+    uploadUrl: value.uploadUrl.trim(),
+    key: value.key.trim(),
+    secret: value.secret.trim()
   });
 
-  return R.of(newAssetSource);
+  return R.of(newAssetSource[0]);
 }
 
 
@@ -50,20 +48,12 @@ export async function getLRUAssetStorage(ctx: Context): Promise<AssetStorage | n
 
   const { db } = ctx;
 
-  const results = await db.assetStorage.findMany({
-    include: {
-      _count: {
-        select: {
-          assets: true
-        }
-      }
-    }
-  });
+  const results = await db.asset.findLeastUsedStorage();
 
   const record = results.length === 0
     ? null
     : results.reduce((current, next) =>
-        (current._count?.assets || 0) >= (next._count?.assets || 0) ? current : next)
+        (current.assetCount ?? 0) >= (next.assetCount ?? 0) ? current : next);
 
   return record;
 }

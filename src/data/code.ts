@@ -1,10 +1,7 @@
-import { ClientAppToken, PrismaClient, UserToken } from '@prisma/client';
 import slugify from '@sindresorhus/slugify';
 import argon2 from 'argon2';
 import cryptoRandomString from 'crypto-random-string';
 import cuid from 'cuid';
-
-import { ONE_HOUR_MS } from './invitation';
 
 
 export function generateInviteCode() {
@@ -35,26 +32,10 @@ export async function hashPassword(password: string): Promise<[string, string]> 
 }
 
 
-export function generateUserToken(db: PrismaClient, userId: string): Promise<UserToken> {
-  const tokenId = 'u-' + cryptoRandomString({ length: 128, type: 'url-safe' });
-
-  return db.userToken.create({
-    data: {
-      id: tokenId,
-      duration: 3600 * 1000 * 72,
-      userId
-    }
-  });
+export function generateUserToken(): string {
+  return 'u-' + cryptoRandomString({ length: 128, type: 'url-safe' });
 }
 
-export function generateClientToken(db: PrismaClient, clientAppId: string): Promise<ClientAppToken> {
-  const tokenId = 'c-' + cryptoRandomString({ length: 32, type: 'url-safe' });
-
-  return db.clientAppToken.create({
-    data: {
-      id: tokenId,
-      clientAppId,
-      duration: ONE_HOUR_MS
-    }
-  });
+export function generateClientToken(): string {
+  return 'c-' + cryptoRandomString({ length: 32, type: 'url-safe' });
 }

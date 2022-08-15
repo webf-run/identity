@@ -137,13 +137,6 @@ export interface NexusGenObjects {
   }
   Mutation: {};
   Post: Op.Post;
-  Post2: { // root type
-    content: NexusGenScalars['JSONObject']; // JSONObject!
-    meta: NexusGenRootTypes['PostMeta']; // PostMeta!
-    slug: string; // String!
-    tags: NexusGenRootTypes['Tag'][]; // [Tag!]!
-    title: string; // String!
-  }
   PostMeta: Op.PostMeta;
   PostSettings: Op.PostSettings;
   Publication: Op.Publication;
@@ -153,14 +146,14 @@ export interface NexusGenObjects {
     fields: NexusGenRootTypes['UrlFormField'][]; // [UrlFormField!]!
     url: string; // String!
   }
-  Tag: { // root type
-    approved: boolean; // Boolean!
-    description: string; // String!
+  Tag: Op.Tag;
+  UpdatePostPayload: { // root type
+    content: NexusGenScalars['JSONObject']; // JSONObject!
     id: string; // ID!
-    name: string; // String!
+    meta: NexusGenRootTypes['PostMeta']; // PostMeta!
     slug: string; // String!
+    title: string; // String!
   }
-  UpdatePostPayload: Op.UpdatePostPayload;
   UrlFormField: { // root type
     key: string; // String!
     value: string; // String!
@@ -240,14 +233,6 @@ export interface NexusGenFieldTypes {
     uploadImage: NexusGenRootTypes['SignedUrlResponse']; // SignedUrlResponse!
   }
   Post: { // field return type
-    content: NexusGenScalars['JSONObject']; // JSONObject!
-    id: string; // ID!
-    meta: NexusGenRootTypes['PostMeta']; // PostMeta!
-    slug: string; // String!
-    tags: NexusGenRootTypes['Tag'][]; // [Tag!]!
-    title: string; // String!
-  }
-  Post2: { // field return type
     content: NexusGenScalars['JSONObject']; // JSONObject!
     id: string; // ID!
     meta: NexusGenRootTypes['PostMeta']; // PostMeta!
@@ -355,14 +340,6 @@ export interface NexusGenFieldTypeNames {
     uploadImage: 'SignedUrlResponse'
   }
   Post: { // field return type name
-    content: 'JSONObject'
-    id: 'ID'
-    meta: 'PostMeta'
-    slug: 'String'
-    tags: 'Tag'
-    title: 'String'
-  }
-  Post2: { // field return type name
     content: 'JSONObject'
     id: 'ID'
     meta: 'PostMeta'

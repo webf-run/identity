@@ -1,21 +1,21 @@
-import type { PrismaClient } from '@prisma/client';
-import { getEmailConfig } from '../data/email';
+import { getEmailConfig } from './infra/email';
 
 import { EmailService } from '../infra/Email';
 import { Either } from '../util/Either';
 import { Access, makePublicAccess } from './Access';
-import { getAccessForToken } from './core/auth';
+import { getAccessForToken } from './auth/auth';
+import { DbClient } from './DbContext';
 import { R } from './R';
 
 
 export interface Context {
-  db: PrismaClient;
+  db: DbClient;
   access: Access;
   email: EmailService;
 }
 
 
-export async function makeContext(db: PrismaClient, tokenId?: string, scope?: bigint): DomainResult<Context> {
+export async function makeContext(db: DbClient, tokenId?: string, scope?: bigint): DomainResult<Context> {
 
   const emailConfigCb = () => getEmailConfig(db);
   const email = new EmailService(emailConfigCb);

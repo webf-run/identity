@@ -3,9 +3,8 @@ import { extendType, inputObjectType, objectType } from 'nexus';
 import { claimInvitation } from '../domain/core/claim';
 import { deleteInvitation, retryInvitation } from '../domain/core/invitation';
 
-import { addMemberToPublication, createNewPublication } from '../domain/core/project';
+import { addMemberToPublication, createNewPublication } from '../domain/publication/new';
 import { R } from '../domain/R';
-import { Publication as PublicationType } from '../domain/Output';
 
 import { errorUnion } from './helper';
 
@@ -65,7 +64,7 @@ export const CoreQuery = extendType({
     t.list.field('getPublications', {
       type: 'Publication',
       resolve(_root, _args, ctx) {
-        return ctx.db.publication.findMany();
+        throw 'pending work';
       }
     });
   }

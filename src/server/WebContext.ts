@@ -1,19 +1,19 @@
 import type { IncomingHttpHeaders } from 'http';
 
-import type { PrismaClient } from '@prisma/client';
 import { ApolloError, AuthenticationError, ExpressContext, ForbiddenError } from 'apollo-server-express';
 
 import { ErrorCode } from '../domain/AppError';
 import { Context, makeContext } from '../domain/Context';
 import { Either } from '../util/Either';
 import { tryBigInt } from '../util/unit';
+import { DbClient } from '../domain/DbContext';
 
 
 const BEARER_REGEX = /^(Bearer)(\s)(.+)$/;
 const SCOPE_HEADER = 'x-rano-scope';
 
 
-export async function makeContextFromWeb(db: PrismaClient, webContext: ExpressContext): Promise<Context> {
+export async function makeContextFromWeb(db: DbClient, webContext: ExpressContext): Promise<Context> {
 
   const headers = webContext.req.headers;
   const scopeHeader = headers[SCOPE_HEADER];

@@ -26,7 +26,7 @@ const imageV = apply<ImageInput>({
 export async function createImageUploadIntent(ctx: Context, input: ImageInput): DomainResult<SignedUrl> {
 
   const { db } = ctx;
-  const publicationId = 1;
+  const publicationId = '1';
   const title = path.basename(input.title).trim();
   const extension = input.extension;
 
@@ -36,37 +36,33 @@ export async function createImageUploadIntent(ctx: Context, input: ImageInput): 
     return R.ofError(ErrorCode.INVALID_DATA, result.value.join('\n'));
   }
 
-  const source = await getLRUAssetStorage(ctx);
+  const storage = await getLRUAssetStorage(ctx);
 
-  if (!source) {
-    return R.ofError(ErrorCode.NO_ASSET_STORE, 'At least one asset source is required');
+  if (!storage) {
+    return R.ofError(ErrorCode.NO_ASSET_STORAGE, 'At least one asset storage is required');
   }
 
   // TODO: Allow 50 images per user per 24 hours.
-
   const fileName = `${publicationId}/${title}-${cuid()}.${extension}`;
 
-  const _image = await db.image.create({
-    data: {
-      altText: '',
-      caption: '',
-      asset: {
-        create: {
-          title,
-          fileName,
-          size: 0,
-          sizeUnit: 'byte',
-          publicationId,
-          storageId: source.id,
-          contentType: 'image/'
-        }
-      }
-    }
+  const _results = await db.asset.createNewImage({
+    altText: '',
+    caption: '',
+    title,
+    fileName,
+    size: 0,
+    sizeUnit: 'byte',
+    sourceId: storage.id,
+    contentType: 'image/',
+    publicationId,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    verified: false
   });
 
   // Currently, support only Digital Ocean spaces
-  const client = makeClient(source.region, source.uploadUrl, source.key, source.secret);
-  const uploadUrl = await generateImageUrl(client, source.bucket, fileName);
+  const client = makeClient(storage.region, storage.uploadUrl, storage.key, storage.secret);
+  const uploadUrl: SignedUrl = await generateImageUrl(client, storage.bucket, fileName);
 
   client.destroy();
 
