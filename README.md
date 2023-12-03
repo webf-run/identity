@@ -1,38 +1,30 @@
-# Bisa
-Backend for Chidi.
+# API Base
+Helper for building multi-tenant apps using SQLite.
 
-## Configuration
+## Features
+- Preconfigured authentication with social signups.
+- Multi-tenant isolated DB solutions.
 
-### URLs that must be configured
 
-  - Claim invitation
-  - Join invitation
-  - Reset forgotten password
+## Design
 
-## Useful commands
+This package provides following middlewares.
 
-```bash
-# Generates assets like Prisma Client.
-prisma generate
+### Authentication middleware
 
-# Generate Database migration
-prisma migrate dev --create-only -name some-migration-name
-```
+Define login related paths:
 
-## Local Setup
+- `GET /auth/login/:provider`.
+- `GET /auth/login/:provider/callback`.
+- `GET /auth/info`.
 
-Create an `.env` file at the root of the repository. Copy the content of `.env.backup` and set appropriate values.
+### Session middleware
 
-### Sample postgres docker command
+Recognize user session using either cookie or authorization headers. It supports:
 
-```bash
-docker run -d --rm --name postgres-db \
-  -p 5432:5432 \
-  -e POSTGRES_PASSWORD=postgres \
-  -e PGDATA=/var/lib/postgresql/data/pgdata \
-  --mount source=pg-data-vol,target=/var/lib/postgresql/data \
-  postgres:14.4
+- `Authorization: Bearer <token>`.
+- Cookie with `rola_session`.
 
-# Connect using PSQL
-docker run --rm -it postgres:14.4 psql -h localhost -U postgres
-```
+### Static middleware
+
+Serve any static frontend application (typically SPA application).

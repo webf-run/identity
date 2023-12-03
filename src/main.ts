@@ -1,33 +1,21 @@
-import { makeCache } from './cache';
-import { initialize } from './DBClient';
-import { makeServer } from './server/Server';
-
+import { serve } from '@hono/node-server';
+import { Hono } from 'hono';
 
 export async function main() {
+  const app = new Hono();
 
-  const PG_HOST = process.env.PG_HOST;
-  const PG_PORT = Number(process.env.PG_PORT);
-  const PG_USER = process.env.PG_USER;
-  const PG_PASSWORD = process.env.PG_PASSWORD;
-  const PG_DATABASE = process.env.PG_DATABASE;
+  app.get('/', (c) => c.text('Hello Hono!'));
 
-  // Initialize the Database client
-  const db = await initialize({
-    host: PG_HOST,
-    port: PG_PORT,
-    user: PG_USER,
-    password: PG_PASSWORD,
-    database: PG_DATABASE
+  app.use('*', async (c, next) => {
+    await next();
   });
-  makeCache();
 
-  // Initialize a GraphQL Server with fastify client
-  const server = await makeServer(db);
-
-  const info = await server.listen();
-
-  console.log(`🚀 Server ready at ${info.url}`);
+  serve({
+    fetch: app.fetch,
+    port: 4001,
+  }, (info) => {
+    console.log(`🚀 Server ready at ${info.address}:${info.port}`);
+  });
 }
-
 
 main().then(() => {});
