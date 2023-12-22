@@ -1,12 +1,21 @@
 {
-  "name": "@postrola/api-base",
+  "name": "@webf/base",
   "version": "0.1.0",
   "description": "Backend for Chidi",
-  "main": "index.js",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    "./auth": "./dist/auth/auth.js",
+    "./auth/core/password": "./dist/auth/core/password.js",
+    "./auth/migrator": "./dist/auth/migrator.js"
+  },
   "scripts": {
-    "check": "tsc",
-    "build": "npm run check && webpack --env production",
-    "dev": "dotenv -- tsx ./src/main.ts"
+    "check:types": "tsc",
+    "check:cycles": "tsx ./scripts/cycles.ts",
+    "dev": "dotenv -- tsx ./src/main.ts",
+    "build": "tsc -p ./tsconfig.build.json",
+    "generate": "drizzle-kit generate:sqlite",
+    "test": "NODE_OPTIONS='--import tsx' node --test"
   },
   "repository": {
     "type": "git",
@@ -19,18 +28,29 @@
     "url": "https://github.com/PostRola/api-base/issues"
   },
   "homepage": "https://github.com/PostRola/api-base#readme",
-  "dependencies": {
-    "@hono/node-server": "^1.3.1",
-    "hono": "^3.10.4",
-    "oauth4webapi": "^2.4.0"
-  },
   "volta": {
     "node": "20.10.0"
   },
+  "dependencies": {
+    "@hono/node-server": "^1.3.1",
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/uuid": "^9.0.7",
+    "argon2": "^0.31.2",
+    "better-sqlite3": "^9.2.2",
+    "crypto-random-string": "^5.0.0",
+    "drizzle-orm": "^0.29.1",
+    "hono": "^3.10.4",
+    "oauth4webapi": "^2.4.0",
+    "uuid": "^9.0.1",
+    "zod": "^3.22.4"
+  },
   "devDependencies": {
+    "@types/madge": "^5.0.3",
     "@types/node": "^20.10.2",
     "dotenv": "^16.3.1",
     "dotenv-cli": "^7.3.0",
+    "drizzle-kit": "^0.20.7",
+    "madge": "^6.1.0",
     "tsx": "^4.6.2",
     "typescript": "^5.3.2"
   }

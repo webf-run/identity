@@ -1,23 +1,36 @@
 import * as oauth from 'oauth4webapi';
 import type { AuthorizationServer, Client } from 'oauth4webapi';
 
-export class OAuth2Client {
-  as: AuthorizationServer;
+export type OAuth2Options = {
+  clientId: string;
+  clientSecret: string;
   redirectUri: string;
-  client: Client;
-  codeVerifier: string;
+  scope?: string;
+};
 
-  private constructor(as: AuthorizationServer, redirectUri: string, client: Client) {
+export class OAuth2Client {
+  private readonly as: AuthorizationServer;
+  private readonly redirectUri: string;
+  private readonly client: Client;
+  private readonly codeVerifier: string;
+  private readonly scope?: string;
+
+  private constructor(as: AuthorizationServer, options: OAuth2Options) {
     this.as = as;
-    this.redirectUri = redirectUri;
-    this.client = client;
+    this.redirectUri = options.redirectUri;
+    this.client = {
+      client_id: options.clientId,
+      client_secret: options.clientSecret,
+      token_endpoint_auth_method: 'client_secret_basic',
+    };
     this.codeVerifier = oauth.generateRandomCodeVerifier();
+    this.scope = options.scope;
   }
 
-  static async make(asURL: string, redirectUri: string, client: Client): Promise<OAuth2Client> {
+  static async make(asURL: string, options: OAuth2Options): Promise<OAuth2Client> {
     const issuer = new URL(asURL);
 
-    const discovery = await oauth.discoveryRequest(issuer, { algorithm: 'oauth2' });
+    const discovery = await oauth.discoveryRequest(issuer, { algorithm: 'oidc' });
     const as = await oauth.processDiscoveryResponse(issuer, discovery);
 
     if (as.code_challenge_methods_supported?.includes('S256') !== true) {
@@ -26,14 +39,14 @@ export class OAuth2Client {
       throw new Error('S256 PKCE is not supported');
     }
 
-    return new OAuth2Client(as, redirectUri, client);
+    return new OAuth2Client(as, options);
   }
 
   async makeLoginUrl(): Promise<URL> {
     const codeChallenge = await oauth.calculatePKCECodeChallenge(this.codeVerifier);
     const codeChallengeMethod = 'S256';
 
-    const authorizationUrl = new URL(this.as!.authorization_endpoint!);
+    const authorizationUrl = new URL(this.as.authorization_endpoint!);
     const searchParams = authorizationUrl.searchParams;
 
     searchParams.set('client_id', this.client.client_id);
@@ -41,7 +54,10 @@ export class OAuth2Client {
     searchParams.set('code_challenge_method', codeChallengeMethod);
     searchParams.set('redirect_uri', this.redirectUri);
     searchParams.set('response_type', 'code');
-    searchParams.set('scope', 'api:read');
+
+    if (this.scope) {
+      searchParams.set('scope', this.scope);
+    }
 
     return authorizationUrl;
   }
@@ -71,7 +87,7 @@ export class OAuth2Client {
     const result = await oauth.processAuthorizationCodeOAuth2Response(
       this.as,
       this.client,
-      response
+      response,
     );
 
     if (oauth.isOAuth2Error(result)) {
@@ -79,6 +95,6 @@ export class OAuth2Client {
       throw new Error();
     }
 
-    console.log('result', result)
+    return result;
   }
 }
