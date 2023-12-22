@@ -1,7 +1,7 @@
 {
   "name": "@webf/base",
   "version": "0.1.0",
-  "description": "Backend for Chidi",
+  "description": "Hono helper modules",
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
