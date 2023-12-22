@@ -5,7 +5,7 @@
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
-    "./auth": "./dist/auth/auth.js",
+    "./auth/hono": "./dist/auth/hono.js",
     "./auth/core/password": "./dist/auth/core/password.js",
     "./auth/migrator": "./dist/auth/migrator.js"
   },
@@ -19,15 +19,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PostRola/api-base.git"
+    "url": "git+https://github.com/webf-run/api-base.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/PostRola/api-base/issues"
+    "url": "https://github.com/webf-run/api-base/issues"
   },
-  "homepage": "https://github.com/PostRola/api-base#readme",
+  "homepage": "https://github.com/webf-run/api-base#readme",
   "volta": {
     "node": "20.10.0"
   },

@@ -1,7 +1,7 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 
-import { makeAuth } from './auth/auth.js';
+import { makeAuth } from './auth/hono.js';
 
 export async function main() {
   const app = new Hono();

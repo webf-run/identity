@@ -23,7 +23,7 @@ Define login related paths:
 Recognize user session using either cookie or authorization headers. It supports:
 
 - `Authorization: Bearer <token>`.
-- Cookie with `rola_session`.
+- Cookie for session management.
 
 ### Static middleware
 
