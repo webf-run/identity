@@ -1,7 +1,8 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 
-import { makeAuth } from './auth/hono.js';
+import { addOpenIDStrategy, addPasswordStrategy, makeAuth } from './auth/auth.js';
+import { google } from './auth/oauth/providers.js';
 
 export async function main() {
   const app = new Hono();
@@ -10,11 +11,26 @@ export async function main() {
 
   const { auth } = await makeAuth({
     dbFile: './auth.sqlite3',
-    google: {
-      clientId: 'clientId',
-      clientSecret: 'clientSecret',
-      redirectUri: 'http://localhost:8080/callback',
-      scope: 'email profile',
+  });
+
+  const googleClient = await google({
+    clientId: 'clientId',
+    clientSecret: 'clientSecret',
+    redirectUri: 'http://localhost:8080/callback',
+    scope: 'email profile',
+  });
+
+  await addPasswordStrategy(auth);
+  await addOpenIDStrategy(auth, googleClient, {
+    errorUrl: '/error',
+    onLogin(user, profile) {
+      return Promise.resolve('/');
+    },
+    onLoginNoUser(profile) {
+      return Promise.resolve('/');
+    },
+    onSignup(user) {
+      return Promise.resolve();
     },
   });
 

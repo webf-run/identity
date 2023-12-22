@@ -5,16 +5,20 @@
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
-    "./auth/hono": "./dist/auth/hono.js",
+    "./auth": "./dist/auth/auth.js",
     "./auth/core/password": "./dist/auth/core/password.js",
-    "./auth/migrator": "./dist/auth/migrator.js"
+    "./auth/migrator": "./dist/auth/migrator.js",
+    "./auth/provider": "./dist/auth/oauth/providers.js",
+    "./auth/type": "./dist/auth/type.js"
   },
   "scripts": {
     "check:types": "tsc",
     "check:cycles": "tsx ./scripts/cycles.ts",
     "dev": "dotenv -- tsx ./src/main.ts",
+    "prebuild": "rimraf ./dist",
     "build": "tsc -p ./tsconfig.build.json",
     "generate": "drizzle-kit generate:sqlite",
+    "dev:pack": "tsx ./scripts/pack.ts",
     "test": "NODE_OPTIONS='--import tsx' node --test"
   },
   "repository": {
@@ -50,7 +54,9 @@
     "dotenv": "^16.3.1",
     "dotenv-cli": "^7.3.0",
     "drizzle-kit": "^0.20.7",
+    "glob": "^10.3.10",
     "madge": "^6.1.0",
+    "rimraf": "^5.0.5",
     "tsx": "^4.6.2",
     "typescript": "^5.3.2"
   }

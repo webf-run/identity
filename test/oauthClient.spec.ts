@@ -1,11 +1,11 @@
 import { it } from 'node:test';
 import { equal } from 'node:assert';
 
-import { makeGoogleClient } from '../src/auth/oauth/providers';
+import { google } from '../src/auth/oauth/providers';
 
 it('OAuth2 Client - Google', async (t) => {
 
-  const googleClient = await makeGoogleClient({
+  const googleClient = await google({
     clientId: 'clientId',
     clientSecret: 'clientSecret',
     redirectUri: 'http://localhost:8080/callback',
@@ -13,7 +13,7 @@ it('OAuth2 Client - Google', async (t) => {
 
   await t.test('login url', async (tt) => {
     // SUT - System Under Test
-    const url = await googleClient.makeLoginUrl();
+    const url = await googleClient.makeAuthorizationUrl('login');
 
     // Verify - Result
     equal(url.origin, 'https://accounts.google.com');

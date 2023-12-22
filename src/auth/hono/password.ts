@@ -1,9 +1,7 @@
 import { z } from 'zod';
 
-import { authenticate, forgotPassword, resetPassword } from '../core/password.js';
-import { OAuth2Options, OAuth2Client } from '../oauth/client.js';
-import { makeGoogleClient, makeZohoClient } from '../oauth/providers.js';
-import type { AuthMiddleware } from './type.js';
+import { authenticate, forgotPassword, resetPassword } from '../core/password';
+import { HonoAuthMiddleware } from './type';
 
 const credentialsDTO = z.object({
   username: z.string(),
@@ -19,42 +17,7 @@ const resetPassDTO = z.object({
   newPassword: z.string(),
 });
 
-
-export async function addGoogleStrategy(app: AuthMiddleware, options: OAuth2Options): Promise<OAuth2Client> {
-  const googleClient = await makeGoogleClient(options);
-
-  app.get('/login/google', async (c) => {
-    const loginUrl = await googleClient.makeLoginUrl();
-
-    return c.redirect(loginUrl.toString(), 307);
-  });
-
-  app.get('/login/google/callback', async (c) => {
-    const response = await googleClient.exchangeAuthorizationCode(new URLSearchParams(c.req.query()));
-  });
-
-  return googleClient;
-}
-
-export async function addZohoStrategy(app: AuthMiddleware, options: OAuth2Options): Promise<OAuth2Client> {
-  const zohoClient = await makeZohoClient(options);
-
-  app.get('/login/zoho', async (c) => {
-    const loginUrl = await zohoClient.makeLoginUrl();
-
-    return c.redirect(loginUrl.toString(), 307);
-  });
-
-  app.get('/login/zoho/callback', async (c) => {
-    const response = await zohoClient.exchangeAuthorizationCode(new URLSearchParams(c.req.query()));
-  });
-
-  return zohoClient;
-}
-
-
-export function addPasswordStrategy(app: AuthMiddleware) {
-
+export async function addPasswordStrategy(app: HonoAuthMiddleware): Promise<void> {
   // Exchange username and password
   app.post('/login/password', async (c) => {
     const body = await c.req.json();

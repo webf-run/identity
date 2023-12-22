@@ -1,7 +1,13 @@
-import { DbClient } from './db/client';
-import { AuthMiddleware } from './middleware/type';
+import type { DbClient } from './db/client.js';
+import type { HonoAuthMiddleware, OAuthCallbacks } from './hono/type.js';
 
 export type AuthSystem = {
-  auth: AuthMiddleware;
+  auth: HonoAuthMiddleware;
   db: DbClient;
-}
+};
+
+export type {
+  HonoAuthMiddleware,
+  DbClient,
+  OAuthCallbacks,
+};

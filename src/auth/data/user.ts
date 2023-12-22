@@ -2,7 +2,7 @@ import { and, eq } from 'drizzle-orm';
 
 import { DbClient } from '../db/client.js';
 import { User, UserLocalLogin, UserToken } from '../db/model.js';
-import { localLogin, user, userEmail, userToken } from '../db/schema.js';
+import { localLogin, providerLogin, user, userEmail, userToken } from '../db/schema.js';
 import { generateUserToken, hashPassword } from './code.js';
 
 export async function findLoginByEmail(db: DbClient, email: string): Promise<Nil<UserLocalLogin>> {
@@ -36,6 +36,17 @@ export async function findLoginByUsername(db: DbClient, username: string): Promi
     .where(eq(localLogin.username, username));
 
   return result.at(0);
+}
+
+
+export async function findUserBySocialId(db: DbClient, providerId: string, subjectId: string): Promise<Nil<User>> {
+  const result = await db
+    .select()
+    .from(providerLogin)
+    .innerJoin(user, eq(providerLogin.userId, user.id))
+    .where(and(eq(providerLogin.providerId, providerId), eq(providerLogin.subjectId, subjectId)));
+
+  return result.at(0)?.user;
 }
 
 

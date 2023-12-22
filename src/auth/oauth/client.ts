@@ -8,6 +8,35 @@ export type OAuth2Options = {
   scope?: string;
 };
 
+export type OAuth2ClientOptions = OAuth2Options & {
+  /**
+   * The OAuth 2.0 provider like `google`, `zoho`, etc.
+   */
+  provider: string;
+}
+
+export type State = {
+  type: 'login' | 'signup';
+  redirectUrl?: string;
+};
+
+export type OAuthProfile = {
+  /**
+   * The OAuth 2.0 provider like `google`, `zoho`, etc. to which this user belongs.
+   */
+  provider: string;
+  subjectId: string;
+  email: string;
+  emailVerified: boolean;
+
+  givenName: string;
+  familyName: string;
+  name: string;
+
+  accessToken: string;
+  tokenType: string;
+};
+
 export class OAuth2Client {
   private readonly as: AuthorizationServer;
   private readonly redirectUri: string;
@@ -15,7 +44,10 @@ export class OAuth2Client {
   private readonly codeVerifier: string;
   private readonly scope?: string;
 
-  private constructor(as: AuthorizationServer, options: OAuth2Options) {
+  readonly provider: string;
+
+  private constructor(as: AuthorizationServer, options: OAuth2ClientOptions) {
+    this.provider = options.provider;
     this.as = as;
     this.redirectUri = options.redirectUri;
     this.client = {
@@ -27,11 +59,14 @@ export class OAuth2Client {
     this.scope = options.scope;
   }
 
-  static async make(asURL: string, options: OAuth2Options): Promise<OAuth2Client> {
+  static async make(asURL: string, options: OAuth2ClientOptions): Promise<OAuth2Client> {
     const issuer = new URL(asURL);
 
-    const discovery = await oauth.discoveryRequest(issuer, { algorithm: 'oidc' });
-    const as = await oauth.processDiscoveryResponse(issuer, discovery);
+    // Hack as Node.js fetch has problems. The instance of Response is not a real Response. So, we copy it to a new response.
+    const discovery: Response = await oauth.discoveryRequest(issuer, { algorithm: 'oidc' });
+    const response = new Response(discovery.body, discovery);
+
+    const as = await oauth.processDiscoveryResponse(issuer, response);
 
     if (as.code_challenge_methods_supported?.includes('S256') !== true) {
       // This example assumes S256 PKCE support is signalled
@@ -42,18 +77,21 @@ export class OAuth2Client {
     return new OAuth2Client(as, options);
   }
 
-  async makeLoginUrl(): Promise<URL> {
+  async makeAuthorizationUrl(type: 'login' | 'signup'): Promise<URL> {
+    // TODO: Check code challenge method.
     const codeChallenge = await oauth.calculatePKCECodeChallenge(this.codeVerifier);
     const codeChallengeMethod = 'S256';
 
     const authorizationUrl = new URL(this.as.authorization_endpoint!);
     const searchParams = authorizationUrl.searchParams;
+    const state = btoa(JSON.stringify({ type }));
 
     searchParams.set('client_id', this.client.client_id);
     searchParams.set('code_challenge', codeChallenge);
     searchParams.set('code_challenge_method', codeChallengeMethod);
     searchParams.set('redirect_uri', this.redirectUri);
     searchParams.set('response_type', 'code');
+    searchParams.set('state', state);
 
     if (this.scope) {
       searchParams.set('scope', this.scope);
@@ -62,12 +100,12 @@ export class OAuth2Client {
     return authorizationUrl;
   }
 
-  async exchangeAuthorizationCode(searchParams: URLSearchParams) {
+  async exchangeAuthorizationCode(searchParams: URLSearchParams): Promise<OAuthProfile> {
     const parameters = oauth.validateAuthResponse(
       this.as,
       this.client,
       searchParams,
-      oauth.expectNoState
+      oauth.skipStateCheck,
     );
 
     if (oauth.isOAuth2Error(parameters)) {
@@ -84,17 +122,33 @@ export class OAuth2Client {
       this.codeVerifier,
     );
 
-    const result = await oauth.processAuthorizationCodeOAuth2Response(
-      this.as,
-      this.client,
-      response,
-    );
+    // Hack as Node.js fetch has problems. The instance of Response is not a real Response.
+    // So, we copy it to a new response.
+    const response2 = new Response(response.body, response);
+
+    const result = await oauth.processAuthorizationCodeOpenIDResponse(this.as, this.client, response2);
 
     if (oauth.isOAuth2Error(result)) {
       console.log('error', result);
       throw new Error();
     }
 
-    return result;
+    const claims = oauth.getValidatedIdTokenClaims(result);
+
+    const user: OAuthProfile = {
+      provider: this.provider,
+      subjectId: claims.sub,
+      email: claims.email as string,
+      emailVerified: !!claims.email_verified,
+
+      givenName: (claims.first_name || claims.given_name) as string,
+      familyName: (claims.last_name || claims.family_name) as string,
+      name: claims.name as string,
+
+      accessToken: result.access_token,
+      tokenType: result.token_type,
+    };
+
+    return user;
   }
 }
