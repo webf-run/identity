@@ -15,7 +15,7 @@ import {
 import type { AuthContext, AuthToken, Credentials } from './type.js';
 
 
-export async function authenticate(ctx: AuthContext, input: Credentials): AsyncResult2<AuthToken> {
+export async function authenticate(ctx: AuthContext, input: Credentials): AsyncResult<AuthToken> {
   const { db } = ctx;
   const { password } = input;
 
@@ -46,7 +46,7 @@ export async function authenticate(ctx: AuthContext, input: Credentials): AsyncR
 }
 
 
-export async function forgotPassword(ctx: AuthContext, username: string): AsyncResult2<boolean> {
+export async function forgotPassword(ctx: AuthContext, username: string): AsyncResult<boolean> {
   const { db } = ctx;
 
   const userFound = await findResetPasswordRequestByEmail(db, username);

@@ -1,3 +1,13 @@
+CREATE TABLE `api_key` (
+	`id` text PRIMARY KEY NOT NULL,
+	`description` text NOT NULL,
+	`token` text NOT NULL,
+	`hash_fn` text NOT NULL,
+	`is_active` integer NOT NULL,
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE `local_login` (
 	`user_id` text PRIMARY KEY NOT NULL,
 	`username` text NOT NULL,

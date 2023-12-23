@@ -1,6 +1,20 @@
 import { integer, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
 
 
+export const apiKey = sqliteTable('api_key', {
+  id: text('id').primaryKey(),
+  description: text('description').notNull(),
+
+  token: text('token').notNull(),
+  hashFn: text('hash_fn').notNull(),
+
+  isActive: integer('is_active', { mode: 'boolean' }).notNull(),
+
+  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+});
+
+
 export const user = sqliteTable('user', {
   id: text('id').primaryKey(),
 

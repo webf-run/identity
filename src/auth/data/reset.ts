@@ -1,6 +1,6 @@
 import cryptoRandomString from 'crypto-random-string';
 import { sql, eq, and, gte } from 'drizzle-orm';
-import { v4 } from 'uuid';
+import { nanoid } from 'nanoid';
 
 import { DbClient } from '../db/client.js';
 import { ResetPasswordRequest } from '../db/model.js';
@@ -25,7 +25,7 @@ export async function createResetPasswordRequest(db: DbClient, userId: string) {
   return await db
     .insert(resetPasswordRequest)
     .values({
-      id: v4(),
+      id: nanoid(),
       code: cryptoRandomString({ length: 96, type: 'url-safe' }),
       userId,
       createdAt: new Date(),

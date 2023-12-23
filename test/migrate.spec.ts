@@ -25,6 +25,6 @@ it('Migration', async (t) => {
     const results: Migration[] = db.all(statement);
     const applied = results.map((result) => result.created_at);
 
-    deepEqual(applied, [1703172646911]);
+    deepEqual(applied, [1703329169723]);
   });
 });

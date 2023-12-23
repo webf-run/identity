@@ -27,7 +27,7 @@ export function err<V>(code: ErrorCode, message: string): Result<V> {
 // as long as I am not patching global object for values.
 // I am only making few types available globally.
 declare global {
-  type AsyncResult2<V> = Promise<Result<V>>;
+  type AsyncResult<V> = Promise<Result<V>>;
 
   /**
    * Wraps a value of type T into a nullable type - `null | undefined | T`.

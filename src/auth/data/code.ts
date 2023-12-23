@@ -1,7 +1,8 @@
 import argon2 from 'argon2';
 import cryptoRandomString from 'crypto-random-string';
+import { customAlphabet, customRandom } from 'nanoid';
 
-export function generateInviteCode() {
+export function generateInviteCode(): string {
   return cryptoRandomString({ length: 160, type: 'url-safe' });
 }
 
@@ -21,4 +22,22 @@ export function verifyPassword(hash: string, password: string, algo: string): Pr
   }
 
   throw 'Only argon2id hashing is supported';
+}
+
+
+export function generateApiKeyId(): string {
+  const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 24);
+
+  return 'webf_' + nanoid();
+}
+
+export async function generateApiKeyToken() {
+  const secret = cryptoRandomString({ length: 128, type: 'url-safe' });
+  const [hash, hashFn] = await hashPassword(secret);
+
+  return {
+    secret,
+    hash,
+    hashFn,
+  };
 }
