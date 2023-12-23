@@ -14,3 +14,8 @@ export interface AuthToken {
 export type Credentials =
   | { username: string; password: string; }
   | { email: string; password: string; };
+
+
+export type InitResponse = {
+  apiKey: string;
+};

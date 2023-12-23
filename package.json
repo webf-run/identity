@@ -6,7 +6,7 @@
   "exports": {
     "./package.json": "./package.json",
     "./auth": "./dist/auth/auth.js",
-    "./auth/core/password": "./dist/auth/core/password.js",
+    "./auth/core/*": "./dist/auth/core/*.js",
     "./auth/migrator": "./dist/auth/db/migrator.js",
     "./auth/provider": "./dist/auth/oauth/providers.js",
     "./auth/type": "./dist/auth/type.js"
