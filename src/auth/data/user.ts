@@ -1,8 +1,8 @@
 import { and, eq } from 'drizzle-orm';
 
 import { DbClient } from '../db/client.js';
-import { User, UserLocalLogin, UserToken } from '../db/model.js';
-import { localLogin, providerLogin, user, userEmail, userToken } from '../db/schema.js';
+import { User, UserLocalLogin, UserWithMembership, UserToken } from '../db/model.js';
+import { localLogin, providerLogin, tenantUser, user, userEmail, userToken } from '../db/schema.js';
 import { generateUserToken, hashPassword } from './code.js';
 
 export async function findLoginByEmail(db: DbClient, email: string): Promise<Nil<UserLocalLogin>> {
@@ -50,16 +50,48 @@ export async function findUserBySocialId(db: DbClient, providerId: string, subje
 }
 
 
+export async function findUserByToken(db: DbClient, token: string): Promise<Nil<UserWithMembership>> {
+  const result = await db
+    .select()
+    .from(userToken)
+    .innerJoin(user, eq(userToken.userId, user.id))
+    .innerJoin(tenantUser, eq(userToken.userId, tenantUser.userId))
+    .where(eq(userToken.id, token));
+
+  const found = result.at(0);
+
+  if (!found) {
+    return null;
+  }
+
+  const tenants: string[] = result.map((x) => x.tenant_user.tenantId);
+
+  return {
+    ...found.user,
+    tenants,
+  };
+}
+
+/**
+ * Generate a cryptographically secure token for the user that can be used to make
+ * API calls.
+ * @param db
+ * @param userId
+ * @returns
+ */
 export async function createToken(db: DbClient, userId: string): Promise<Nil<UserToken>> {
   const tokenId = generateUserToken();
 
   // Create a user token
-  const added = await db.insert(userToken).values({
-    id: tokenId,
-    userId,
-    duration: 3600 * 1000 * 72,
-    generatedAt: new Date(),
-  }).returning();
+  const added = await db
+    .insert(userToken)
+    .values({
+      id: tokenId,
+      userId,
+      duration: 3600 * 1000 * 72,
+      generatedAt: new Date(),
+    })
+    .returning();
 
   return added.at(0);
 }

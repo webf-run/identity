@@ -4,11 +4,12 @@ import { hasAppInitialized, initialize } from './core/system.js';
 import { init } from './db/client.js';
 import { addOpenIDStrategy } from './hono/oauth.js';
 import { addPasswordStrategy } from './hono/password.js';
-import type { HonoAuthMiddleware, AuthOptions } from './hono/type.js';
+import { session } from './hono/session.js';
+import type { HonoAuthApp, AuthOptions } from './hono/type.js';
 import type { AuthSystem } from './type.js';
 
 export async function makeAuth(options: AuthOptions): Promise<AuthSystem> {
-  const auth: HonoAuthMiddleware = new Hono();
+  const auth: HonoAuthApp = new Hono();
   const db = init(options.dbFile);
   const initialized = await hasAppInitialized({ db });
 
@@ -41,4 +42,5 @@ export async function makeAuth(options: AuthOptions): Promise<AuthSystem> {
 export {
   addOpenIDStrategy,
   addPasswordStrategy,
+  session,
 };

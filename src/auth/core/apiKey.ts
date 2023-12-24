@@ -1,4 +1,7 @@
-import { generateApiKeyId, generateApiKeyToken } from '../data/code.js';
+import { and, eq } from 'drizzle-orm';
+
+import { generateApiKeyId, generateApiKeyToken, verifyPassword } from '../data/code.js';
+import { ApiKey } from '../db/model.js';
 import { apiKey } from '../db/schema.js';
 import { AuthContext } from './type.js';
 
@@ -23,4 +26,31 @@ export async function generateApiKey(context: AuthContext, description: string):
   const serialized = `${id}.${token.secret}`;
 
   return serialized;
+}
+
+export async function findApiKeyByToken(context: AuthContext, token: string): Promise<ApiKey> {
+  const { db } = context;
+
+  const [id, secret] = token.split('.');
+
+  const result = await db
+    .select()
+    .from(apiKey)
+    .where(and(eq(apiKey.id, id), eq(apiKey.isActive, true)));
+
+  const key = result.at(0);
+
+  if (!key) {
+    // TODO: Error handling
+    throw 'key not found';
+  }
+
+  const valid = await verifyPassword(key.token, secret, key.hashFn);
+
+  if (!valid) {
+    // TODO: Error handling
+    throw 'key not valid';
+  }
+
+  return key;
 }

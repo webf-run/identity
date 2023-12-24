@@ -1,13 +1,13 @@
 import type { DbClient } from './db/client.js';
-import type { HonoAuthMiddleware, OAuthCallbacks } from './hono/type.js';
+import type { HonoAuthApp, OAuthCallbacks } from './hono/type.js';
 
 export type AuthSystem = {
-  auth: HonoAuthMiddleware;
+  auth: HonoAuthApp;
   db: DbClient;
 };
 
 export type {
-  HonoAuthMiddleware,
+  HonoAuthApp,
   DbClient,
   OAuthCallbacks,
 };

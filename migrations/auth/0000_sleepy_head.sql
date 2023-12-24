@@ -86,4 +86,5 @@ CREATE TABLE `user_token` (
 CREATE UNIQUE INDEX `username` ON `local_login` (`username`);--> statement-breakpoint
 CREATE UNIQUE INDEX `provider_login_unique_id` ON `provider_login` (`provider_id`,`subject_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `code` ON `reset_password_request` (`code`);--> statement-breakpoint
+CREATE UNIQUE INDEX `tenant_user_unique_membership` ON `tenant_user` (`tenant_id`,`user_id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `email` ON `user_email` (`email`);

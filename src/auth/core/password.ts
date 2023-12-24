@@ -2,7 +2,6 @@ import { err, ok } from '../../result.js';
 import { verifyPassword } from '../data/code.js';
 import {
   changePassword,
-  createToken,
   findLoginByEmail,
   findLoginByUsername
 } from '../data/user.js';
@@ -13,6 +12,7 @@ import {
   findResetPasswordRequestByEmail
 } from '../data/reset.js';
 import type { AuthContext, AuthToken, Credentials } from './type.js';
+import { createBearerToken } from './user.js';
 
 
 export async function authenticate(ctx: AuthContext, input: Credentials): AsyncResult<AuthToken> {
@@ -36,10 +36,10 @@ export async function authenticate(ctx: AuthContext, input: Credentials): AsyncR
   }
 
   // Generate a token for the user.
-  const token = await createToken(db, login.userId);
+  const token = await createBearerToken(db, login.userId);
 
   if (token) {
-    return ok({ ...token, type: 'bearer' as const });
+    return ok(token);
   } else {
     return err('INTERNAL_ERROR', 'Internal error');
   }

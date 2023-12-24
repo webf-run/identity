@@ -1,9 +1,9 @@
 import { sql } from 'drizzle-orm';
 
-import { ok, err } from '../../result';
-import { apiKey } from '../db/schema';
-import { generateApiKey } from './apiKey';
-import { AuthContext, InitResponse } from './type';
+import { ok, err } from '../../result.js';
+import { apiKey } from '../db/schema.js';
+import { generateApiKey } from './apiKey.js';
+import { AuthContext, InitResponse } from './type.js';
 
 /**
  * An app is initialized if it has at least one API key in the database.

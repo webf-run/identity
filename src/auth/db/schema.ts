@@ -101,7 +101,9 @@ export const tenantUser = sqliteTable('tenant_user', {
 
   createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
-});
+}, (t) => ({
+  membership: unique('tenant_user_unique_membership').on(t.tenantId, t.userId),
+}));
 
 
 export const resetPasswordRequest = sqliteTable('reset_password_request', {

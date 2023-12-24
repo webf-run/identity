@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
-import { authenticate, forgotPassword, resetPassword } from '../core/password';
-import { HonoAuthMiddleware } from './type';
+import { authenticate, forgotPassword, resetPassword } from '../core/password.js';
+import { HonoAuthApp } from './type.js';
+import { setSession } from './session.js';
 
 const credentialsDTO = z.object({
   username: z.string(),
@@ -17,7 +18,7 @@ const resetPassDTO = z.object({
   newPassword: z.string(),
 });
 
-export async function addPasswordStrategy(app: HonoAuthMiddleware): Promise<void> {
+export async function addPasswordStrategy(app: HonoAuthApp): Promise<void> {
   // Exchange username and password
   app.post('/login/password', async (c) => {
     const body = await c.req.json();
@@ -35,7 +36,13 @@ export async function addPasswordStrategy(app: HonoAuthMiddleware): Promise<void
     // Check if the username and password exists in the database.
     const result = await authenticate(context, parsed.data);
 
-    c.status(result.ok ? 200 : 401);
+    if (result.ok) {
+      const token = result.value;
+      setSession(c, token);
+      c.status(200);
+    } else {
+      c.status(404);
+    }
 
     return c.json(result.value);
   });

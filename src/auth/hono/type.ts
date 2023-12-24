@@ -1,14 +1,15 @@
-import type { Context, Hono } from 'hono';
+import type { Context, Hono, MiddlewareHandler } from 'hono';
 
 import type { AuthContext } from '../core/type.js';
 import type { OAuthProfile } from '../oauth/client.js';
-import { User } from '../db/model.js';
+import type { ApiKey, User, UserWithMembership } from '../db/model.js';
+import { DbClient } from '../type.js';
 
 export type HonoAuthVariables = {
   authContext: AuthContext;
 };
 
-export type HonoAuthMiddleware = Hono<{
+export type HonoAuthApp = Hono<{
   Variables: HonoAuthVariables;
 }>;
 
@@ -16,9 +17,15 @@ export type HonoAuthContext = Context<{
   Variables: HonoAuthVariables;
 }>;
 
+// export type HonoSessionVariables = {};
+
+export type HonoSessionMiddleware = MiddlewareHandler<{
+  Variables: HonoAuthVariables;
+}>;
 
 export type LoginNRegisterProps = {
   c: HonoAuthContext;
+  db: DbClient;
   user: Nil<User>;
   profile: OAuthProfile;
   callbacks: OAuthCallbacks;
@@ -45,3 +52,21 @@ export type OAuthCallbacks = {
   onLoginError?: (error: unknown) => Promise<string>;
   onSignup?: (user: OAuthProfile) => Promise<void>;
 };
+
+
+export interface UserAccess {
+  readonly type: 'user';
+  readonly user: UserWithMembership;
+}
+
+export interface ClientAppAccess {
+  readonly type: 'client';
+  readonly key: ApiKey;
+}
+
+export interface PublicAccess {
+  readonly type: 'public';
+}
+
+
+export type Access = UserAccess | ClientAppAccess | PublicAccess;

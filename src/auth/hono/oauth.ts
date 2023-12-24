@@ -1,10 +1,11 @@
+import { createBearerToken } from '../core/user.js';
 import { findUserBySocialId } from '../data/user.js';
 import type { OAuth2Client, State } from '../oauth/client.js';
-import type { HonoAuthMiddleware, LoginNRegisterProps, OAuthCallbacks } from './type.js';
+import { setSession } from './session.js';
+import type { HonoAuthApp, LoginNRegisterProps, OAuthCallbacks } from './type.js';
 
 
-export async function addOpenIDStrategy(app: HonoAuthMiddleware, client: OAuth2Client, callbacks: OAuthCallbacks): Promise<OAuth2Client> {
-
+export async function addOpenIDStrategy(app: HonoAuthApp, client: OAuth2Client, callbacks: OAuthCallbacks): Promise<OAuth2Client> {
   // If onSignup is provided, means application is allowing new users to sign up.
   const hasSignup = !!callbacks.onSignup;
 
@@ -32,11 +33,12 @@ export async function addOpenIDStrategy(app: HonoAuthMiddleware, client: OAuth2C
 
     // Find the user
     const user = await findUserBySocialId(db, client.provider, userProfile.subjectId);
+    const loginProps = { c, db, user, profile: userProfile, callbacks };
 
     if (state.type === 'login') {
-      return loginUser({ c, user, profile: userProfile, callbacks });
+      return loginUser(loginProps);
     } else if (state.type === 'signup' && hasSignup) {
-      return signUpUser({ c, user, profile: userProfile, callbacks });
+      return signUpUser(loginProps);
     } else {
       // Return to generic error page
       return c.redirect(callbacks.errorUrl, 307);
@@ -48,11 +50,12 @@ export async function addOpenIDStrategy(app: HonoAuthMiddleware, client: OAuth2C
 
 
 async function loginUser(props: LoginNRegisterProps): Promise<Response> {
-  const { c, user, profile, callbacks } = props;
+  const { c, db, user, profile, callbacks } = props;
   let redirectURL = '/';
 
   if (user) {
-    // TODO: Set-session cookie
+    const token = await createBearerToken(db, user.id);
+    const _ = await setSession(c, token);
     redirectURL = await callbacks.onLogin(user, profile);
   } else {
     redirectURL = await callbacks.onLoginNoUser(profile);
@@ -72,5 +75,4 @@ async function signUpUser(props: LoginNRegisterProps): Promise<Response> {
   await callbacks.onSignup!(profile);
 
   return c.redirect('/', 307);
-
 }

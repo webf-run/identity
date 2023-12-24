@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "c8e754f0-b933-4e33-8840-a4c17bfd1322",
+  "id": "28814a26-7a98-45a3-bfa7-cdf57032fdfc",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "api_key": {
@@ -381,7 +381,16 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "tenant_user_unique_membership": {
+          "name": "tenant_user_unique_membership",
+          "columns": [
+            "tenant_id",
+            "user_id"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {
         "tenant_user_tenant_id_tenant_id_fk": {
           "name": "tenant_user_tenant_id_tenant_id_fk",
