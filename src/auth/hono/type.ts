@@ -36,7 +36,7 @@ export type AuthOptions = {
    * Path to the SQLite database file.
    * File will be opened in WAL mode.
    */
-  db: InitOptions
+  db: InitOptions;
 };
 
 export type OAuthCallbacks = {

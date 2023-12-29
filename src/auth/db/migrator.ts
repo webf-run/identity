@@ -22,6 +22,10 @@ export async function migrate(config: MigrationConfig) {
     username: config.user,
     password: config.password,
     database: config.database,
+
+    // As per recommendation from drizzle about connection pool size:
+    // https://orm.drizzle.team/docs/get-started-postgresql#postgresjs
+    max: 1,
   });
 
   const db = drizzle(pgClient);
@@ -34,7 +38,5 @@ export async function migrate(config: MigrationConfig) {
     migrationsTable: 'migration',
   });
 
-  pgClient.end();
-
-  return { db };
+  await pgClient.end();
 }

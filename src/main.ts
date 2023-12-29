@@ -3,20 +3,23 @@ import { Hono } from 'hono';
 
 import { addOpenIDStrategy, addPasswordStrategy, makeAuth } from './auth/auth.js';
 import { google } from './auth/oauth/providers.js';
+import postgres from 'postgres';
 
 export async function main() {
   const app = new Hono();
 
   app.get('/', (c) => c.text('Hello Hono!'));
 
+  const pgClient = postgres({
+    host: 'localhost',
+    port: 5432,
+    user: 'postgres',
+    password: 'postgres',
+    database: 'base',
+  });
+
   const { auth } = await makeAuth({
-    db: {
-      host: 'localhost',
-      port: 5432,
-      user: 'postgres',
-      password: 'postgres',
-      database: 'base',
-    },
+    db: { pgClient },
   });
 
   const googleClient = await google({
