@@ -1,5 +1,5 @@
 import { err, ok } from '../../result.js';
-import { verifyPassword } from '../data/code.js';
+import { verify } from '../data/hash.js';
 import {
   changePassword,
   findLoginByEmail,
@@ -28,7 +28,7 @@ export async function authenticate(ctx: AuthContext, input: Credentials): AsyncR
     return err('INVALID_CREDENTIALS', 'Invalid user credentials');
   }
 
-  const verified = await verifyPassword(login.password, password, login.hashFn);
+  const verified = await verify(login.password, password, login.hashFn);
 
   // User with given email found but not password match.
   if (!verified) {
@@ -66,7 +66,7 @@ export async function forgotPassword(ctx: AuthContext, username: string): AsyncR
 }
 
 
-export async function resetPassword(ctx: AuthContext, code: string, newPassword: string) {
+export async function resetPassword(ctx: AuthContext, code: string, newPassword: string): AsyncResult<boolean> {
   const { db } = ctx;
 
   // Token is valid for 30 minutes only

@@ -1,60 +1,54 @@
 {
-  "version": "5",
-  "dialect": "sqlite",
-  "id": "28814a26-7a98-45a3-bfa7-cdf57032fdfc",
+  "id": "e542c1ba-1477-4ff8-8884-b9601016cf25",
   "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "5",
+  "dialect": "pg",
   "tables": {
     "api_key": {
       "name": "api_key",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "token": {
           "name": "token",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "hash_fn": {
           "name": "hash_fn",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "is_active": {
           "name": "is_active",
-          "type": "integer",
+          "type": "boolean",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -64,59 +58,46 @@
     },
     "local_login": {
       "name": "local_login",
+      "schema": "",
       "columns": {
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "username": {
           "name": "username",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "password": {
           "name": "password",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "hash_fn": {
           "name": "hash_fn",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
-      "indexes": {
-        "username": {
-          "name": "username",
-          "columns": [
-            "username"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "local_login_user_id_user_id_fk": {
           "name": "local_login_user_id_user_id_fk",
@@ -133,31 +114,37 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "username": {
+          "name": "username",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        }
+      }
     },
     "login_attempt": {
       "name": "login_attempt",
+      "schema": "",
       "columns": {
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "attempts": {
           "name": "attempts",
-          "type": "integer",
+          "type": "smallint",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "last_attempt": {
           "name": "last_attempt",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -181,46 +168,34 @@
     },
     "provider_login": {
       "name": "provider_login",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "provider_id": {
           "name": "provider_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "subject_id": {
           "name": "subject_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
-      "indexes": {
-        "provider_login_unique_id": {
-          "name": "provider_login_unique_id",
-          "columns": [
-            "provider_id",
-            "subject_id"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "provider_login_user_id_user_id_fk": {
           "name": "provider_login_user_id_user_id_fk",
@@ -237,56 +212,53 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "provider_unique_id": {
+          "name": "provider_unique_id",
+          "nullsNotDistinct": false,
+          "columns": [
+            "provider_id",
+            "subject_id"
+          ]
+        }
+      }
     },
     "reset_password_request": {
       "name": "reset_password_request",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "code": {
           "name": "code",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
-      "indexes": {
-        "code": {
-          "name": "code",
-          "columns": [
-            "code"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "reset_password_request_user_id_user_id_fk": {
           "name": "reset_password_request_user_id_user_id_fk",
@@ -303,94 +275,106 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "code": {
+          "name": "code",
+          "nullsNotDistinct": false,
+          "columns": [
+            "code"
+          ]
+        }
+      }
     },
     "tenant": {
       "name": "tenant",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "key": {
+          "name": "key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "key"
+          ]
+        }
+      }
     },
     "tenant_user": {
       "name": "tenant_user",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "tenant_id": {
           "name": "tenant_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
-      "indexes": {
-        "tenant_user_unique_membership": {
-          "name": "tenant_user_unique_membership",
-          "columns": [
-            "tenant_id",
-            "user_id"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "tenant_user_tenant_id_tenant_id_fk": {
           "name": "tenant_user_tenant_id_tenant_id_fk",
@@ -420,45 +404,50 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "membership": {
+          "name": "membership",
+          "nullsNotDistinct": false,
+          "columns": [
+            "tenant_id",
+            "user_id"
+          ]
+        }
+      }
     },
     "user": {
       "name": "user",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "first_name": {
           "name": "first_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "last_name": {
           "name": "last_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -468,45 +457,34 @@
     },
     "user_email": {
       "name": "user_email",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "email": {
           "name": "email",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "verified": {
           "name": "verified",
-          "type": "integer",
+          "type": "boolean",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
-      "indexes": {
-        "email": {
-          "name": "email",
-          "columns": [
-            "email"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "user_email_user_id_user_id_fk": {
           "name": "user_email_user_id_user_id_fk",
@@ -523,38 +501,43 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "email": {
+          "name": "email",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      }
     },
     "user_token": {
       "name": "user_token",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "generated_at": {
           "name": "generated_at",
-          "type": "integer",
+          "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "duration": {
           "name": "duration",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -578,9 +561,10 @@
     }
   },
   "enums": {},
+  "schemas": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
+    "tables": {}
   }
 }

@@ -1,12 +1,13 @@
-import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3/driver';
-import { migrate as baseMigrate } from 'drizzle-orm/better-sqlite3/migrator';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import { migrate as baseMigrate } from 'drizzle-orm/postgres-js/migrator';
+import postgres from 'postgres';
 
 export type MigrationConfig = {
-  /**
-   * The SQLite file containing databse.
-   */
-  dbFile: string;
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  database: string;
 
   /**
    * Migrations folder.
@@ -14,17 +15,26 @@ export type MigrationConfig = {
   folder: string;
 };
 
-export function migrate(config: MigrationConfig) {
-  const dbClient = new Database(config.dbFile);
-  const db = drizzle(dbClient);
+export async function migrate(config: MigrationConfig) {
+  const pgClient = postgres({
+    host: config.host,
+    port: config.port,
+    username: config.user,
+    password: config.password,
+    database: config.database,
+  });
 
-  baseMigrate(db, {
+  const db = drizzle(pgClient);
+
+  await baseMigrate(db, {
     migrationsFolder: config.folder,
 
     // Note: Drizzle is not using this.
     // It always uses `__drizzle_migrations` table.
     migrationsTable: 'migration',
   });
+
+  pgClient.end();
 
   return { db };
 }

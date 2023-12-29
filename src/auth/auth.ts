@@ -10,7 +10,7 @@ import type { AuthSystem } from './type.js';
 
 export async function makeAuth(options: AuthOptions): Promise<AuthSystem> {
   const auth: HonoAuthApp = new Hono();
-  const db = init(options.dbFile);
+  const { db } = init(options.db);
   const initialized = await hasAppInitialized({ db });
 
   // Inject the auth context into the request.

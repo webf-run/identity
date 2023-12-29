@@ -10,7 +10,13 @@ export async function main() {
   app.get('/', (c) => c.text('Hello Hono!'));
 
   const { auth } = await makeAuth({
-    dbFile: './auth.sqlite3',
+    db: {
+      host: 'localhost',
+      port: 5432,
+      user: 'postgres',
+      password: 'postgres',
+      database: 'base',
+    },
   });
 
   const googleClient = await google({

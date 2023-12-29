@@ -1,6 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 
-import { generateApiKeyId, generateApiKeyToken, verifyPassword } from '../data/code.js';
+import { generateApiKeyId, generateApiKeyToken } from '../data/code.js';
+import { verify } from '../data/hash.js';
 import { ApiKey } from '../db/model.js';
 import { apiKey } from '../db/schema.js';
 import { AuthContext } from './type.js';
@@ -45,7 +46,7 @@ export async function findApiKeyByToken(context: AuthContext, token: string): Pr
     throw 'key not found';
   }
 
-  const valid = await verifyPassword(key.token, secret, key.hashFn);
+  const valid = await verify(key.token, secret, key.hashFn);
 
   if (!valid) {
     // TODO: Error handling

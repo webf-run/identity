@@ -3,7 +3,7 @@ import type { Context, Hono, MiddlewareHandler } from 'hono';
 import type { AuthContext } from '../core/type.js';
 import type { OAuthProfile } from '../oauth/client.js';
 import type { ApiKey, User, UserWithMembership } from '../db/model.js';
-import { DbClient } from '../type.js';
+import type { InitOptions, DbClient } from '../db/client.js';
 
 export type HonoAuthVariables = {
   authContext: AuthContext;
@@ -36,7 +36,7 @@ export type AuthOptions = {
    * Path to the SQLite database file.
    * File will be opened in WAL mode.
    */
-  dbFile: string;
+  db: InitOptions
 };
 
 export type OAuthCallbacks = {

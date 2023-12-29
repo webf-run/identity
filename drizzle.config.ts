@@ -3,9 +3,13 @@ import type { Config } from 'drizzle-kit';
 export default {
   schema: './src/auth/db/schema.ts',
   out: './migrations/auth',
-  driver: 'better-sqlite',
+  driver: 'pg',
   dbCredentials: {
-    url: './migrate.fixture.db'
+    host: 'localhost',
+    port: 5432,
+    user: 'postgres',
+    password: 'postgres',
+    database: 'base',
   },
   verbose: true,
   strict: true,

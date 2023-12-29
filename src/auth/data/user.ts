@@ -3,7 +3,8 @@ import { and, eq } from 'drizzle-orm';
 import { DbClient } from '../db/client.js';
 import { User, UserLocalLogin, UserWithMembership, UserToken } from '../db/model.js';
 import { localLogin, providerLogin, tenantUser, user, userEmail, userToken } from '../db/schema.js';
-import { generateUserToken, hashPassword } from './code.js';
+import { generateUserToken } from './code.js';
+import { hash } from './hash.js';
 
 export async function findLoginByEmail(db: DbClient, email: string): Promise<Nil<UserLocalLogin>> {
   const result = await db
@@ -97,7 +98,7 @@ export async function createToken(db: DbClient, userId: string): Promise<Nil<Use
 }
 
 export async function changePassword(db: DbClient, userId: string, newPassword: string): Promise<Nil<any>> {
-  const [password, hashFn] = await hashPassword(newPassword);
+  const [password, hashFn] = await hash(newPassword);
 
   const result = await db
     .update(localLogin)

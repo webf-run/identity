@@ -8,6 +8,6 @@ export async function createBearerToken(db: DbClient, userId: string): Promise<A
 
   return {
     ...token!,
-    type: 'bearer' as const
+    type: 'bearer',
   };
 }

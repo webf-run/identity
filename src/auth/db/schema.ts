@@ -1,42 +1,42 @@
-import { integer, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
+import { boolean, integer, pgTable, smallint, text, timestamp, unique } from 'drizzle-orm/pg-core';
 
 
-export const apiKey = sqliteTable('api_key', {
+export const apiKey = pgTable('api_key', {
   id: text('id').primaryKey(),
   description: text('description').notNull(),
 
   token: text('token').notNull(),
   hashFn: text('hash_fn').notNull(),
 
-  isActive: integer('is_active', { mode: 'boolean' }).notNull(),
+  isActive: boolean('is_active').notNull(),
 
-  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
 });
 
 
-export const user = sqliteTable('user', {
+export const user = pgTable('user', {
   id: text('id').primaryKey(),
 
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
 
-  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
 });
 
 
-export const userEmail = sqliteTable('user_email', {
+export const userEmail = pgTable('user_email', {
   id: text('id').primaryKey(),
 
   email: text('email').unique('email').notNull(),
-  verified: integer('verified', { mode: 'boolean' }).notNull(),
+  verified: boolean('verified').notNull(),
 
   userId: text('user_id').references(() => user.id).notNull(),
 });
 
 
-export const localLogin = sqliteTable('local_login', {
+export const localLogin = pgTable('local_login', {
   userId: text('user_id').primaryKey().references(() => user.id).notNull(),
 
   // Value of the username depends on the application logic.
@@ -46,11 +46,11 @@ export const localLogin = sqliteTable('local_login', {
   password: text('password').notNull(),
   hashFn: text('hash_fn').notNull(),
 
-  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
 });
 
-export const providerLogin = sqliteTable('provider_login', {
+export const providerLogin = pgTable('provider_login', {
   id: text('id').primaryKey(),
 
   providerId: text('provider_id').notNull(),
@@ -58,22 +58,24 @@ export const providerLogin = sqliteTable('provider_login', {
 
   userId: text('user_id').references(() => user.id).notNull(),
 }, (t) => ({
-  uniqueId: unique('provider_login_unique_id').on(t.providerId, t.subjectId)
+  uniqueId: unique('provider_unique_id').on(t.providerId, t.subjectId)
 }));
 
 
-export const tenant = sqliteTable('tenant', {
+export const tenant = pgTable('tenant', {
   id: text('id').primaryKey(),
 
   name: text('name').notNull(),
+  description: text('description').notNull(),
+  key: text('key').unique('key').notNull(),
 
-  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
 });
 
 
 // TODO: Should invitation be part of this system?
-// export const invitation = sqliteTable('invitation', {
+// export const invitation = pgTable('invitation', {
 //   id: text('id').primaryKey(),
 //   code: text('code').unique('code').notNull(),
 
@@ -88,48 +90,52 @@ export const tenant = sqliteTable('tenant', {
 
 //   tenantId: text('tenant_id').references(() => tenant.id).notNull(),
 
-//   createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
-//   updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+//   createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
+//   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
 // });
 
 
-export const tenantUser = sqliteTable('tenant_user', {
+export const tenantUser = pgTable('tenant_user', {
   id: text('id').primaryKey(),
 
   tenantId: text('tenant_id').references(() => tenant.id).notNull(),
   userId: text('user_id').references(() => user.id).notNull(),
 
-  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
 }, (t) => ({
-  membership: unique('tenant_user_unique_membership').on(t.tenantId, t.userId),
+  membership: unique('membership').on(t.tenantId, t.userId),
 }));
 
 
-export const resetPasswordRequest = sqliteTable('reset_password_request', {
+export const resetPasswordRequest = pgTable('reset_password_request', {
   id: text('id').primaryKey(),
 
   code: text('code').unique('code').notNull(),
   userId: text('user_id').references(() => user.id).notNull(),
 
-  createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
 });
 
 
-export const loginAttempt = sqliteTable('login_attempt', {
+export const loginAttempt = pgTable('login_attempt', {
   userId: text('user_id').primaryKey().references(() => user.id),
 
-  attempts: integer('attempts', { mode: 'number' }).notNull(),
-  lastAttempt: integer('last_attempt', { mode: 'timestamp_ms' }).notNull(),
+  attempts: smallint('attempts').notNull(),
+  lastAttempt: timestamp('last_attempt', { withTimezone: true }).notNull(),
 });
 
 
-export const userToken = sqliteTable('user_token', {
+export const userToken = pgTable('user_token', {
   id: text('id').primaryKey(),
 
-  generatedAt: integer('generated_at', { mode: 'timestamp_ms' }).notNull(),
-  duration: integer('duration', { mode: 'number' }).notNull(),
+  generatedAt: timestamp('generated_at', { withTimezone: true }).notNull(),
+
+  /**
+   *  The `duration` in milliseconds
+   */
+  duration: integer('duration').notNull(),
 
   userId: text('user_id').references(() => user.id).notNull(),
 });

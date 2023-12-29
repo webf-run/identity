@@ -1,13 +1,25 @@
-import Database from 'better-sqlite3';
-import { BetterSQLite3Database, drizzle } from 'drizzle-orm/better-sqlite3/driver';
+import postgres from 'postgres';
+import { PostgresJsDatabase, drizzle } from 'drizzle-orm/postgres-js/driver';
 
 import * as schema from './schema.js';
 
-export type DbClient = BetterSQLite3Database<typeof schema>;
+export type DbClient = PostgresJsDatabase<typeof schema>;
 
-export function init(dbUri: string): DbClient {
-  const client = new Database(dbUri);
-  const db = drizzle(client, { schema });
+export type InitOptions = {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  database: string;
+};
 
-  return db;
+export type DbResponse = {
+  db: DbClient;
+}
+
+export function init(options: InitOptions): DbResponse {
+  const pgClient = postgres(options);
+  const db = drizzle(pgClient, { schema });
+
+  return { db };
 }
