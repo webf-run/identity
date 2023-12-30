@@ -3,7 +3,7 @@ import { and, eq } from 'drizzle-orm';
 import { generateApiKeyId, generateApiKeyToken } from '../data/code.js';
 import { verify } from '../data/hash.js';
 import { ApiKey } from '../db/model.js';
-import { apiKey } from '../db/schema.js';
+import { apiKey } from '../../schema/identity.js';
 import { AuthContext } from './type.js';
 
 export async function generateApiKey(context: AuthContext, description: string): Promise<string> {

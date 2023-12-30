@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 
 import { DbClient } from '../db/client.js';
 import { ResetPasswordRequest } from '../db/model.js';
-import { resetPasswordRequest, userEmail } from '../db/schema.js';
+import { resetPasswordRequest, userEmail } from '../../schema/identity.js';
 
 export type ResetCount = { userId: string; count: number };
 

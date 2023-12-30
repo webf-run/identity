@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 
 import { ok, err } from '../../result.js';
-import { apiKey } from '../db/schema.js';
+import { apiKey } from '../../schema/identity.js';
 import { generateApiKey } from './apiKey.js';
 import { AuthContext, InitResponse } from './type.js';
 

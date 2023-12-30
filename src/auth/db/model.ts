@@ -1,4 +1,4 @@
-import { resetPasswordRequest, user, userToken } from './schema.js';
+import { resetPasswordRequest, user, userToken } from '../../schema/identity.js';
 
 export type User = typeof user.$inferSelect;
 export type UserToken = typeof userToken.$inferSelect;

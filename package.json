@@ -7,10 +7,10 @@
     "./package.json": "./package.json",
     "./auth": "./dist/auth/auth.js",
     "./auth/core/*": "./dist/auth/core/*.js",
-    "./auth/db/schema": "./dist/auth/db/schema.js",
     "./auth/migrator": "./dist/auth/db/migrator.js",
     "./auth/provider": "./dist/auth/oauth/providers.js",
-    "./auth/type": "./dist/auth/type.js"
+    "./auth/type": "./dist/auth/type.js",
+    "./schema/*": "./dist/schema/*.js"
   },
   "scripts": {
     "check:types": "tsc",

@@ -1,7 +1,7 @@
 import { Sql } from 'postgres';
 import { PostgresJsDatabase, drizzle } from 'drizzle-orm/postgres-js/driver';
 
-import * as schema from './schema.js';
+import * as schema from '../../schema/identity.js';
 
 export type DbClient = PostgresJsDatabase<typeof schema>;
 

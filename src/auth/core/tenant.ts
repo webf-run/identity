@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 
-import { tenant } from '../db/schema';
+import { tenant } from '../../schema/identity';
 import { AuthContext } from './type';
 
 export type NewTenantPayload = {
