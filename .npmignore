@@ -3,3 +3,4 @@ test/
 tsconfig.json
 tsconfig.build.json
 .vscode/
+scripts/

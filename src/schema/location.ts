@@ -17,21 +17,21 @@ export const state = pgTable('state', {
 
   name: text('name').notNull(),
   code: text('code').notNull().unique(),
-  countryId: text('country_id').notNull().references(() => country.id),
+  countryId: text('country_id').notNull().references(() => country.id, { onDelete: 'cascade' }),
 });
 
 export const city = pgTable('city', {
   id: text('id').primaryKey(),
 
   name: text('name').notNull(),
-  stateId: text('state_id').notNull().references(() => state.id),
+  stateId: text('state_id').notNull().references(() => state.id, { onDelete: 'cascade' }),
 });
 
 export const postalCode = pgTable('postal_code', {
   id: text('id').primaryKey(),
 
   code: text('code').notNull().unique(),
-  cityId: text('city_id').notNull().references(() => city.id),
+  cityId: text('city_id').notNull().references(() => city.id, { onDelete: 'cascade' }),
 });
 
 export const address = pgTable('address', {
@@ -40,7 +40,7 @@ export const address = pgTable('address', {
   house: text('house').notNull(),
   street: text('street').notNull(),
   city: text('city').notNull().references(() => city.id),
-  zip_code: text('zip_code').references(() => postalCode.id),
+  zip_code: text('zip_code').references(() => postalCode.id, { onDelete: 'cascade' }),
 
   createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),

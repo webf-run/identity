@@ -1,4 +1,4 @@
-import { err, ok } from '../../result.js';
+import { AsyncResult, err, ok } from '../../result.js';
 import { verify } from '../data/hash.js';
 import {
   changePassword,

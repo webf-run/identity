@@ -1,12 +1,14 @@
 import type { Context, Hono, MiddlewareHandler } from 'hono';
 
+import { Nil } from '../../result.js';
 import type { AuthContext } from '../core/type.js';
-import type { OAuthProfile } from '../oauth/client.js';
-import type { ApiKey, User, UserWithMembership } from '../db/model.js';
 import type { InitOptions, DbClient } from '../db/client.js';
+import type { ApiKey, User, UserWithMembership } from '../db/model.js';
+import type { OAuthProfile } from '../oauth/client.js';
 
 export type HonoAuthVariables = {
   authContext: AuthContext;
+  session: Access;
 };
 
 export type HonoAuthApp = Hono<{

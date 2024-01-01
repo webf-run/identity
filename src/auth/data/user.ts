@@ -1,8 +1,9 @@
 import { and, eq } from 'drizzle-orm';
 
+import { Nil } from '../../result.js';
+import { localLogin, providerLogin, tenantUser, user, userEmail, userToken } from '../../schema/identity.js';
 import { DbClient } from '../db/client.js';
 import { User, UserLocalLogin, UserWithMembership, UserToken } from '../db/model.js';
-import { localLogin, providerLogin, tenantUser, user, userEmail, userToken } from '../../schema/identity.js';
 import { generateUserToken } from './code.js';
 import { hash } from './hash.js';
 

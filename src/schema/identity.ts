@@ -32,12 +32,12 @@ export const userEmail = pgTable('user_email', {
   email: text('email').unique('email').notNull(),
   verified: boolean('verified').notNull(),
 
-  userId: text('user_id').references(() => user.id).notNull(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
 });
 
 
 export const localLogin = pgTable('local_login', {
-  userId: text('user_id').primaryKey().references(() => user.id).notNull(),
+  userId: text('user_id').primaryKey().references(() => user.id, { onDelete: 'cascade' }),
 
   // Value of the username depends on the application logic.
   // They may store some GitHub/Twitter like username or use the email.
@@ -56,7 +56,7 @@ export const providerLogin = pgTable('provider_login', {
   providerId: text('provider_id').notNull(),
   subjectId: text('subject_id').notNull(),
 
-  userId: text('user_id').references(() => user.id).notNull(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete:  'cascade'}),
 }, (t) => ({
   uniqueId: unique('provider_unique_id').on(t.providerId, t.subjectId)
 }));
@@ -98,8 +98,8 @@ export const tenant = pgTable('tenant', {
 export const tenantUser = pgTable('tenant_user', {
   id: text('id').primaryKey(),
 
-  tenantId: text('tenant_id').references(() => tenant.id).notNull(),
-  userId: text('user_id').references(() => user.id).notNull(),
+  tenantId: text('tenant_id').notNull().references(() => tenant.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
 
   createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
@@ -112,7 +112,7 @@ export const resetPasswordRequest = pgTable('reset_password_request', {
   id: text('id').primaryKey(),
 
   code: text('code').unique('code').notNull(),
-  userId: text('user_id').references(() => user.id).notNull(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
 
   createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
@@ -120,7 +120,7 @@ export const resetPasswordRequest = pgTable('reset_password_request', {
 
 
 export const loginAttempt = pgTable('login_attempt', {
-  userId: text('user_id').primaryKey().references(() => user.id),
+  userId: text('user_id').primaryKey().notNull().references(() => user.id, { onDelete: 'cascade' }),
 
   attempts: smallint('attempts').notNull(),
   lastAttempt: timestamp('last_attempt', { withTimezone: true }).notNull(),
@@ -137,5 +137,5 @@ export const userToken = pgTable('user_token', {
    */
   duration: integer('duration').notNull(),
 
-  userId: text('user_id').references(() => user.id).notNull(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
 });

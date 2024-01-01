@@ -23,14 +23,9 @@ export function err<V>(code: ErrorCode, message: string): Result<V> {
   return { ok: false, value: { code, message } };
 }
 
-// I do not like this patching but it is very convenient
-// as long as I am not patching global object for values.
-// I am only making few types available globally.
-declare global {
-  type AsyncResult<V> = Promise<Result<V>>;
+export type AsyncResult<V> = Promise<Result<V>>;
 
-  /**
-   * Wraps a value of type T into a nullable type - `null | undefined | T`.
-   */
-  type Nil<T> = T | null | undefined;
-}
+/**
+ * Wraps a value of type T into a nullable type - `null | undefined | T`.
+ */
+export type Nil<T> = T | null | undefined;

@@ -4,11 +4,11 @@ import { customAlphabet } from 'nanoid';
 import { hash } from './hash';
 
 export function generateInviteCode(): string {
-  return cryptoRandomString({ length: 160, type: 'url-safe' });
+  return cryptoRandomString({ length: 96, type: 'alphanumeric' });
 }
 
 export function generateUserToken(): string {
-  return 'u-' + cryptoRandomString({ length: 128, type: 'url-safe' });
+  return 'u-' + cryptoRandomString({ length: 96, type: 'alphanumeric' });
 }
 
 export function generateApiKeyId(): string {
@@ -18,7 +18,7 @@ export function generateApiKeyId(): string {
 }
 
 export async function generateApiKeyToken() {
-  const secret = cryptoRandomString({ length: 128, type: 'url-safe' });
+  const secret = cryptoRandomString({ length: 128, type: 'alphanumeric' });
   const hashed = await hash(secret);
 
   return {

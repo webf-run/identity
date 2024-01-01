@@ -16,10 +16,10 @@
     "check:types": "tsc",
     "check:cycles": "tsx ./scripts/cycles.ts",
     "dev": "dotenv -- tsx ./src/main.ts",
+    "dev:pack": "tsx ./scripts/pack.ts",
     "prebuild": "rimraf ./dist",
     "build": "tsc -p ./tsconfig.build.json",
     "generate": "drizzle-kit generate:pg",
-    "dev:pack": "tsx ./scripts/pack.ts",
     "test": "NODE_OPTIONS='--import tsx' node --test"
   },
   "repository": {

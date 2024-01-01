@@ -19,7 +19,7 @@ export async function generateApiKey(context: AuthContext, description: string):
       description,
       hashFn: token.hashFn,
       isActive: true,
-      token: token.secret,
+      token: token.hash,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -32,7 +32,8 @@ export async function generateApiKey(context: AuthContext, description: string):
 export async function findApiKeyByToken(context: AuthContext, token: string): Promise<ApiKey> {
   const { db } = context;
 
-  const [id, secret] = token.split('.');
+  const [id, ...rest] = token.split('.');
+  const secret = rest.join('');
 
   const result = await db
     .select()

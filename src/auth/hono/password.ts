@@ -38,7 +38,7 @@ export async function addPasswordStrategy(app: HonoAuthApp): Promise<void> {
 
     if (result.ok) {
       const token = result.value;
-      setSession(c, token);
+      await setSession(c, token);
       c.status(200);
     } else {
       c.status(404);
