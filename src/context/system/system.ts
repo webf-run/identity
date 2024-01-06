@@ -2,8 +2,8 @@ import { sql } from 'drizzle-orm';
 
 import { ok, err, AsyncResult } from '../../result.js';
 import { apiKey } from '../../schema/identity.js';
+import { AuthContext, InitResponse } from '../type.js';
 import { generateApiKey } from './apiKey.js';
-import { AuthContext, InitResponse } from './type.js';
 
 /**
  * An app is initialized if it has at least one API key in the database.
@@ -46,5 +46,4 @@ export async function initialize(context: AuthContext): AsyncResult<InitResponse
   } else {
     return err('INTERNAL_ERROR', 'App already initialized.');
   }
-
 }

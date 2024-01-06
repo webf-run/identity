@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { authenticate, forgotPassword, resetPassword } from '../core/password.js';
+import { authenticate, forgotPassword, resetPassword } from '../../context/password/password.js';
 import { HonoAuthApp } from './type.js';
 import { setSession } from './session.js';
 

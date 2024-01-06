@@ -1,12 +1,12 @@
 import { Hono } from 'hono';
 
-import { hasAppInitialized, initialize } from './core/system.js';
-import { init } from './db/client.js';
+import { hasAppInitialized, initialize } from '../context/system/system.js';
+import { init } from '../db/client.js';
 import { addOpenIDStrategy } from './hono/oauth.js';
 import { addPasswordStrategy } from './hono/password.js';
 import { session } from './hono/session.js';
 import type { HonoAuthApp, AuthOptions } from './hono/type.js';
-import type { AuthSystem } from './type.js';
+import type { AuthSystem } from '../type.js';
 
 /**
  * Builds a Hono app that handles only authentication.

@@ -29,7 +29,7 @@ export const user = pgTable('user', {
 export const userEmail = pgTable('user_email', {
   id: text('id').primaryKey(),
 
-  email: text('email').unique('email').notNull(),
+  email: text('email').unique().notNull(),
   verified: boolean('verified').notNull(),
 
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
@@ -41,7 +41,7 @@ export const localLogin = pgTable('local_login', {
 
   // Value of the username depends on the application logic.
   // They may store some GitHub/Twitter like username or use the email.
-  username: text('username').unique('username').notNull(),
+  username: text('username').unique().notNull(),
 
   password: text('password').notNull(),
   hashFn: text('hash_fn').notNull(),
@@ -74,25 +74,26 @@ export const tenant = pgTable('tenant', {
 });
 
 
-// TODO: Should invitation be part of this system?
-// export const invitation = pgTable('invitation', {
-//   id: text('id').primaryKey(),
-//   code: text('code').unique('code').notNull(),
+export const invitation = pgTable('invitation', {
+  id: text('id').primaryKey(),
+  code: text('code').unique().notNull(),
 
-//   firstName: text('first_name').notNull(),
-//   lastName: text('last_name').notNull(),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
 
-//   email: text('email').notNull(),
+  email: text('email').notNull(),
 
-//   // duration in milliseconds
-//   duration: integer('duration').notNull(),
-//   expiryAt: integer('expiry_at').notNull(),
+  /**
+   * duration: The validity of invitation in milliseconds
+   */
+  duration: integer('duration').notNull(),
+  expiryAt: timestamp('expirty_at', { withTimezone: true }).notNull(),
 
-//   tenantId: text('tenant_id').references(() => tenant.id).notNull(),
+  tenantId: text('tenant_id').references(() => tenant.id).notNull(),
 
-//   createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
-//   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
-// });
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
+});
 
 
 export const tenantUser = pgTable('tenant_user', {
@@ -111,7 +112,7 @@ export const tenantUser = pgTable('tenant_user', {
 export const resetPasswordRequest = pgTable('reset_password_request', {
   id: text('id').primaryKey(),
 
-  code: text('code').unique('code').notNull(),
+  code: text('code').unique().notNull(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
 
   createdAt: timestamp('created_at', { withTimezone: true }).notNull(),

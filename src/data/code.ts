@@ -3,21 +3,21 @@ import { customAlphabet } from 'nanoid';
 
 import { hash } from './hash';
 
-export function generateInviteCode(): string {
+export function inviteCode(): string {
   return cryptoRandomString({ length: 96, type: 'alphanumeric' });
 }
 
-export function generateUserToken(): string {
+export function bearerToken(): string {
   return 'u-' + cryptoRandomString({ length: 96, type: 'alphanumeric' });
 }
 
-export function generateApiKeyId(): string {
+export function apiKeyId(): string {
   const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 24);
 
   return 'webf_' + nanoid();
 }
 
-export async function generateApiKeyToken() {
+export async function apiKeyToken() {
   const secret = cryptoRandomString({ length: 128, type: 'alphanumeric' });
   const hashed = await hash(secret);
 

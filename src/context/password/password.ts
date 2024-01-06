@@ -1,18 +1,19 @@
 import { AsyncResult, err, ok } from '../../result.js';
-import { verify } from '../data/hash.js';
+import { verify } from '../../data/hash.js';
+import type { AuthContext, AuthToken, Credentials } from '../type.js';
+import { createBearerToken } from '../user/user.js';
+
 import {
   changePassword,
   findLoginByEmail,
   findLoginByUsername
-} from '../data/user.js';
+} from './login.js';
 import {
   createResetPasswordRequest,
   deleteResetPasswordRequest,
   findResetPasswordRequestByCode,
   findResetPasswordRequestByEmail
-} from '../data/reset.js';
-import type { AuthContext, AuthToken, Credentials } from './type.js';
-import { createBearerToken } from './user.js';
+} from './reset.js';
 
 
 export async function authenticate(ctx: AuthContext, input: Credentials): AsyncResult<AuthToken> {

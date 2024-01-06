@@ -1,14 +1,13 @@
 import type { Context, Hono, MiddlewareHandler } from 'hono';
 
 import { Nil } from '../../result.js';
-import type { AuthContext } from '../core/type.js';
-import type { InitOptions, DbClient } from '../db/client.js';
-import type { ApiKey, User, UserWithMembership } from '../db/model.js';
+import type { AuthContext } from '../../context/type.js';
+import type { InitOptions, DbClient } from '../../db/client.js';
+import type { User } from '../../db/model.js';
 import type { OAuthProfile } from '../oauth/client.js';
 
 export type HonoAuthVariables = {
   authContext: AuthContext;
-  session: Access;
 };
 
 export type HonoAuthApp = Hono<{
@@ -54,21 +53,3 @@ export type OAuthCallbacks = {
   onLoginError?: (error: unknown) => Promise<string>;
   onSignup?: (user: OAuthProfile) => Promise<void>;
 };
-
-
-export interface UserAccess {
-  readonly type: 'user';
-  readonly user: UserWithMembership;
-}
-
-export interface ClientAppAccess {
-  readonly type: 'client';
-  readonly key: ApiKey;
-}
-
-export interface PublicAccess {
-  readonly type: 'public';
-}
-
-
-export type Access = UserAccess | ClientAppAccess | PublicAccess;

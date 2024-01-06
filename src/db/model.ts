@@ -1,8 +1,25 @@
-import { resetPasswordRequest, user, userToken } from '../../schema/identity.js';
+export type User = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  firstName: string;
+  lastName: string;
+};
 
-export type User = typeof user.$inferSelect;
-export type UserToken = typeof userToken.$inferSelect;
-export type ResetPasswordRequest = typeof resetPasswordRequest.$inferSelect;
+export type UserToken = {
+  id: string;
+  generatedAt: Date;
+  duration: number;
+  userId: string;
+};
+
+export type ResetPasswordRequest = {
+  id: string;
+  code: string;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+};
 
 // After the model is finalized, replace inferred types with real types.
 export type ApiKey = {
@@ -13,10 +30,6 @@ export type ApiKey = {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-};
-
-export type UserWithMembership = User & {
-  tenants: string[];
 };
 
 // export type User

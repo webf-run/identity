@@ -3,7 +3,7 @@ import { deepEqual } from 'node:assert';
 
 import { sql } from 'drizzle-orm';
 
-import { migrate } from '../src/auth/db/migrator';
+import { migrate } from '../src/db/migrator';
 
 type Migration = {
   id: string | null;

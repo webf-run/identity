@@ -5,11 +5,17 @@
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
-    "./auth": "./dist/auth/auth.js",
-    "./auth/core/*": "./dist/auth/core/*.js",
-    "./auth/migrator": "./dist/auth/db/migrator.js",
-    "./auth/provider": "./dist/auth/oauth/providers.js",
-    "./auth/type": "./dist/auth/type.js",
+    "./context": "./dist/context/type.js",
+    "./context/access": "./dist/context/access.js",
+    "./context/password": "./dist/context/password.js",
+    "./context/system": "./dist/context/system/system.js",
+    "./context/system/apiKey": "./dist/context/system/apiKey.js",
+    "./context/user": "./dist/context/user/user.js",
+    "./context/tenant": "./dist/context/tenant/tenant.js",
+    "./hono": "./dist/web/hono.js",
+    "./migrator": "./dist/db/migrator.js",
+    "./provider": "./dist/web/oauth/providers.js",
+    "./type": "./dist/type.js",
     "./schema/*": "./dist/schema/*.js"
   },
   "scripts": {

@@ -1,7 +1,7 @@
 import { it } from 'node:test';
 import { equal } from 'node:assert';
 
-import { google } from '../src/auth/oauth/providers';
+import { google } from '../src/web/oauth/providers';
 
 it('OAuth2 Client - Google', async (t) => {
 

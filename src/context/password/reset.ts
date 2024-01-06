@@ -1,11 +1,11 @@
 import cryptoRandomString from 'crypto-random-string';
 import { sql, eq, and, gte } from 'drizzle-orm';
-import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid/non-secure';
 
 import { Nil } from '../../result.js';
 import { resetPasswordRequest, userEmail } from '../../schema/identity.js';
-import { DbClient } from '../db/client.js';
-import { ResetPasswordRequest } from '../db/model.js';
+import { DbClient } from '../../db/client.js';
+import { ResetPasswordRequest } from '../../db/model.js';
 
 export type ResetCount = { userId: string; count: number };
 

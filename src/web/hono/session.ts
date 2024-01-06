@@ -2,14 +2,20 @@ import { getCookie, setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception'
 
-import { findApiKeyByToken } from '../core/apiKey.js';
-import { AuthToken } from '../core/type.js';
-import { findUserByToken } from '../data/user.js';
-import { ApiKey, UserWithMembership } from '../db/model.js';
-import type { DbClient } from '../type.js';
-import type { ClientAppAccess, HonoAuthContext, PublicAccess, UserAccess } from './type.js';
+import { findApiKeyByToken } from '../../context/system/apiKey.js';
+import { findUserByToken } from '../../context/user/user.js';
+import type { AuthToken } from '../../context/type.js';
+import type { Access, ClientAppAccess, PublicAccess, UserAccess, UserWithMembership } from '../../context/access.js';
+import type { DbClient } from '../../type.js';
+import type { HonoAuthContext } from './type.js';
 
 export const SESSION_COOKIE = 'webf_session';
+
+declare module 'hono' {
+  interface ContextVariableMap {
+    session: Access;
+  }
+}
 
 export type SessionOptions = {
   db: DbClient;
@@ -74,7 +80,7 @@ function publicAccess(): PublicAccess {
   return { type: 'public' };
 }
 
-function clientAccess(key: ApiKey): ClientAppAccess {
+function clientAccess(key: ClientAppAccess['key']): ClientAppAccess {
   return { type: 'client', key };
 }
 
