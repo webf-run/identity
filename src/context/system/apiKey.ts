@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 
-import { apiKeyId, apiKeyToken } from '../../data/code.js';
-import { verify } from '../../data/hash.js';
+import { apiKeyId, apiKeyToken } from '../../util/code.js';
+import { verify } from '../../util/hash.js';
 import { ApiKey } from '../../db/model.js';
 import { apiKey } from '../../schema/identity.js';
 import { AuthContext } from '../type.js';

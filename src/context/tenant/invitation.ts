@@ -1,8 +1,8 @@
-import { and, eq, gt } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
 import { ONE_DAY_MS } from '../../constant.js';
-import { inviteCode } from '../../data/code';
+import { inviteCode } from '../../util/code.js';
 import * as schema from '../../schema/identity.js';
 import type { AuthContext, Invitation } from '../type.js';
 
@@ -24,41 +24,6 @@ export async function inviteUser(context: AuthContext, input: NewInvitation, ten
   return invitation;
 }
 
-export async function deleteInvitation(context: AuthContext, invitationId: string): Promise<boolean> {
-  const { db } = context;
-
-  const results = await db.delete(schema.invitation)
-    .where(eq(schema.invitation.id, invitationId))
-    .returning();
-
-  return results.length > 0;
-}
-
-
-export async function getInvitationById(context: AuthContext, invitationId: string): Promise<Invitation | null> {
-  const { db } = context;
-
-  const results = await db.select()
-    .from(schema.invitation)
-    .where(eq(schema.invitation.id, invitationId));
-
-  return results.at(0) ?? null;
-}
-
-
-export async function findInvitationByCode(context: AuthContext, code: string): Promise<Invitation | null> {
-  const { db } = context;
-
-  const results = await db.select()
-    .from(schema.invitation)
-    .where(and(
-      eq(schema.invitation.code, code),
-      gt(schema.invitation.expiryAt, new Date())));
-
-  return results.at(0) ?? null;
-}
-
-
 export async function extendInvitationExpiry(context: AuthContext, invitation: Invitation): Promise<Invitation | null> {
   const { db } = context;
 
@@ -72,7 +37,7 @@ export async function extendInvitationExpiry(context: AuthContext, invitation: I
   return results.at(0) ?? null;
 }
 
-export function buildInvitation(invitation: NewInvitation, tenantId: string) {
+function buildInvitation(invitation: NewInvitation, tenantId: string): Invitation {
   const duration = invitation.duration ?? 4 * ONE_DAY_MS;
   const now = new Date();
   const expiryAt = new Date(now.getTime() + duration);
