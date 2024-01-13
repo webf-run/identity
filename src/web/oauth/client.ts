@@ -15,9 +15,10 @@ export type OAuth2ClientOptions = OAuth2Options & {
   provider: string;
 }
 
-export type State = {
+export type OAuthState = {
   type: 'login' | 'signup';
   redirectUrl?: string;
+  inviteCode?: string;
 };
 
 export type OAuthProfile = {

@@ -4,7 +4,7 @@ import { Nil } from '../../result.js';
 import type { AuthContext } from '../../context/type.js';
 import type { InitOptions, DbClient } from '../../db/client.js';
 import type { User } from '../../db/model.js';
-import type { OAuthProfile } from '../oauth/client.js';
+import type { OAuthProfile, OAuthState } from '../oauth/client.js';
 
 export type HonoAuthVariables = {
   authContext: AuthContext;
@@ -30,6 +30,7 @@ export type LoginNRegisterProps = {
   user: Nil<User>;
   profile: OAuthProfile;
   callbacks: OAuthCallbacks;
+  state: OAuthState;
 };
 
 export type AuthOptions = {
@@ -51,5 +52,5 @@ export type OAuthCallbacks = {
   onLoginNoUser: (profile: OAuthProfile) => Promise<string>;
 
   onLoginError?: (error: unknown) => Promise<string>;
-  onSignup?: (user: OAuthProfile) => Promise<void>;
+  onSignup?: (user: OAuthProfile, state: OAuthState) => Promise<void>;
 };

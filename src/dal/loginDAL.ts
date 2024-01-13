@@ -1,10 +1,11 @@
-import { hash } from 'argon2';
-import { and, eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
+import { nanoid } from 'nanoid';
 
-import type { Nil } from '../../result.js';
-import { localLogin, userEmail } from '../../schema/identity.js';
-import type { DbClient } from '../../type.js';
-import { UserLocalLogin } from '../../db/model.js';
+import { localLogin, providerLogin, userEmail } from '../schema/identity';
+import { DbClient } from '../db/client';
+import { hash } from '../util/hash';
+import { UserLocalLogin } from '../db/model';
+import { Nil } from '../result';
 
 export async function changePassword(db: DbClient, userId: string, newPassword: string): Promise<Nil<any>> {
   const [password, hashFn] = await hash(newPassword);
@@ -21,6 +22,40 @@ export async function changePassword(db: DbClient, userId: string, newPassword: 
   return result.at(0)
 }
 
+export async function createLocalLogin(db: DbClient, userId: string, username: string, password: string) {
+  const now = new Date();
+
+  const [passwordHashed, hashFn] = await hash(password);
+
+  const newLogin = {
+    id: nanoid(),
+    userId,
+    username,
+    password: passwordHashed,
+    hashFn,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  await db.insert(localLogin)
+    .values(newLogin);
+
+  return newLogin;
+}
+
+export async function createSocialLogin(db: DbClient, userId: string, providerId: string, subjectId: string) {
+  const newLogin = {
+    id: nanoid(),
+    userId,
+    providerId,
+    subjectId,
+  };
+
+  await db.insert(providerLogin)
+    .values(newLogin);
+
+  return newLogin;
+}
 
 export async function findLoginByEmail(db: DbClient, email: string): Promise<Nil<UserLocalLogin>> {
   const result = await db
@@ -39,7 +74,6 @@ export async function findLoginByEmail(db: DbClient, email: string): Promise<Nil
 
   return result.at(0);
 }
-
 
 export async function findLoginByUsername(db: DbClient, username: string): Promise<Nil<UserLocalLogin>> {
   const result = await db

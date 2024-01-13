@@ -3,10 +3,10 @@ import { getCookie, setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception'
 
+import type { Access, ClientAppAccess, PublicAccess, UserAccess } from '../../context/access.js';
 import { findApiKeyByToken } from '../../context/system/apiKey.js';
-import { findUserByToken } from '../../context/user/find.js';
-import type { AuthToken } from '../../context/type.js';
-import type { Access, ClientAppAccess, PublicAccess, UserAccess, UserWithMembership } from '../../context/access.js';
+import type { AuthToken, UserWithMembership } from '../../context/type.js';
+import { findUserByToken } from '../../dal/userDAL.js';
 import type { DbClient } from '../../type.js';
 
 export const SESSION_COOKIE = 'webf_session';
@@ -63,7 +63,7 @@ async function handleTokenAuth(c: Context, db: DbClient, token: string) {
 }
 
 async function handleBearerToken(c: Context, db: DbClient, token: string) {
-  const user = await findUserByToken({ db }, token);
+  const user = await findUserByToken(db, token);
 
   if (!user) {
     throw unauthorized();

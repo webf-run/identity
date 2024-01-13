@@ -41,3 +41,20 @@ export type Invitation = {
   expiryAt: Date;
   tenantId: string;
 };
+
+export type UserInput = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  tenantId: string;
+};
+
+
+export type UserWithMembership = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  firstName: string;
+  lastName: string;
+  tenants: string[];
+};

@@ -1,6 +1,6 @@
 import { createBearerToken } from '../../context/user/create.js';
-import { findUserBySocialId } from '../../context/user/find.js';
-import type { OAuth2Client, State } from '../oauth/client.js';
+import { findUserBySocialId } from '../../dal/userDAL.js';
+import type { OAuth2Client, OAuthState } from '../oauth/client.js';
 import { setSession } from './session.js';
 import type { HonoAuthApp, LoginNRegisterProps, OAuthCallbacks } from './type.js';
 
@@ -28,12 +28,12 @@ export async function addOpenIDStrategy(app: HonoAuthApp, client: OAuth2Client, 
     const userProfile = await client.exchangeAuthorizationCode(query);
 
     // TODO: Check if the state is valid and payload parsing.
-    const state: State = JSON.parse(atob(query.get('state') || btoa(JSON.stringify({ type: 'login' }))));
+    const state: OAuthState = JSON.parse(atob(query.get('state') || btoa(JSON.stringify({ type: 'login' }))));
     const { db } = c.var.authContext;
 
     // Find the user
-    const user = await findUserBySocialId({ db }, client.provider, userProfile.subjectId);
-    const loginProps = { c, db, user, profile: userProfile, callbacks };
+    const user = await findUserBySocialId(db, client.provider, userProfile.subjectId);
+    const loginProps = { c, db, user, profile: userProfile, callbacks, state };
 
     if (state.type === 'login') {
       return loginUser(loginProps);
@@ -65,14 +65,14 @@ async function loginUser(props: LoginNRegisterProps): Promise<Response> {
 }
 
 async function signUpUser(props: LoginNRegisterProps): Promise<Response> {
-  const { c, user, profile, callbacks } = props;
+  const { c, user, profile, callbacks, state } = props;
 
   // User already exists.
   if (user) {
     return c.redirect('/', 307);
   }
 
-  await callbacks.onSignup!(profile);
+  await callbacks.onSignup!(profile, state);
 
   return c.redirect('/', 307);
 }

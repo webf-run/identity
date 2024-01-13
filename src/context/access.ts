@@ -1,8 +1,6 @@
-import type { ApiKey, User } from '../db/model.js';
+import type { ApiKey } from '../db/model.js';
+import type { UserWithMembership } from './type.js';
 
-export type UserWithMembership = User & {
-  tenants: string[];
-};
 
 export type UserAccess = {
   readonly type: 'user';

@@ -1,11 +1,13 @@
-import { hash } from 'argon2';
 import { nanoid } from 'nanoid';
-import { AuthContext, UserInput } from '../context.js';
+
+import type { UserInput } from '../context/type.js';
 import type { User, UserToken } from '../db/model.js';
 import type { Nil } from '../result.js';
-import * as schema from '../schema/identity.js';
+import { providerLogin, tenantUser, user, userEmail, userToken } from '../schema/identity.js';
 import type { DbClient } from '../type.js';
 import { bearerToken } from '../util/code.js';
+import { eq, and } from 'drizzle-orm';
+import { UserWithMembership } from '../context/type.js';
 
 /**
  * Generate a cryptographically secure token for the user that can be used to make
@@ -19,7 +21,7 @@ export async function createToken(db: DbClient, userId: string): Promise<Nil<Use
 
   // Create a user token
   const added = await db
-    .insert(schema.userToken)
+    .insert(userToken)
     .values({
       id: tokenId,
       userId,
@@ -31,14 +33,10 @@ export async function createToken(db: DbClient, userId: string): Promise<Nil<Use
   return added.at(0);
 }
 
-
-export async function createNewUser(ctx: AuthContext, input: UserInput, password: string): Promise<User | null> {
-  const { db } = ctx;
-  const [passwordHashed, hashFn] = await hash(password);
+export async function createUser(db: DbClient, input: UserInput) {
   const now = new Date();
 
-  // TODO: Email and Password validation pending2
-  const user = {
+  const newUser = {
     id: nanoid(),
     firstName: input.firstName,
     lastName: input.lastName,
@@ -46,44 +44,52 @@ export async function createNewUser(ctx: AuthContext, input: UserInput, password
     updatedAt: now,
   };
 
-  const userEmail = {
-    id: nanoid(),
-    userId: user.id,
-    email: input.email,
-    verified: true,
+  await db.insert(user)
+    .values(newUser);
+
+  return newUser;
+}
+
+export async function findUserByEmail(db: DbClient, email: string): Promise<Nil<User>> {
+  const result = await db
+    .select()
+    .from(userEmail)
+    .innerJoin(user, eq(userEmail.userId, user.id))
+    .where(eq(userEmail.email, email));
+
+  return result.at(0)?.user;
+}
+
+
+export async function findUserBySocialId(db: DbClient, providerId: string, subjectId: string): Promise<Nil<User>> {
+  const result = await db
+    .select()
+    .from(providerLogin)
+    .innerJoin(user, eq(providerLogin.userId, user.id))
+    .where(and(eq(providerLogin.providerId, providerId), eq(providerLogin.subjectId, subjectId)));
+
+  return result.at(0)?.user;
+}
+
+
+export async function findUserByToken(db: DbClient, token: string): Promise<Nil<UserWithMembership>> {
+  const result = await db
+    .select()
+    .from(userToken)
+    .innerJoin(user, eq(userToken.userId, user.id))
+    .innerJoin(tenantUser, eq(userToken.userId, tenantUser.userId))
+    .where(eq(userToken.id, token));
+
+  const found = result.at(0);
+
+  if (!found) {
+    return null;
+  }
+
+  const tenants: string[] = result.map((x) => x.tenant_user.tenantId);
+
+  return {
+    ...found.user,
+    tenants,
   };
-
-  const localLogin = {
-    id: nanoid(),
-    userId: user.id,
-    username: input.email,
-    password: passwordHashed,
-    hashFn,
-    createdAt: now,
-    updatedAt: now,
-  };
-
-  const tenantUser = {
-    id: nanoid(),
-    userId: user.id,
-    tenantId: input.tenantId,
-    createdAt: now,
-    updatedAt: now,
-  };
-
-  await db.transaction(async (tx) => {
-    await tx.insert(schema.user)
-      .values(user);
-
-    await tx.insert(schema.userEmail)
-      .values(userEmail);
-
-    await tx.insert(schema.localLogin)
-      .values(localLogin);
-
-    await tx.insert(schema.tenantUser)
-      .values(tenantUser);
-  });
-
-  return user;
 }

@@ -3,7 +3,7 @@ export {
   session,
   addOpenIDStrategy,
   addPasswordStrategy,
-} from './web/hono.js';
+} from './web/authSystem.js';
 
 export {
   Provider,

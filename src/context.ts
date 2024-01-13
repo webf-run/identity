@@ -5,17 +5,10 @@ export {
   ClientAppAccess,
   PublicAccess,
   UserAccess,
-  UserWithMembership,
   isClient,
   isPublic,
   isUser,
 } from './context/access.js';
-
-export {
-  changePassword,
-  findLoginByEmail,
-  findLoginByUsername,
-} from './context/password/login.js';
 
 export {
   authenticate,
@@ -35,6 +28,7 @@ export {
 
 export {
   claimInvitation,
+  acceptInvitation,
 } from './context/tenant/claim.js';
 
 export {
@@ -50,13 +44,5 @@ export {
 } from './context/tenant/tenant.js';
 
 export {
-  UserInput,
   createBearerToken,
-  createNewUserByInvitation,
 } from './context/user/create.js';
-
-export {
-  findUserByEmail,
-  findUserBySocialId,
-  findUserByToken,
-} from './context/user/find.js';

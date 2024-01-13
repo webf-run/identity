@@ -1,12 +1,10 @@
 import { and, eq, gt } from 'drizzle-orm';
 
-import type { AuthContext, Invitation } from '../context';
+import type { Invitation } from '../context/type.js';
+import type { DbClient } from '../db/client';
 import { invitation } from '../schema/identity';
-import { DbClient } from '../db/client';
 
-export async function findInvitationByCode(context: AuthContext, code: string): Promise<Invitation | null> {
-  const { db } = context;
-
+export async function findInvitationByCode(db: DbClient, code: string): Promise<Invitation | null> {
   const results = await db.select()
     .from(invitation)
     .where(and(
@@ -17,9 +15,7 @@ export async function findInvitationByCode(context: AuthContext, code: string): 
 }
 
 
-export async function getInvitationById(context: AuthContext, invitationId: string): Promise<Invitation | null> {
-  const { db } = context;
-
+export async function getInvitationById(db: DbClient, invitationId: string): Promise<Invitation | null> {
   const results = await db.select()
     .from(invitation)
     .where(eq(invitation.id, invitationId));

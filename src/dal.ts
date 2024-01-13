@@ -2,7 +2,14 @@ export {
   findInvitationByCode,
   deleteInvitation,
   getInvitationById,
- } from './dal/invitationDAL.js';
+} from './dal/invitationDAL.js';
+
+
+export {
+  changePassword,
+  findLoginByEmail,
+  findLoginByUsername,
+} from './dal/loginDAL.js';
 
 export {
   createResetPasswordRequest,
@@ -12,6 +19,8 @@ export {
 } from './dal/resetDAL.js';
 
 export {
-  createNewUser,
   createToken,
+  findUserByEmail,
+  findUserBySocialId,
+  findUserByToken,
 } from './dal/userDAL.js';

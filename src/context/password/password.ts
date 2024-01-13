@@ -7,7 +7,7 @@ import {
   changePassword,
   findLoginByEmail,
   findLoginByUsername
-} from './login.js';
+} from '../../dal/loginDAL.js';
 import {
   createResetPasswordRequest,
   deleteResetPasswordRequest,
