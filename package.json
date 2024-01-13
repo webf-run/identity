@@ -5,18 +5,11 @@
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
-    "./context": "./dist/context/type.js",
-    "./context/access": "./dist/context/access.js",
-    "./context/password": "./dist/context/password.js",
-    "./context/system": "./dist/context/system/system.js",
-    "./context/system/apiKey": "./dist/context/system/apiKey.js",
-    "./context/user": "./dist/context/user/user.js",
-    "./context/tenant": "./dist/context/tenant/tenant.js",
-    "./hono": "./dist/web/hono.js",
+    ".": "./dist/type.js",
+    "./context": "./dist/context.js",
     "./migrator": "./dist/db/migrator.js",
-    "./provider": "./dist/web/oauth/providers.js",
-    "./type": "./dist/type.js",
-    "./schema/*": "./dist/schema/*.js"
+    "./schema/*": "./dist/schema/*.js",
+    "./web": "./dist/web.js"
   },
   "scripts": {
     "check:types": "tsc",

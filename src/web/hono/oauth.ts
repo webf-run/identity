@@ -1,4 +1,5 @@
-import { createBearerToken, findUserBySocialId } from '../../context/user/user.js';
+import { createBearerToken } from '../../context/user/create.js';
+import { findUserBySocialId } from '../../context/user/find.js';
 import type { OAuth2Client, State } from '../oauth/client.js';
 import { setSession } from './session.js';
 import type { HonoAuthApp, LoginNRegisterProps, OAuthCallbacks } from './type.js';
@@ -31,7 +32,7 @@ export async function addOpenIDStrategy(app: HonoAuthApp, client: OAuth2Client, 
     const { db } = c.var.authContext;
 
     // Find the user
-    const user = await findUserBySocialId(db, client.provider, userProfile.subjectId);
+    const user = await findUserBySocialId({ db }, client.provider, userProfile.subjectId);
     const loginProps = { c, db, user, profile: userProfile, callbacks };
 
     if (state.type === 'login') {
@@ -53,7 +54,7 @@ async function loginUser(props: LoginNRegisterProps): Promise<Response> {
   let redirectURL = '/';
 
   if (user) {
-    const token = await createBearerToken(db, user.id);
+    const token = await createBearerToken({ db }, user.id);
     const _ = await setSession(c, token);
     redirectURL = await callbacks.onLogin(user, profile);
   } else {

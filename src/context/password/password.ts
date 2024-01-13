@@ -1,7 +1,7 @@
 import { AsyncResult, err, ok } from '../../result.js';
 import { verify } from '../../data/hash.js';
 import type { AuthContext, AuthToken, Credentials } from '../type.js';
-import { createBearerToken } from '../user/user.js';
+import { createBearerToken } from '../user/create.js';
 
 import {
   changePassword,
@@ -37,7 +37,7 @@ export async function authenticate(ctx: AuthContext, input: Credentials): AsyncR
   }
 
   // Generate a token for the user.
-  const token = await createBearerToken(db, login.userId);
+  const token = await createBearerToken(ctx, login.userId);
 
   if (token) {
     return ok(token);

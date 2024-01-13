@@ -39,13 +39,12 @@ export async function makeAuth(options: AuthOptions): Promise<AuthSystem> {
   }
 
   // Inject the auth context into the request.
-  auth.use('*', async (c, next) => {
+  auth.use('*', async function authContextM(c, next) {
     const context = { db };
 
     c.set('authContext', context);
     await next();
   });
-
 
   return { auth, db };
 }

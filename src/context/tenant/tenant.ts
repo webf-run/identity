@@ -4,13 +4,8 @@ import { ONE_DAY_MS } from '../../constant.js';
 import { inviteCode } from '../../data/code.js';
 import * as schema from '../../schema/identity.js';
 import type { AuthContext, Invitation, Tenant } from '../type.js';
+import { NewInvitation } from './invitation.js';
 
-export type NewInvitation = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  duration?: number;
-};
 
 export type NewTenant = {
   name: string;
@@ -32,8 +27,8 @@ export async function createNewTenantWithInvite(context: AuthContext, payload: N
   const { invitation } = payload;
 
   const tenantId = nanoid();
-  const duration = invitation.duration ?? 4 * ONE_DAY_MS;
   const now = new Date();
+  const duration = invitation.duration ?? 4 * ONE_DAY_MS;
   const expiryAt = new Date(now.getTime() + duration);
 
   const newTenant = {

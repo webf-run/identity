@@ -1,13 +1,13 @@
+import type { Context } from 'hono';
 import { getCookie, setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception'
 
 import { findApiKeyByToken } from '../../context/system/apiKey.js';
-import { findUserByToken } from '../../context/user/user.js';
+import { findUserByToken } from '../../context/user/find.js';
 import type { AuthToken } from '../../context/type.js';
 import type { Access, ClientAppAccess, PublicAccess, UserAccess, UserWithMembership } from '../../context/access.js';
 import type { DbClient } from '../../type.js';
-import type { HonoAuthContext } from './type.js';
 
 export const SESSION_COOKIE = 'webf_session';
 
@@ -21,7 +21,7 @@ export type SessionOptions = {
   db: DbClient;
 };
 
-export async function setSession(c: HonoAuthContext, token: AuthToken) {
+export async function setSession(c: Context, token: AuthToken) {
   setCookie(c, SESSION_COOKIE, token.id, {
     httpOnly: true,
     sameSite: 'Lax',
@@ -31,7 +31,7 @@ export async function setSession(c: HonoAuthContext, token: AuthToken) {
 export function session(options: SessionOptions) {
   const { db } = options;
 
-  return createMiddleware(async function sessionM(c: HonoAuthContext, next) {
+  return createMiddleware(async function sessionM(c, next) {
     const authHeader = c.req.header('Authorization');
     const sessionCookie = getCookie(c, SESSION_COOKIE);
 
@@ -56,14 +56,14 @@ export function session(options: SessionOptions) {
   });
 }
 
-async function handleTokenAuth(c: HonoAuthContext, db: DbClient, token: string) {
+async function handleTokenAuth(c: Context, db: DbClient, token: string) {
   const apiKey = await findApiKeyByToken({ db }, token);
 
   c.set('session', clientAccess(apiKey));
 }
 
-async function handleBearerToken(c: HonoAuthContext, db: DbClient, token: string) {
-  const user = await findUserByToken(db, token);
+async function handleBearerToken(c: Context, db: DbClient, token: string) {
+  const user = await findUserByToken({ db }, token);
 
   if (!user) {
     throw unauthorized();
