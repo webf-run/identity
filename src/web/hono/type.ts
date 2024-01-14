@@ -1,7 +1,7 @@
 import type { Context, Hono, MiddlewareHandler } from 'hono';
 
 import type { User } from '../../context/DbType.js';
-import type { AuthContext } from '../../context/TType.js';
+import type { AuthContext } from '../../context/Type.js';
 import type { InitOptions, DbClient } from '../../db/client.js';
 import { Nil } from '../../result.js';
 import type { OAuthProfile, OAuthState } from '../oauth/client.js';

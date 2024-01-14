@@ -4,7 +4,7 @@ import { apiKeyId, apiKeyToken } from '../../util/code.js';
 import { verify } from '../../util/hash.js';
 import { ApiKey } from '../DbType.js';
 import { apiKey } from '../../schema/identity.js';
-import { AuthContext } from '../TType.js';
+import { AuthContext } from '../Type.js';
 
 export async function generateApiKey(context: AuthContext, description: string): Promise<string> {
   const { db } = context;

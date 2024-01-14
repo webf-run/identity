@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 import { ONE_DAY_MS } from '../../constant.js';
 import { inviteCode } from '../../util/code.js';
 import * as schema from '../../schema/identity.js';
-import type { AuthContext, Invitation, Tenant } from '../TType.js';
+import type { AuthContext, Invitation, Tenant } from '../Type.js';
 import { NewInvitation } from './invitation.js';
 
 

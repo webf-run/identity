@@ -8,7 +8,7 @@ import { createUser, findUserByEmail, findUserBySocialId } from '../../dal/userD
 import type { User } from '../DbType.js';
 import type { Nil } from '../../result.js';
 import { tenantUser } from '../../schema/identity.js';
-import type { AuthContext, ExternalProfile } from '../TType.js';
+import type { AuthContext, ExternalProfile } from '../Type.js';
 
 
 export async function claimInvitation(ctx: AuthContext, code: string, password: string): Promise<Nil<User>> {
