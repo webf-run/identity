@@ -1,10 +1,9 @@
 import { nanoid } from 'nanoid';
 
-import { DbClient } from '../db/client';
-import { userEmail } from '../schema/identity';
+import { DbClient } from '../db/client.js';
+import { userEmail } from '../schema/identity.js';
 
 export async function createEmail(db: DbClient, userId: string, email: string, verified: boolean) {
-
   const newEmail = {
     id: nanoid(),
     userId,
@@ -18,3 +17,5 @@ export async function createEmail(db: DbClient, userId: string, email: string, v
 
   return newEmail;
 }
+
+export const count = 1;

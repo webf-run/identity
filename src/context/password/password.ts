@@ -11,7 +11,7 @@ import {
 } from '../../dal/resetDAL.js';
 import { AsyncResult, err, ok } from '../../result.js';
 import { verify } from '../../util/hash.js';
-import type { AuthContext, AuthToken, Credentials } from '../Type.js';
+import type { AuthContext, AuthToken, Credentials } from '../../contract/Type.js';
 import { createBearerToken } from '../user/create.js';
 
 

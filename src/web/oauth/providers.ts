@@ -1,7 +1,7 @@
 import { OAuth2Client, OAuth2Options } from './client';
 
-export const GOOGLE: 'google' = 'google';
-export const ZOHO: 'zoho' = 'zoho';
+export const GOOGLE= 'google' as const;
+export const ZOHO= 'zoho' as const;
 
 export type Provider = 'google' | 'zoho';
 

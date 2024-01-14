@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 
 import { ok, err, AsyncResult } from '../../result.js';
 import { apiKey } from '../../schema/identity.js';
-import { AuthContext, InitResponse } from '../Type.js';
+import { AuthContext, InitResponse } from '../../contract/Type.js';
 import { generateApiKey } from './apiKey.js';
 
 /**

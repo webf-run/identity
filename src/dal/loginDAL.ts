@@ -1,16 +1,16 @@
 import { eq, and } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
-import { UserLocalLogin } from '../context/DbType';
-import { DbClient } from '../db/client';
-import { Nil } from '../result';
-import { localLogin, providerLogin, userEmail } from '../schema/identity';
-import { hash } from '../util/hash';
+import { UserLocalLogin } from '../contract/DbType.js';
+import { DbClient } from '../db/client.js';
+import { Nil } from '../result.js';
+import { localLogin, providerLogin, userEmail } from '../schema/identity.js';
+import { hash } from '../util/hash.js';
 
-export async function changePassword(db: DbClient, userId: string, newPassword: string): Promise<Nil<any>> {
+export async function changePassword(db: DbClient, userId: string, newPassword: string): Promise<Nil<boolean>> {
   const [password, hashFn] = await hash(newPassword);
 
-  const result = await db
+  await db
     .update(localLogin)
     .set({
       password,
@@ -19,7 +19,7 @@ export async function changePassword(db: DbClient, userId: string, newPassword: 
     .where(eq(localLogin.userId, userId))
     .returning();
 
-  return result.at(0)
+  return true;
 }
 
 export async function createLocalLogin(db: DbClient, userId: string, username: string, password: string) {

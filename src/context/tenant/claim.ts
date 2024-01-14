@@ -5,10 +5,10 @@ import { deleteInvitation, findInvitationByCode } from '../../dal/invitationDAL.
 import { createLocalLogin, createSocialLogin } from '../../dal/loginDAL.js';
 import { createTenantUser } from '../../dal/tenantDAL.js';
 import { createUser, findUserByEmail, findUserBySocialId } from '../../dal/userDAL.js';
-import type { User } from '../DbType.js';
+import type { User } from '../../contract/DbType.js';
 import type { Nil } from '../../result.js';
 import { tenantUser } from '../../schema/identity.js';
-import type { AuthContext, ExternalProfile } from '../Type.js';
+import type { AuthContext, ExternalProfile } from '../../contract/Type.js';
 
 
 export async function claimInvitation(ctx: AuthContext, code: string, password: string): Promise<Nil<User>> {

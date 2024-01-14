@@ -1,4 +1,4 @@
-export * from './context/Type.js';
+export * from './contract/Type.js';
 
 export {
   Access,

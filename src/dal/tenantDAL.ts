@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 
-import { DbClient } from '../db/client';
-import { tenantUser } from '../schema/identity';
+import { DbClient } from '../db/client.js';
+import { tenantUser } from '../schema/identity.js';
 
 
 export async function createTenantUser(db: DbClient, tenantId: string, userId: string) {

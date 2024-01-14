@@ -1,10 +1,10 @@
 import type { Context } from 'hono';
 import { getCookie, setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
-import { HTTPException } from 'hono/http-exception'
+import { HTTPException } from 'hono/http-exception';
 
 import type { Access, ClientAppAccess, PublicAccess, UserAccess } from '../../context/access.js';
-import type { AuthToken, UserWithMembership } from '../../context/Type.js';
+import type { AuthToken, UserWithMembership } from '../../contract/Type.js';
 import { findApiKeyByToken } from '../../context/system/apiKey.js';
 import { findUserByToken } from '../../dal/userDAL.js';
 import type { DbClient } from '../../type.js';

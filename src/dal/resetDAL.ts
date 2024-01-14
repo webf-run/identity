@@ -2,7 +2,7 @@ import cryptoRandomString from 'crypto-random-string';
 import { sql, eq, and, gte } from 'drizzle-orm';
 import { nanoid } from 'nanoid/non-secure';
 
-import { ResetPasswordRequest } from '../context/DbType.js';
+import { ResetPasswordRequest } from '../contract/DbType.js';
 import { DbClient } from '../db/client.js';
 import { Nil } from '../result.js';
 import { resetPasswordRequest, userEmail } from '../schema/identity.js';

@@ -1,8 +1,8 @@
 import { and, eq, gt } from 'drizzle-orm';
 
-import type { Invitation } from '../context/Type.js';
-import type { DbClient } from '../db/client';
-import { invitation } from '../schema/identity';
+import type { Invitation } from '../contract/Type.js';
+import type { DbClient } from '../db/client.js';
+import { invitation } from '../schema/identity.js';
 
 export async function findInvitationByCode(db: DbClient, code: string): Promise<Invitation | null> {
   const results = await db.select()
