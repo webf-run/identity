@@ -39,7 +39,7 @@ export async function main() {
       return Promise.resolve('/');
     },
     onSignup(user) {
-      return Promise.resolve();
+      return Promise.resolve(null);
     },
   });
 

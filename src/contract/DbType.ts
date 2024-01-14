@@ -1,3 +1,40 @@
+export type ApiKey = {
+  id: string;
+  description: string;
+  token: string;
+  hashFn: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+
+export type Tenant = {
+  id: string;
+  name: string;
+  description: string;
+  key: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Invitation = {
+  id: string;
+  code: string;
+
+  firstName: string;
+  lastName: string;
+  email: string;
+
+  duration: number;
+  expiryAt: Date;
+
+  tenantId: string;
+
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type User = {
   id: string;
   createdAt: Date;
@@ -22,15 +59,6 @@ export type ResetPasswordRequest = {
 };
 
 // After the model is finalized, replace inferred types with real types.
-export type ApiKey = {
-  id: string;
-  description: string;
-  token: string;
-  hashFn: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-};
 
 
 // TODO: Name it better.

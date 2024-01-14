@@ -1,4 +1,4 @@
-import { createBearerToken } from '../../context/user/create.js';
+import { createBearerToken } from '../../context/user.js';
 import { findUserBySocialId } from '../../dal/userDAL.js';
 import type { OAuth2Client, OAuthState } from '../oauth/client.js';
 import { setSession } from './session.js';
@@ -72,7 +72,8 @@ async function signUpUser(props: LoginNRegisterProps): Promise<Response> {
     return c.redirect('/', 307);
   }
 
-  await callbacks.onSignup!(profile, state);
+  // If new user was created, then login with that user.
+  const newUser = await callbacks.onSignup!(profile, state);
 
-  return c.redirect('/', 307);
+  return loginUser({ ...props, user: newUser });
 }

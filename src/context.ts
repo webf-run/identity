@@ -1,3 +1,4 @@
+export * from './contract/DbType.js';
 export * from './contract/Type.js';
 
 export {
@@ -28,21 +29,20 @@ export {
 
 export {
   claimInvitation,
+  claimWithSocial,
   acceptInvitation,
 } from './context/tenant/claim.js';
 
 export {
-  NewInvitation,
   inviteUser,
   extendInvitationExpiry,
 } from './context/tenant/invitation.js';
 
 export {
-  NewTenant,
-  NewTenantResponse,
   createNewTenantWithInvite,
 } from './context/tenant/tenant.js';
 
 export {
   createBearerToken,
-} from './context/user/create.js';
+  createNewUser,
+} from './context/user.js';

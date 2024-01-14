@@ -2,17 +2,11 @@ import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
 import { ONE_DAY_MS } from '../../constant.js';
-import { inviteCode } from '../../util/code.js';
+import { Invitation } from '../../contract/DbType.js';
+import type { AuthContext, NewInvitation } from '../../contract/Type.js';
 import * as schema from '../../schema/identity.js';
-import type { AuthContext, Invitation } from '../../contract/Type.js';
+import { inviteCode } from '../../util/code.js';
 
-
-export type NewInvitation = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  duration?: number;
-};
 
 export async function inviteUser(context: AuthContext, input: NewInvitation, tenantId: string): Promise<Invitation | null> {
   const { db } = context;

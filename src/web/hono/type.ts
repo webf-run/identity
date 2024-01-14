@@ -52,5 +52,5 @@ export type OAuthCallbacks = {
   onLoginNoUser: (profile: OAuthProfile) => Promise<string>;
 
   onLoginError?: (error: unknown) => Promise<string>;
-  onSignup?: (user: OAuthProfile, state: OAuthState) => Promise<void>;
+  onSignup?: (user: OAuthProfile, state: OAuthState) => Promise<Nil<User>>;
 };

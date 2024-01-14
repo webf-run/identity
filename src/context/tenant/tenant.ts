@@ -3,21 +3,7 @@ import { nanoid } from 'nanoid';
 import { ONE_DAY_MS } from '../../constant.js';
 import { inviteCode } from '../../util/code.js';
 import * as schema from '../../schema/identity.js';
-import type { AuthContext, Invitation, Tenant } from '../../contract/Type.js';
-import { NewInvitation } from './invitation.js';
-
-
-export type NewTenant = {
-  name: string;
-  description: string;
-  key?: string;
-  invitation: NewInvitation;
-};
-
-export type NewTenantResponse = {
-  tenant: Tenant;
-  invitation: Invitation;
-};
+import type { AuthContext, NewTenant, NewTenantResponse } from '../../contract/Type.js';
 
 /**
  * Creates a new tenant with an invitation. Uses transaction scope!

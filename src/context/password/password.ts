@@ -1,3 +1,4 @@
+import type { AuthContext, AuthToken, Credentials } from '../../contract/Type.js';
 import {
   changePassword,
   findLoginByEmail,
@@ -11,8 +12,7 @@ import {
 } from '../../dal/resetDAL.js';
 import { AsyncResult, err, ok } from '../../result.js';
 import { verify } from '../../util/hash.js';
-import type { AuthContext, AuthToken, Credentials } from '../../contract/Type.js';
-import { createBearerToken } from '../user/create.js';
+import { createBearerToken } from '../user.js';
 
 
 export async function authenticate(ctx: AuthContext, input: Credentials): AsyncResult<AuthToken> {

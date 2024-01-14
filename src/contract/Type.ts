@@ -1,4 +1,5 @@
 import type { DbClient } from '../db/client.js';
+import { Invitation, Tenant } from './DbType.js';
 
 export type ExternalProfile = {
   provider: string;
@@ -27,26 +28,23 @@ export type Credentials =
   | { email: string; password: string; };
 
 
-export type Tenant = {
-  id: string;
-  name: string;
-  description: string;
-  key: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-export type Invitation = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  code: string;
+export type NewInvitation = {
   firstName: string;
   lastName: string;
   email: string;
-  duration: number;
-  expiryAt: Date;
-  tenantId: string;
+  duration?: number;
+};
+
+export type NewTenant = {
+  name: string;
+  description: string;
+  key?: string;
+  invitation: NewInvitation;
+};
+
+export type NewTenantResponse = {
+  tenant: Tenant;
+  invitation: Invitation;
 };
 
 export type UserInput = {
@@ -55,7 +53,6 @@ export type UserInput = {
   email: string;
   tenantId: string;
 };
-
 
 export type UserWithMembership = {
   id: string;

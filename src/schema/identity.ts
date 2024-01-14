@@ -80,7 +80,6 @@ export const invitation = pgTable('invitation', {
 
   firstName: text('first_name').notNull(),
   lastName: text('last_name').notNull(),
-
   email: text('email').notNull(),
 
   /**
