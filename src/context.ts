@@ -1,4 +1,4 @@
-export * from './context/type.js';
+export * from './context/TType.js';
 
 export {
   Access,

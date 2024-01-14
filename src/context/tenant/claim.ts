@@ -1,15 +1,14 @@
 import { nanoid } from 'nanoid';
 
-import { deleteInvitation, findInvitationByCode } from '../../dal/invitationDAL.js';
 import { createEmail } from '../../dal/emailDAL.js';
+import { deleteInvitation, findInvitationByCode } from '../../dal/invitationDAL.js';
 import { createLocalLogin, createSocialLogin } from '../../dal/loginDAL.js';
 import { createTenantUser } from '../../dal/tenantDAL.js';
 import { createUser, findUserByEmail, findUserBySocialId } from '../../dal/userDAL.js';
-import type { User } from '../../db/model.js';
+import type { User } from '../DbType.js';
 import type { Nil } from '../../result.js';
 import { tenantUser } from '../../schema/identity.js';
-import { OAuthProfile } from '../../web/oauth/client.js';
-import type { AuthContext } from '../type.js';
+import type { AuthContext, ExternalProfile } from '../TType.js';
 
 
 export async function claimInvitation(ctx: AuthContext, code: string, password: string): Promise<Nil<User>> {
@@ -42,7 +41,7 @@ export async function claimInvitation(ctx: AuthContext, code: string, password: 
 }
 
 
-export async function claimWithSocial(ctx: AuthContext, inviteCode: string, profile: OAuthProfile) {
+export async function claimWithSocial(ctx: AuthContext, inviteCode: string, profile: ExternalProfile): Promise<Nil<User>> {
   const { db } = ctx;
   const invitation = await findInvitationByCode(db, inviteCode);
 

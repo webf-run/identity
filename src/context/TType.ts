@@ -1,5 +1,12 @@
 import type { DbClient } from '../db/client.js';
 
+export type ExternalProfile = {
+  provider: string;
+  subjectId: string;
+  email: string;
+  emailVerified: boolean;
+};
+
 export type InitResponse = {
   apiKey: string;
 };

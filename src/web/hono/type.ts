@@ -1,9 +1,9 @@
 import type { Context, Hono, MiddlewareHandler } from 'hono';
 
-import { Nil } from '../../result.js';
-import type { AuthContext } from '../../context/type.js';
+import type { User } from '../../context/DbType.js';
+import type { AuthContext } from '../../context/TType.js';
 import type { InitOptions, DbClient } from '../../db/client.js';
-import type { User } from '../../db/model.js';
+import { Nil } from '../../result.js';
 import type { OAuthProfile, OAuthState } from '../oauth/client.js';
 
 export type HonoAuthVariables = {

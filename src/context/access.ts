@@ -1,5 +1,5 @@
-import type { ApiKey } from '../db/model.js';
-import type { UserWithMembership } from './type.js';
+import type { ApiKey } from './DbType.js';
+import type { UserWithMembership } from './TType.js';
 
 
 export type UserAccess = {

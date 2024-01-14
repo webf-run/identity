@@ -32,7 +32,6 @@ export type ApiKey = {
   updatedAt: Date;
 };
 
-// export type User
 
 // TODO: Name it better.
 export type UserLocalLogin = {

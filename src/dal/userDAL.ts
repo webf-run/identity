@@ -1,13 +1,13 @@
 import { nanoid } from 'nanoid';
 
-import type { UserInput } from '../context/type.js';
-import type { User, UserToken } from '../db/model.js';
+import type { User, UserToken } from '../context/DbType.js';
+import type { UserInput } from '../context/TType.js';
 import type { Nil } from '../result.js';
 import { providerLogin, tenantUser, user, userEmail, userToken } from '../schema/identity.js';
 import type { DbClient } from '../type.js';
 import { bearerToken } from '../util/code.js';
 import { eq, and } from 'drizzle-orm';
-import { UserWithMembership } from '../context/type.js';
+import { UserWithMembership } from '../context/TType.js';
 
 /**
  * Generate a cryptographically secure token for the user that can be used to make

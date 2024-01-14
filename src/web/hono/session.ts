@@ -4,8 +4,8 @@ import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception'
 
 import type { Access, ClientAppAccess, PublicAccess, UserAccess } from '../../context/access.js';
+import type { AuthToken, UserWithMembership } from '../../context/TType.js';
 import { findApiKeyByToken } from '../../context/system/apiKey.js';
-import type { AuthToken, UserWithMembership } from '../../context/type.js';
 import { findUserByToken } from '../../dal/userDAL.js';
 import type { DbClient } from '../../type.js';
 

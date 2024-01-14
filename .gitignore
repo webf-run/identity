@@ -17,6 +17,7 @@ node_modules/
 .env.test
 
 # Generated folders
+lib
 build
 dist
 

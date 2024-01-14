@@ -1,11 +1,11 @@
 import { eq, and } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
-import { localLogin, providerLogin, userEmail } from '../schema/identity';
+import { UserLocalLogin } from '../context/DbType';
 import { DbClient } from '../db/client';
-import { hash } from '../util/hash';
-import { UserLocalLogin } from '../db/model';
 import { Nil } from '../result';
+import { localLogin, providerLogin, userEmail } from '../schema/identity';
+import { hash } from '../util/hash';
 
 export async function changePassword(db: DbClient, userId: string, newPassword: string): Promise<Nil<any>> {
   const [password, hashFn] = await hash(newPassword);

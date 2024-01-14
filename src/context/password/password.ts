@@ -1,8 +1,3 @@
-import { AsyncResult, err, ok } from '../../result.js';
-import { verify } from '../../util/hash.js';
-import type { AuthContext, AuthToken, Credentials } from '../type.js';
-import { createBearerToken } from '../user/create.js';
-
 import {
   changePassword,
   findLoginByEmail,
@@ -14,6 +9,10 @@ import {
   findResetPasswordRequestByCode,
   findResetPasswordRequestByEmail
 } from '../../dal/resetDAL.js';
+import { AsyncResult, err, ok } from '../../result.js';
+import { verify } from '../../util/hash.js';
+import type { AuthContext, AuthToken, Credentials } from '../TType.js';
+import { createBearerToken } from '../user/create.js';
 
 
 export async function authenticate(ctx: AuthContext, input: Credentials): AsyncResult<AuthToken> {

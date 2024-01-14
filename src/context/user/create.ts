@@ -1,5 +1,5 @@
 import { createToken } from '../../dal/userDAL.js';
-import type { AuthContext, AuthToken } from '../type.js';
+import type { AuthContext, AuthToken } from '../TType.js';
 
 
 export async function createBearerToken(context: AuthContext, userId: string): Promise<AuthToken> {

@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 import { ONE_DAY_MS } from '../../constant.js';
 import { inviteCode } from '../../util/code.js';
 import * as schema from '../../schema/identity.js';
-import type { AuthContext, Invitation } from '../type.js';
+import type { AuthContext, Invitation } from '../TType.js';
 
 
 export type NewInvitation = {

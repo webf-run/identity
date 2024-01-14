@@ -1,6 +1,6 @@
 import { and, eq, gt } from 'drizzle-orm';
 
-import type { Invitation } from '../context/type.js';
+import type { Invitation } from '../context/TType.js';
 import type { DbClient } from '../db/client';
 import { invitation } from '../schema/identity';
 

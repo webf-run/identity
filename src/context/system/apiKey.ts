@@ -2,9 +2,9 @@ import { and, eq } from 'drizzle-orm';
 
 import { apiKeyId, apiKeyToken } from '../../util/code.js';
 import { verify } from '../../util/hash.js';
-import { ApiKey } from '../../db/model.js';
+import { ApiKey } from '../DbType.js';
 import { apiKey } from '../../schema/identity.js';
-import { AuthContext } from '../type.js';
+import { AuthContext } from '../TType.js';
 
 export async function generateApiKey(context: AuthContext, description: string): Promise<string> {
   const { db } = context;
