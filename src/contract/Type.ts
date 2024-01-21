@@ -1,6 +1,11 @@
 import type { DbClient } from '../db/client.js';
 import { Invitation, Tenant } from './DbType.js';
 
+
+export interface AuthContext {
+  db: DbClient;
+}
+
 export type ExternalProfile = {
   provider: string;
   subjectId: string;
@@ -12,9 +17,6 @@ export type InitResponse = {
   apiKey: string;
 };
 
-export interface AuthContext {
-  db: DbClient;
-}
 
 export type AuthToken = {
   id: string;
@@ -28,7 +30,7 @@ export type Credentials =
   | { email: string; password: string; };
 
 
-export type NewInvitation = {
+export type NewInvitationInput = {
   firstName: string;
   lastName: string;
   email: string;
@@ -39,7 +41,7 @@ export type NewTenant = {
   name: string;
   description: string;
   key?: string;
-  invitation: NewInvitation;
+  invitation: NewInvitationInput;
 };
 
 export type NewTenantResponse = {

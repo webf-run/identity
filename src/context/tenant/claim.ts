@@ -27,6 +27,7 @@ export async function claimInvitation(ctx: AuthContext, code: string, password: 
 
   return await db.transaction(async (tx) => {
     const user = await createUser(db, invitation);
+
     await createEmail(db, user.id, invitation.email, true);
     await createTenantUser(db, invitation.tenantId, user.id);
 

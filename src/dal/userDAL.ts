@@ -1,12 +1,13 @@
 import { eq, and } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
-import type { User, UserToken } from '../contract/DbType.js';
+import type { Page, User, UserToken } from '../contract/DbType.js';
 import type { UserInput, UserWithMembership } from '../contract/Type.js';
 import type { Nil } from '../result.js';
 import { providerLogin, tenantUser, user, userEmail, userToken } from '../schema/identity.js';
 import type { DbClient } from '../type.js';
 import { bearerToken } from '../util/code.js';
+import { aggregate } from '../util/map.js';
 
 /**
  * Generate a cryptographically secure token for the user that can be used to make
@@ -91,4 +92,19 @@ export async function findUserByToken(db: DbClient, token: string): Promise<Nil<
     ...found.user,
     tenants,
   };
+}
+
+export async function getUsersByTenant(db: DbClient, tenantId: string, page: Page): Promise<User[]> {
+  const result = await db
+    .select()
+    .from(tenantUser)
+    .innerJoin(user, eq(tenantUser.userId, user.id))
+    .where(eq(tenantUser.tenantId, tenantId))
+    .limit(page.size)
+    .offset(page.number * page.size);
+
+
+  const results = aggregate(result, (x) => x.user.id, (x) => x.user);
+
+  return results;
 }

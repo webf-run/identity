@@ -3,12 +3,13 @@ import { nanoid } from 'nanoid';
 
 import { ONE_DAY_MS } from '../../constant.js';
 import { Invitation } from '../../contract/DbType.js';
-import type { AuthContext, NewInvitation } from '../../contract/Type.js';
+import type { AuthContext, NewInvitationInput } from '../../contract/Type.js';
+import { Nil } from '../../result.js';
 import * as schema from '../../schema/identity.js';
 import { inviteCode } from '../../util/code.js';
 
 
-export async function inviteUser(context: AuthContext, input: NewInvitation, tenantId: string): Promise<Invitation | null> {
+export async function inviteUser(context: AuthContext, input: NewInvitationInput, tenantId: string): Promise<Nil<Invitation>> {
   const { db } = context;
   const invitation = buildInvitation(input, tenantId);
 
@@ -18,7 +19,7 @@ export async function inviteUser(context: AuthContext, input: NewInvitation, ten
   return invitation;
 }
 
-export async function extendInvitationExpiry(context: AuthContext, invitation: Invitation): Promise<Invitation | null> {
+export async function extendInvitationExpiry(context: AuthContext, invitation: Invitation): Promise<Nil<Invitation>> {
   const { db } = context;
 
   const results = await db.update(schema.invitation)
@@ -31,7 +32,7 @@ export async function extendInvitationExpiry(context: AuthContext, invitation: I
   return results.at(0) ?? null;
 }
 
-function buildInvitation(invitation: NewInvitation, tenantId: string): Invitation {
+function buildInvitation(invitation: NewInvitationInput, tenantId: string): Invitation {
   const duration = invitation.duration ?? 4 * ONE_DAY_MS;
   const now = new Date();
   const expiryAt = new Date(now.getTime() + duration);

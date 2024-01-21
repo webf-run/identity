@@ -23,4 +23,10 @@ export {
   findUserByEmail,
   findUserBySocialId,
   findUserByToken,
+  getUsersByTenant,
 } from './dal/userDAL.js';
+
+
+export {
+  getTenantsForUser,
+} from './dal/tenantDAL.js';

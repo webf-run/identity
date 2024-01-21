@@ -9,6 +9,7 @@ export {
   isClient,
   isPublic,
   isUser,
+  isMember,
 } from './context/access.js';
 
 export {

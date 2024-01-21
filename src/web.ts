@@ -1,4 +1,5 @@
 export {
+  AuthSystem,
   makeAuth,
   session,
   addOpenIDStrategy,

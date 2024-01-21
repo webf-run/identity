@@ -1,12 +1,16 @@
 import { Hono } from 'hono';
 
 import { hasAppInitialized, initialize } from '../context/system/system.js';
-import { init } from '../db/client.js';
+import { init, DbClient } from '../db/client.js';
 import { addOpenIDStrategy } from './hono/oauth.js';
 import { addPasswordStrategy } from './hono/password.js';
 import { session } from './hono/session.js';
 import type { HonoAuthApp, AuthOptions } from './hono/type.js';
-import type { AuthSystem } from '../type.js';
+
+export type AuthSystem = {
+  auth: HonoAuthApp;
+  db: DbClient;
+};
 
 /**
  * Builds a Hono app that handles only authentication.
@@ -16,6 +20,14 @@ import type { AuthSystem } from '../type.js';
 export async function makeAuth(options: AuthOptions): Promise<AuthSystem> {
   const auth: HonoAuthApp = new Hono();
   const { db } = init(options.db);
+
+  // Inject the auth context into the request.
+  auth.use('*', async function authContextM(c, next) {
+    const context = { db };
+
+    c.set('authContext', context);
+    await next();
+  });
 
   try {
     const initialized = await hasAppInitialized({ db });
@@ -37,14 +49,6 @@ export async function makeAuth(options: AuthOptions): Promise<AuthSystem> {
   } catch (err) {
     console.warn('Failed to check if app is initialized.');
   }
-
-  // Inject the auth context into the request.
-  auth.use('*', async function authContextM(c, next) {
-    const context = { db };
-
-    c.set('authContext', context);
-    await next();
-  });
 
   return { auth, db };
 }
