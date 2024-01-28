@@ -1,4 +1,4 @@
-import { text, pgTable, timestamp } from 'drizzle-orm/pg-core';
+import { text, pgTable } from 'drizzle-orm/pg-core';
 
 export const country = pgTable('country', {
   id: text('id').primaryKey(),
@@ -33,15 +33,4 @@ export const postalCode = pgTable('postal_code', {
   code: text('code').notNull().unique(),
   area: text('area').notNull(),
   cityId: text('city_id').notNull().references(() => city.id, { onDelete: 'cascade' }),
-});
-
-export const address = pgTable('address', {
-  id: text('id').primaryKey(),
-
-  house: text('house').notNull(),
-  street: text('street').notNull(),
-  postalCodeId: text('postal_code_id').references(() => postalCode.id, { onDelete: 'cascade' }),
-
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
 });

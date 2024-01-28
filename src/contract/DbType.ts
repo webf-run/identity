@@ -80,16 +80,6 @@ export type UserLocalLogin = {
   hashFn: string;
 };
 
-export type Address = {
-  id: string;
-  house: string;
-  street: string;
-  postalCodeId: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-
 export type Country = {
   id: string;
   name: string;
