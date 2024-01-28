@@ -1,14 +1,23 @@
-import cryptoRandomString from 'crypto-random-string';
-import { customAlphabet } from 'nanoid';
+import cryptoRandomString, { Options } from 'crypto-random-string';
+import { customAlphabet, nanoid } from 'nanoid';
 
 import { hash } from './hash';
 
+const SECURE_RANDOM_OPTIONS: Options = {
+  length: 96,
+  type: 'alphanumeric',
+};
+
+export function pk(): string {
+  return nanoid();
+}
+
 export function inviteCode(): string {
-  return cryptoRandomString({ length: 96, type: 'alphanumeric' });
+  return cryptoRandomString(SECURE_RANDOM_OPTIONS);
 }
 
 export function bearerToken(): string {
-  return 'u-' + cryptoRandomString({ length: 96, type: 'alphanumeric' });
+  return 'u-' + cryptoRandomString(SECURE_RANDOM_OPTIONS);
 }
 
 export function apiKeyId(): string {
@@ -18,7 +27,7 @@ export function apiKeyId(): string {
 }
 
 export async function apiKeyToken() {
-  const secret = cryptoRandomString({ length: 128, type: 'alphanumeric' });
+  const secret = cryptoRandomString(SECURE_RANDOM_OPTIONS);
   const hashed = await hash(secret);
 
   return {

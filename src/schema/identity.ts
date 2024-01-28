@@ -15,7 +15,7 @@ export const apiKey = pgTable('api_key', {
 });
 
 
-export const user = pgTable('user', {
+export const user = pgTable('app_user', {
   id: text('id').primaryKey(),
 
   firstName: text('first_name').notNull(),

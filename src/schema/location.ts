@@ -9,7 +9,7 @@ export const country = pgTable('country', {
   code: text('code').notNull().unique(),
 
   // https://en.wikipedia.org/wiki/List_of_country_calling_codes
-  isdCode: text('isd_code').notNull(),
+  isdCode: text('isd_code').notNull().unique(),
 });
 
 export const state = pgTable('state', {
@@ -31,6 +31,7 @@ export const postalCode = pgTable('postal_code', {
   id: text('id').primaryKey(),
 
   code: text('code').notNull().unique(),
+  area: text('area').notNull(),
   cityId: text('city_id').notNull().references(() => city.id, { onDelete: 'cascade' }),
 });
 
@@ -39,8 +40,7 @@ export const address = pgTable('address', {
 
   house: text('house').notNull(),
   street: text('street').notNull(),
-  city: text('city').notNull().references(() => city.id),
-  zip_code: text('zip_code').references(() => postalCode.id, { onDelete: 'cascade' }),
+  postalCodeId: text('postal_code_id').references(() => postalCode.id, { onDelete: 'cascade' }),
 
   createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),

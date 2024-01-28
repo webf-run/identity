@@ -68,9 +68,6 @@ export type ResetPasswordRequest = {
   userId: string;
 };
 
-// After the model is finalized, replace inferred types with real types.
-
-
 // TODO: Name it better.
 export type UserLocalLogin = {
   userId: string;
@@ -81,4 +78,41 @@ export type UserLocalLogin = {
   loginId: string;
   password: string;
   hashFn: string;
+};
+
+export type Address = {
+  id: string;
+  house: string;
+  street: string;
+  postalCodeId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+
+export type Country = {
+  id: string;
+  name: string;
+  code: string;
+  isdCode: string;
+};
+
+export type State = {
+  id: string;
+  name: string;
+  code: string;
+  countryId: string;
+};
+
+export type PostalCode = {
+  id: string;
+  code: string;
+  area: string;
+  cityId: string;
+};
+
+export type City = {
+  id: string;
+  name: string;
+  stateId: string;
 };

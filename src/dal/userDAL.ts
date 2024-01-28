@@ -57,7 +57,7 @@ export async function findUserByEmail(db: DbClient, email: string): Promise<Nil<
     .innerJoin(user, eq(userEmail.userId, user.id))
     .where(eq(userEmail.email, email));
 
-  return result.at(0)?.user;
+  return result.at(0)?.app_user;
 }
 
 
@@ -68,7 +68,7 @@ export async function findUserBySocialId(db: DbClient, providerId: string, subje
     .innerJoin(user, eq(providerLogin.userId, user.id))
     .where(and(eq(providerLogin.providerId, providerId), eq(providerLogin.subjectId, subjectId)));
 
-  return result.at(0)?.user;
+  return result.at(0)?.app_user;
 }
 
 
@@ -89,7 +89,7 @@ export async function findUserByToken(db: DbClient, token: string): Promise<Nil<
   const tenants: string[] = result.map((x) => x.tenant_user.tenantId);
 
   return {
-    ...found.user,
+    ...found.app_user,
     tenants,
   };
 }
@@ -104,7 +104,7 @@ export async function getUsersByTenant(db: DbClient, tenantId: string, page: Pag
     .offset(page.number * page.size);
 
 
-  const results = aggregate(result, (x) => x.user.id, (x) => x.user);
+  const results = aggregate(result, (x) => x.app_user.id, (x) => x.app_user);
 
   return results;
 }
