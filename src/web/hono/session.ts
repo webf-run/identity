@@ -38,7 +38,7 @@ export function session(options: SessionOptions) {
     if (authHeader) {
       const [type, token] = authHeader.split(' ');
 
-      if (type === 'Bearer') {
+      if (type.toLowerCase() === 'Bearer'.toLowerCase()) {
         await handleBearerToken(c, db, token);
       } else if (type === 'ApiKey') {
         await handleTokenAuth(c, db, token);

@@ -1,14 +1,15 @@
-import type { User } from '../contract/DbType.js';
-import type { AuthContext, AuthToken, UserInput } from '../contract/Type.js';
-import { createToken, createUser } from '../dal/userDAL.js';
-import { createLocalLogin } from '../dal/loginDAL.js';
-import { createTenantUser } from '../dal/tenantDAL.js';
+import type { User } from '../../contract/DbType.js';
+import type { AuthContext, AuthToken, UserInput } from '../../contract/Type.js';
+import { createToken, createUser } from '../../dal/userDAL.js';
+import { createLocalLogin } from '../../dal/loginDAL.js';
+import { createTenantUser } from '../../dal/tenantDAL.js';
 
 /**
  * Issue a new bearer token for the user.
  */
 export async function createBearerToken(context: AuthContext, userId: string): Promise<AuthToken> {
   const { db } = context;
+
   // Generate a token for the user.
   const token = await createToken(db, userId);
 

@@ -53,6 +53,13 @@ export type User = {
   lastName: string;
 };
 
+export type UserEmail = {
+  id: string;
+  email: string;
+  verified: boolean;
+  userId: string;
+};
+
 export type UserToken = {
   id: string;
   generatedAt: Date;
@@ -78,6 +85,13 @@ export type UserLocalLogin = {
   loginId: string;
   password: string;
   hashFn: string;
+};
+
+export type ProviderLogin = {
+  id: string;
+  userId: string;
+  providerId: string;
+  subjectId: string;
 };
 
 export type Country = {

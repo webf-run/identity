@@ -1,8 +1,12 @@
 import { z } from 'zod';
 
-import { authenticate, forgotPassword, resetPassword } from '../../context/password/password.js';
-import { HonoAuthApp } from './type.js';
+import {
+  authenticate,
+  forgotPassword,
+  resetPassword,
+} from '../../context/user/password.js';
 import { setSession } from './session.js';
+import type { HonoAuthApp } from './type.js';
 
 const credentialsDTO = z.object({
   username: z.string(),

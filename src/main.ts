@@ -31,15 +31,11 @@ export async function main() {
 
   await addPasswordStrategy(auth);
   await addOpenIDStrategy(auth, googleClient, {
-    errorUrl: '/error',
     onLogin(user, profile) {
       return Promise.resolve('/');
     },
-    onLoginNoUser(profile) {
+    onError(error) {
       return Promise.resolve('/');
-    },
-    onSignup(user) {
-      return Promise.resolve(null);
     },
   });
 

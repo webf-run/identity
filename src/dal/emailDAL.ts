@@ -1,11 +1,11 @@
-import { nanoid } from 'nanoid';
-
-import { DbClient } from '../db/client.js';
+import type { UserEmail } from '../context.js';
+import type { DbClient } from '../db/client.js';
 import { userEmail } from '../schema/identity.js';
+import { pk } from '../util/code.js';
 
-export async function createEmail(db: DbClient, userId: string, email: string, verified: boolean) {
+export async function createEmail(db: DbClient, userId: string, email: string, verified: boolean): Promise<UserEmail> {
   const newEmail = {
-    id: nanoid(),
+    id: pk(),
     userId,
     email,
     verified,
@@ -17,5 +17,3 @@ export async function createEmail(db: DbClient, userId: string, email: string, v
 
   return newEmail;
 }
-
-export const count = 1;

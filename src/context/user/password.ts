@@ -12,7 +12,7 @@ import {
 } from '../../dal/resetDAL.js';
 import { AsyncResult, err, ok } from '../../result.js';
 import { verify } from '../../util/hash.js';
-import { createBearerToken } from '../user.js';
+import { createBearerToken } from './user.js';
 
 
 export async function authenticate(ctx: AuthContext, input: Credentials): AsyncResult<AuthToken> {

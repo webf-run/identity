@@ -1,6 +1,8 @@
 import * as oauth from 'oauth4webapi';
 import type { AuthorizationServer, Client } from 'oauth4webapi';
 
+import { OAuthProfile } from '../../contract/Type';
+
 export type OAuth2Options = {
   clientId: string;
   clientSecret: string;
@@ -15,28 +17,6 @@ export type OAuth2ClientOptions = OAuth2Options & {
   provider: string;
 }
 
-export type OAuthState = {
-  type: 'login' | 'signup';
-  redirectUrl?: string;
-  inviteCode?: string;
-};
-
-export type OAuthProfile = {
-  /**
-   * The OAuth 2.0 provider like `google`, `zoho`, etc. to which this user belongs.
-   */
-  provider: string;
-  subjectId: string;
-  email: string;
-  emailVerified: boolean;
-
-  givenName: string;
-  familyName: string;
-  name: string;
-
-  accessToken: string;
-  tokenType: string;
-};
 
 export class OAuth2Client {
   private readonly as: AuthorizationServer;
@@ -78,7 +58,7 @@ export class OAuth2Client {
     return new OAuth2Client(as, options);
   }
 
-  async makeAuthorizationUrl(type: 'login' | 'signup'): Promise<URL> {
+  async makeAuthorizationUrl(type: 'login' | 'signup' | 'link'): Promise<URL> {
     // TODO: Check code challenge method.
     const codeChallenge = await oauth.calculatePKCECodeChallenge(this.codeVerifier);
     const codeChallengeMethod = 'S256';

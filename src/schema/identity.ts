@@ -35,7 +35,6 @@ export const userEmail = pgTable('user_email', {
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
 });
 
-
 export const localLogin = pgTable('local_login', {
   userId: text('user_id').primaryKey().references(() => user.id, { onDelete: 'cascade' }),
 

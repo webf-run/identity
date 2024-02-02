@@ -15,7 +15,7 @@ export {
 export {
   authenticate,
   forgotPassword,
-} from './context/password/password.js';
+} from './context/user/password.js';
 
 
 export {
@@ -44,6 +44,10 @@ export {
 } from './context/tenant/tenant.js';
 
 export {
+  processOAuthAuthorization,
+} from './context/user/social.js';
+
+export {
   createBearerToken,
   createNewUser,
-} from './context/user.js';
+} from './context/user/user.js';
