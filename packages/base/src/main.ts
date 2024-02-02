@@ -1,9 +1,12 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
-
-import { addOpenIDStrategy, addPasswordStrategy, makeAuth } from './web/authSystem.js';
-import { google } from './web/oauth/providers.js';
 import postgres from 'postgres';
+
+import { makeAuth } from './auth/system.js';
+import { google } from './oauth/providers.js';
+import { addOpenIDStrategy } from './auth/oauth.js';
+import { addPasswordStrategy } from './auth/password.js';
+
 
 export async function main() {
   const app = new Hono();

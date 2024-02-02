@@ -1,0 +1,34 @@
+{
+  "name": "@webf/base",
+  "version": "0.1.0",
+  "description": "Base system for building APIs",
+  "type": "module",
+  "exports": {
+    ".": "./dist/web.js"
+  },
+  "scripts": {
+    "check:types": "tsc",
+    "check:cycles": "tsx ./scripts/cycles.ts",
+    "dev": "dotenv -- tsx ./src/main.ts",
+    "dev:pack": "tsx ./scripts/pack.ts",
+    "prebuild": "rimraf ./dist",
+    "build": "tsc -p ./tsconfig.build.json",
+    "lint": "eslint ./src",
+    "generate": "drizzle-kit generate:pg",
+    "test": "NODE_OPTIONS='--import tsx' node --test"
+  },
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "@webf/auth": "*"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.5.0",
+    "hono": "^3.12.7",
+    "oauth4webapi": "^2.8.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@webf/auth": "*"
+  }
+}

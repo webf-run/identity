@@ -1,7 +1,7 @@
 import cryptoRandomString, { Options } from 'crypto-random-string';
 import { customAlphabet, nanoid } from 'nanoid';
 
-import { hash } from './hash';
+import { hash } from './hash.js';
 
 const SECURE_RANDOM_OPTIONS: Options = {
   length: 96,

@@ -1,7 +1,7 @@
 import * as oauth from 'oauth4webapi';
 import type { AuthorizationServer, Client } from 'oauth4webapi';
 
-import { OAuthProfile } from '../../contract/Type';
+import { OAuthProfile } from '@webf/auth/context';
 
 export type OAuth2Options = {
   clientId: string;

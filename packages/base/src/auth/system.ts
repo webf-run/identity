@@ -1,11 +1,8 @@
+import { hasAppInitialized, initialize } from '@webf/auth/context';
+import { init, DbClient } from '@webf/auth/db';
 import { Hono } from 'hono';
 
-import { hasAppInitialized, initialize } from '../context/system/system.js';
-import { init, DbClient } from '../db/client.js';
-import { addOpenIDStrategy } from './hono/oauth.js';
-import { addPasswordStrategy } from './hono/password.js';
-import { session } from './hono/session.js';
-import type { HonoAuthApp, AuthOptions } from './hono/type.js';
+import type { HonoAuthApp, AuthOptions } from './type.js';
 
 export type AuthSystem = {
   auth: HonoAuthApp;
@@ -52,9 +49,3 @@ export async function makeAuth(options: AuthOptions): Promise<AuthSystem> {
 
   return { auth, db };
 }
-
-export {
-  addOpenIDStrategy,
-  addPasswordStrategy,
-  session,
-};

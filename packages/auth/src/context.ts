@@ -15,6 +15,7 @@ export {
 export {
   authenticate,
   forgotPassword,
+  resetPassword,
 } from './context/user/password.js';
 
 

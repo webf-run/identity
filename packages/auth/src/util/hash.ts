@@ -8,7 +8,6 @@ export async function hash(entity: string): Promise<[string, string]> {
   return [hash, HASH_FN];
 }
 
-
 export function verify(hash: string, original: string, algo: string): Promise<boolean> {
   if (algo === HASH_FN) {
     return argon2.verify(hash, original, { type: argon2.argon2id });

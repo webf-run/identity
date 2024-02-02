@@ -1,10 +1,10 @@
-import { z } from 'zod';
-
 import {
   authenticate,
   forgotPassword,
   resetPassword,
-} from '../../context/user/password.js';
+} from '@webf/auth/context';
+import { z } from 'zod';
+
 import { setSession } from './session.js';
 import type { HonoAuthApp } from './type.js';
 

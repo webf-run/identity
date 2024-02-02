@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { User } from '../../contract/DbType';
-import type { AuthContext, AuthToken, OAuthProfile, OAuthState } from '../../contract/Type';
-import { createSocialLogin } from '../../dal/loginDAL';
-import { findUserBySocialId } from '../../dal/userDAL';
-import { claimWithSocial } from '../tenant/claim';
-import { createBearerToken } from './user';
+import { User } from '../../contract/DbType.js';
+import type { AuthContext, AuthToken, OAuthProfile, OAuthState } from '../../contract/Type.js';
+import { createSocialLogin } from '../../dal/loginDAL.js';
+import { findUserBySocialId } from '../../dal/userDAL.js';
+import { claimWithSocial } from '../tenant/claim.js';
+import { createBearerToken } from './user.js';
 
 
 const union = z.discriminatedUnion('type', [

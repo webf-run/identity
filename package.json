@@ -1,55 +1,31 @@
 {
-  "name": "@webf/base",
+  "name": "@webf/identity",
   "version": "0.5.0",
-  "description": "Hono helper modules",
+  "private": true,
+  "description": "IAM system built on top of Postgres",
   "type": "module",
-  "exports": {
-    "./package.json": "./package.json",
-    ".": "./dist/type.js",
-    "./context": "./dist/context.js",
-    "./dal": "./dist/dal.js",
-    "./migrator": "./dist/db/migrator.js",
-    "./schema/*": "./dist/schema/*.js",
-    "./util/*": "./dist/util/*.js",
-    "./web": "./dist/web.js"
-  },
   "scripts": {
-    "check:types": "tsc",
-    "check:cycles": "tsx ./scripts/cycles.ts",
-    "dev": "dotenv -- tsx ./src/main.ts",
-    "dev:pack": "tsx ./scripts/pack.ts",
-    "prebuild": "rimraf ./dist",
-    "build": "tsc -p ./tsconfig.build.json",
-    "lint": "eslint ./src",
-    "generate": "drizzle-kit generate:pg",
-    "test": "NODE_OPTIONS='--import tsx' node --test"
+    "build": "npm run build --workspaces"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/webf-run/api-base.git"
+    "url": "git+https://github.com/webf-run/identity.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/webf-run/api-base/issues"
+    "url": "https://github.com/webf-run/identity/issues"
   },
-  "homepage": "https://github.com/webf-run/api-base#readme",
+  "homepage": "https://github.com/webf-run/identity#readme",
   "volta": {
     "node": "20.10.0"
   },
-  "peerDependencies": {
-    "postgres": "^3.4.3"
-  },
+  "workspaces": [
+    "packages/auth",
+    "packages/base"
+  ],
   "dependencies": {
-    "@hono/node-server": "^1.5.0",
-    "argon2": "^0.31.2",
-    "crypto-random-string": "^5.0.0",
-    "drizzle-orm": "^0.29.3",
-    "hono": "^3.12.7",
-    "nanoid": "^5.0.4",
-    "oauth4webapi": "^2.8.1",
-    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/madge": "^5.0.3",
@@ -58,13 +34,11 @@
     "@typescript-eslint/parser": "^6.19.1",
     "dotenv": "^16.4.1",
     "dotenv-cli": "^7.3.0",
-    "drizzle-kit": "^0.20.13",
     "eslint": "^8.56.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
     "glob": "^10.3.10",
     "madge": "^6.1.0",
-    "postgres": "^3.4.3",
     "rimraf": "^5.0.5",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"

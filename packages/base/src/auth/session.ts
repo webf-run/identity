@@ -3,11 +3,17 @@ import { getCookie, setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
-import type { Access, ClientAppAccess, PublicAccess, UserAccess } from '../../context/access.js';
-import type { AuthToken, UserWithMembership } from '../../contract/Type.js';
-import { findApiKeyByToken } from '../../context/system/apiKey.js';
-import { findUserByToken } from '../../dal/userDAL.js';
-import type { DbClient } from '../../type.js';
+import type {
+  Access,
+  AuthToken,
+  ClientAppAccess,
+  PublicAccess,
+  UserAccess,
+  UserWithMembership
+} from '@webf/auth/context';
+import { findApiKeyByToken } from '@webf/auth/context';
+import { findUserByToken } from '@webf/auth/dal';
+import type { DbClient } from '@webf/auth/db';
 
 export const SESSION_COOKIE = 'webf_session';
 

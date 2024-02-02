@@ -1,4 +1,4 @@
-import { OAuth2Client, OAuth2Options } from './client';
+import { OAuth2Client, OAuth2Options } from './client.js';
 
 export const GOOGLE= 'google' as const;
 export const ZOHO= 'zoho' as const;

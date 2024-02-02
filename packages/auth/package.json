@@ -1,0 +1,44 @@
+{
+  "name": "@webf/auth",
+  "version": "0.1.0",
+  "description": "Multi-tenant IAM system",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    "./context": "./dist/context.js",
+    "./dal": "./dist/dal.js",
+    "./db": "./dist/db/client.js",
+    "./migrator": "./dist/db/migrator.js",
+    "./result": "./dist/result.js",
+    "./schema/*": "./dist/schema/*.js",
+    "./util/*": "./dist/util/*.js"
+  },
+  "scripts": {
+    "check:types": "tsc",
+    "check:cycles": "tsx ./scripts/cycles.ts",
+    "dev": "dotenv -- tsx ./src/main.ts",
+    "dev:pack": "tsx ./scripts/pack.ts",
+    "prebuild": "rimraf ./dist",
+    "build": "tsc -p ./tsconfig.build.json",
+    "lint": "eslint ./src",
+    "generate": "drizzle-kit generate:pg",
+    "test": "NODE_OPTIONS='--import tsx' node --test"
+  },
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "postgres": "^3.4.3"
+  },
+  "dependencies": {
+    "argon2": "^0.31.2",
+    "crypto-random-string": "^5.0.0",
+    "drizzle-orm": "^0.29.3",
+    "nanoid": "^5.0.4",
+    "oauth4webapi": "^2.8.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.20.13",
+    "postgres": "^3.4.3"
+  }
+}

@@ -1,9 +1,7 @@
-import type { Context, Hono, MiddlewareHandler } from 'hono';
+import type { AuthContext, OAuthProfile, User } from '@webf/auth/context';
+import type { InitOptions } from '@webf/auth/db';
 
-import type { User } from '../../contract/DbType.js';
-import type { AuthContext, OAuthProfile, OAuthState } from '../../contract/Type.js';
-import type { InitOptions, DbClient } from '../../db/client.js';
-import type { Nil } from '../../result.js';
+import type { Context, Hono, MiddlewareHandler } from 'hono';
 
 export type HonoAuthVariables = {
   authContext: AuthContext;
@@ -23,15 +21,6 @@ export type HonoSessionMiddleware = MiddlewareHandler<{
   Variables: HonoAuthVariables;
 }>;
 
-export type LoginNRegisterProps = {
-  c: HonoAuthContext;
-  db: DbClient;
-  user: Nil<User>;
-  profile: OAuthProfile;
-  callbacks: OAuthCallbacks;
-  state: OAuthState;
-};
-
 export type AuthOptions = {
   /**
    * Path to the SQLite database file.
@@ -41,9 +30,6 @@ export type AuthOptions = {
 };
 
 export type OAuthCallbacks = {
-  /**
-   * The URL to redirect to after login.
-  */
   onLogin: (user: User, profile: OAuthProfile) => Promise<string>;
   onError: (error: unknown) => Promise<string>;
 };
