@@ -1,6 +1,6 @@
 {
   "name": "@webf/base",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Base system for building APIs",
   "type": "module",
   "exports": {
@@ -11,7 +11,6 @@
     "check:types": "tsc",
     "check:cycles": "tsx ./scripts/cycles.ts",
     "dev": "dotenv -- tsx ./src/main.ts",
-    "dev:pack": "tsx ./scripts/pack.ts",
     "prebuild": "rimraf ./dist",
     "build": "tsc -p ./tsconfig.build.json",
     "lint": "eslint ./src",

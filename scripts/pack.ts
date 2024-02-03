@@ -50,11 +50,16 @@ async function main() {
   // Destination folder to install the packages
   const destination = '../crm';
 
+  const auth = './packages/auth';
+  const base = './packages/base';
+
   console.log('Build packages');
-  await build('.');
+  await build(auth);
+  await build(base);
 
   console.log('Bundle packages');
-  await bundle('.');
+  await bundle(auth);
+  await bundle(base);
 
   const bundles = await glob('*.tgz', { cwd: processCWD });
   const destinationAbs = path.join(processCWD, destination);

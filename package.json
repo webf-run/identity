@@ -1,11 +1,11 @@
 {
   "name": "@webf/identity",
   "version": "0.1.0",
-  "private": true,
   "description": "IAM system built on top of Postgres",
   "type": "module",
   "scripts": {
-    "build": "npm run build --workspaces"
+    "build": "npm run build --workspaces",
+    "dev:pack": "tsx ./scripts/pack.ts"
   },
   "repository": {
     "type": "git",
