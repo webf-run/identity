@@ -24,8 +24,12 @@
     "generate": "drizzle-kit generate:pg",
     "test": "NODE_OPTIONS='--import tsx' node --test"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webf-run/identity.git"
+  },
+  "license": "SEE LICENSE IN ../../LICENSE",
+  "keywords": [],
   "peerDependencies": {
     "postgres": "^3.4.3"
   },
@@ -40,5 +44,8 @@
   "devDependencies": {
     "drizzle-kit": "^0.20.13",
     "postgres": "^3.4.3"
+  },
+  "volta": {
+    "node": "20.11.0"
   }
 }

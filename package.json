@@ -1,6 +1,6 @@
 {
   "name": "@webf/identity",
-  "version": "0.5.0",
+  "version": "0.1.0",
   "private": true,
   "description": "IAM system built on top of Postgres",
   "type": "module",
@@ -11,15 +11,10 @@
     "type": "git",
     "url": "git+https://github.com/webf-run/identity.git"
   },
+  "license": "SEE LICENSE IN LICENSE",
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/webf-run/identity/issues"
-  },
-  "homepage": "https://github.com/webf-run/identity#readme",
   "volta": {
-    "node": "20.10.0"
+    "node": "20.11.0"
   },
   "workspaces": [
     "packages/auth",

@@ -55,15 +55,6 @@ module.exports = {
           target: './src/dal/**/*',
           from: './src/context/**/*',
         },
-        {
-          target: './src/dal/**/*',
-          from: './src/web/**/*',
-        },
-        // Context cannot import from web.
-        {
-          target: './src/context/**/*',
-          from: './src/web/**/*',
-        },
       ],
     }],
   },

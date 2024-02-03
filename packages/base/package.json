@@ -1,10 +1,11 @@
 {
   "name": "@webf/base",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "description": "Base system for building APIs",
   "type": "module",
   "exports": {
-    ".": "./dist/web.js"
+    ".": "./dist/web.js",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "check:types": "tsc",
@@ -17,8 +18,12 @@
     "generate": "drizzle-kit generate:pg",
     "test": "NODE_OPTIONS='--import tsx' node --test"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webf-run/identity.git"
+  },
+  "license": "SEE LICENSE IN ../../LICENSE",
+  "keywords": [],
   "peerDependencies": {
     "@webf/auth": "*"
   },
@@ -30,5 +35,8 @@
   },
   "devDependencies": {
     "@webf/auth": "*"
+  },
+  "volta": {
+    "node": "20.11.0"
   }
 }
