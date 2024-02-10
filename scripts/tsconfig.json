@@ -11,9 +11,8 @@
     // "checkJs": true,
     // "jsx": "react",
     // "jsxImportSource": "react",
-    // "declaration": true,
-    // "declarationMap": true,
-    // "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
     // "outFile": "./",
     // "outDir": "./dist",
     // "rootDir": "./",
@@ -56,6 +55,7 @@
     // "allowUmdGlobalAccess": true,
 
     /* Source Map Options */
+    "sourceMap": true,
     // "sourceRoot": "",
     // "mapRoot": "",
     // "inlineSourceMap": true,

@@ -87,7 +87,7 @@ export const invitation = pgTable('invitation', {
   duration: integer('duration').notNull(),
   expiryAt: timestamp('expirty_at', { withTimezone: true }).notNull(),
 
-  tenantId: text('tenant_id').references(() => tenant.id).notNull(),
+  tenantId: text('tenant_id').references(() => tenant.id, { onDelete: 'cascade' }).notNull(),
 
   createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),

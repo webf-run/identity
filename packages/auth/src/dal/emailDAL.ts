@@ -1,4 +1,4 @@
-import type { UserEmail } from '../context.js';
+import type { UserEmail } from '../contract/DbType.js';
 import type { DbClient } from '../db/client.js';
 import { userEmail } from '../schema/identity.js';
 import { pk } from '../util/code.js';
