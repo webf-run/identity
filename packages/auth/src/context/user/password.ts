@@ -1,3 +1,4 @@
+import type { ResetPasswordRequest } from '../../context.js';
 import type { AuthContext, AuthToken, Credentials } from '../../contract/Type.js';
 import {
   changePassword,
@@ -10,7 +11,8 @@ import {
   findResetPasswordRequestByCode,
   findResetPasswordRequestByEmail
 } from '../../dal/resetDAL.js';
-import { AsyncResult, err, ok } from '../../result.js';
+import { deleteToken } from '../../dal/userDAL.js';
+import { AsyncResult, err, ok, type Nil } from '../../result.js';
 import { verify } from '../../util/hash.js';
 import { createBearerToken } from './user.js';
 
@@ -30,7 +32,7 @@ export async function authenticate(ctx: AuthContext, input: Credentials): AsyncR
 
   const verified = await verify(login.password, password, login.hashFn);
 
-  // User with given email found but not password match.
+  // User with given email found but no password match.
   if (!verified) {
     return err('INVALID_CREDENTIALS', 'Invalid user credentials');
   }
@@ -66,13 +68,28 @@ export async function forgotPassword(ctx: AuthContext, username: string): AsyncR
 }
 
 
-export async function resetPassword(ctx: AuthContext, code: string, newPassword: string): AsyncResult<boolean> {
+export async function getResetTokenInfo(ctx: AuthContext, token: string): Promise<ResetPasswordRequest> {
   const { db } = ctx;
 
   // Token is valid for 30 minutes only
   const validTime = new Date(Date.now() - 30 * 60000);
 
-  const resetRequest = await findResetPasswordRequestByCode(db, code, validTime);
+  const resetRequest = await findResetPasswordRequestByCode(db, token, validTime);
+
+  if (!resetRequest) {
+    throw 'invalid credentials';
+  }
+
+  return resetRequest;
+}
+
+export async function resetPassword(ctx: AuthContext, token: string, newPassword: string): AsyncResult<boolean> {
+  const { db } = ctx;
+
+  // Token is valid for 30 minutes only
+  const validTime = new Date(Date.now() - 30 * 60000);
+
+  const resetRequest = await findResetPasswordRequestByCode(db, token, validTime);
 
   if (!resetRequest) {
     return err('INVALID_CREDENTIALS', 'Invalid reset request');
@@ -88,4 +105,13 @@ export async function resetPassword(ctx: AuthContext, code: string, newPassword:
   }
 
   return ok(true);
+}
+
+
+export async function invalidateToken(ctx: AuthContext, token: string): Promise<boolean> {
+  const { db } = ctx;
+
+  await deleteToken(db, token);
+
+  return true;
 }

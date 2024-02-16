@@ -2,6 +2,7 @@ import {
   authenticate,
   forgotPassword,
   resetPassword,
+  getResetTokenInfo,
 } from '@webf/auth/context';
 import { z } from 'zod';
 
@@ -69,6 +70,14 @@ export async function addPasswordStrategy(app: HonoAuthApp): Promise<void> {
     c.status(result.ok ? 200 : 404);
 
     return c.json({ value: result.value });
+  });
+
+  app.get('/reset-password/:token', async (c) => {
+    const token = c.req.param('token');
+    const request = await getResetTokenInfo(c.var.authContext, token);
+
+    // TODO: Error handling.
+    return c.json(request);
   });
 
   // Reset password

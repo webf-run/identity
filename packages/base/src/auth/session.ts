@@ -17,12 +17,6 @@ import type { DbClient } from '@webf/auth/db';
 
 export const SESSION_COOKIE = 'webf_session';
 
-declare module 'hono' {
-  interface ContextVariableMap {
-    session: Access;
-  }
-}
-
 export type SessionOptions = {
   db: DbClient;
 };

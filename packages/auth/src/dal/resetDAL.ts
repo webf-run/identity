@@ -17,7 +17,8 @@ export async function findResetPasswordRequestByEmail(db: DbClient, email: strin
     })
     .from(userEmail)
     .leftJoin(resetPasswordRequest, eq(userEmail.userId, resetPasswordRequest.userId))
-    .where(eq(userEmail.email, email));
+    .where(eq(userEmail.email, email))
+    .groupBy(userEmail.userId);
 
   return result.at(0);
 }

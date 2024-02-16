@@ -15,9 +15,9 @@ export {
 export {
   authenticate,
   forgotPassword,
+  getResetTokenInfo,
   resetPassword,
 } from './context/user/password.js';
-
 
 export {
   generateApiKey,

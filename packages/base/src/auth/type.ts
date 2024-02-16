@@ -1,5 +1,4 @@
 import type { AuthContext, OAuthProfile, User } from '@webf/auth/context';
-import type { InitOptions } from '@webf/auth/db';
 
 import type { Context, Hono, MiddlewareHandler } from 'hono';
 
@@ -20,14 +19,6 @@ export type HonoAuthContext = Context<{
 export type HonoSessionMiddleware = MiddlewareHandler<{
   Variables: HonoAuthVariables;
 }>;
-
-export type AuthOptions = {
-  /**
-   * Path to the SQLite database file.
-   * File will be opened in WAL mode.
-   */
-  db: InitOptions;
-};
 
 export type OAuthCallbacks = {
   onLogin: (user: User, profile: OAuthProfile) => Promise<string>;

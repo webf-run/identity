@@ -33,6 +33,13 @@ export async function createToken(db: DbClient, userId: string): Promise<Nil<Use
   return added.at(0);
 }
 
+export async function deleteToken(db: DbClient, token: string): Promise<void> {
+  const _ = await db
+    .delete(userToken)
+    .where(eq(userToken.id, token));
+}
+
+
 export async function createUser(db: DbClient, input: UserInput) {
   const now = new Date();
 

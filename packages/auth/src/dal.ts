@@ -24,6 +24,7 @@ export {
   findUserBySocialId,
   findUserByToken,
   getUsersByTenant,
+  deleteToken,
 } from './dal/userDAL.js';
 
 
