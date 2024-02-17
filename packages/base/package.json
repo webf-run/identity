@@ -1,6 +1,6 @@
 {
   "name": "@webf/base",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Base system for building APIs",
   "type": "module",
   "exports": {

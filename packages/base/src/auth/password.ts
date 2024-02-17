@@ -19,7 +19,7 @@ const forgotPassDTO = z.object({
 });
 
 const resetPassDTO = z.object({
-  code: z.string(),
+  token: z.string(),
   newPassword: z.string(),
 });
 
@@ -93,7 +93,7 @@ export async function addPasswordStrategy(app: HonoAuthApp): Promise<void> {
     }
 
     const dto = parsed.data;
-    const result = await resetPassword(c.var.authContext, dto.code, dto.newPassword);
+    const result = await resetPassword(c.var.authContext, dto.token, dto.newPassword);
 
     c.status(result.ok ? 200 : 404);
 
