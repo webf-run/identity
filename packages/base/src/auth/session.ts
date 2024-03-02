@@ -15,6 +15,8 @@ import { findApiKeyByToken } from '@webf/auth/context';
 import { findUserByToken } from '@webf/auth/dal';
 import type { DbClient } from '@webf/auth/db';
 
+import type { HonoAuthContext } from './type.js';
+
 export const SESSION_COOKIE = 'webf_session';
 
 export type SessionOptions = {
@@ -26,6 +28,18 @@ export async function setSession(c: Context, token: AuthToken) {
     httpOnly: true,
     sameSite: 'Lax',
   });
+}
+
+export function getSessionInfo(c: HonoAuthContext) {
+  const session = c.var.session;
+
+  if (session.type === 'user') {
+    c.status(200);
+    return c.json(session.user);
+  } else {
+    c.status(404);
+    return c.json({});
+  }
 }
 
 export function session(options: SessionOptions) {

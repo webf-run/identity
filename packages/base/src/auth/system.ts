@@ -6,7 +6,7 @@ import { createMiddleware } from 'hono/factory';
 import type { OAuth2Client } from '../oauth/client.js';
 import { addOpenIDStrategy } from './oauth.js';
 import { addPasswordStrategy } from './password.js';
-import { session } from './session.js';
+import { getSessionInfo, session } from './session.js';
 import type { HonoAuthApp, HonoAuthContext, OAuthCallbacks } from './type.js';
 
 export type AuthOptions = {
@@ -62,6 +62,8 @@ export async function makeAuth(options: AuthOptions): Promise<AuthSystem> {
   auth.use('*', authContext(db));
 
   await addInitRoute(auth, db);
+
+  auth.get('/token/info', getSessionInfo);
 
   // Add the OAuth strategies to the auth app.
   for (const { client, callbacks } of strategies) {
