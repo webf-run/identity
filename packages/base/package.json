@@ -28,6 +28,8 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.5.0",
+    "@pothos/core": "^3.41.0",
+    "graphql": "^16.8.1",
     "hono": "^3.12.7",
     "oauth4webapi": "^2.8.1",
     "zod": "^3.22.4"

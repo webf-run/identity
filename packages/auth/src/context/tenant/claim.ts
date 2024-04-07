@@ -1,18 +1,23 @@
-import { nanoid } from 'nanoid';
-
+import type { User } from '../../contract/DbType.js';
+import type { AuthContext, ExternalProfile } from '../../contract/Type.js';
 import { createEmail } from '../../dal/emailDAL.js';
 import { deleteInvitation, findInvitationByCode } from '../../dal/invitationDAL.js';
 import { createLocalLogin, createSocialLogin } from '../../dal/loginDAL.js';
 import { createTenantUser } from '../../dal/tenantDAL.js';
 import { createUser, findUserByEmail, findUserBySocialId } from '../../dal/userDAL.js';
-import type { User } from '../../contract/DbType.js';
 import type { Nil } from '../../result.js';
 import { tenantUser } from '../../schema/identity.js';
-import type { AuthContext, ExternalProfile } from '../../contract/Type.js';
+import { pk } from '../../util/code.js';
+import { isPublic, isUser } from '../access.js';
 
 
 export async function claimInvitation(ctx: AuthContext, code: string, password: string): Promise<Nil<User>> {
-  const { db } = ctx;
+  const { access, db } = ctx;
+
+  if (!isPublic(access)) {
+    throw new Error('Invalid access');
+  }
+
   const invitation = await findInvitationByCode(db, code);
 
   if (!invitation) {
@@ -83,8 +88,14 @@ export async function claimWithSocial(ctx: AuthContext, inviteCode: string, prof
   return newUser;
 }
 
-export async function acceptInvitation(ctx: AuthContext, code: string, userId: string) {
-  const { db } = ctx;
+export async function acceptInvitation(ctx: AuthContext, code: string) {
+  const { access, db } = ctx;
+
+  if (!isUser(access)) {
+    throw new Error('Invalid access');
+  }
+
+  const userId = access.user.id;
   const invitation = await findInvitationByCode(db, code);
 
   if (!invitation) {
@@ -97,7 +108,7 @@ export async function acceptInvitation(ctx: AuthContext, code: string, userId: s
   await db.transaction(async (tx) => {
     await tx.insert(tenantUser)
       .values({
-        id: nanoid(),
+        id: pk(),
         userId,
         tenantId,
         createdAt: now,

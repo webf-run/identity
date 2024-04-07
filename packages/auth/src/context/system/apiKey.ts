@@ -2,36 +2,25 @@ import { and, eq } from 'drizzle-orm';
 
 import type { ApiKey } from '../../contract/DbType.js';
 import type { AuthContext } from '../../contract/Type.js';
+import { generateApiKey } from '../../dal/apiKey.js';
+import type { DbClient } from '../../db/client.js';
 import { apiKey } from '../../schema/identity.js';
-import { apiKeyId, apiKeyToken } from '../../util/code.js';
 import { verify } from '../../util/hash.js';
+import { isClient } from '../access.js';
 
-export async function generateApiKey(context: AuthContext, description: string): Promise<string> {
-  const { db } = context;
+export async function createNewApiKey(context: AuthContext, description: string): Promise<string> {
+  const { access, db } = context;
 
-  const id = apiKeyId();
-  const token = await apiKeyToken();
+  if (!isClient(access)) {
+    throw 'not authorized';
+  }
 
-  await db
-    .insert(apiKey)
-    .values({
-      id,
-      description,
-      hashFn: token.hashFn,
-      isActive: true,
-      token: token.hash,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+  const key = await generateApiKey(db, description);
 
-  const serialized = `${id}.${token.secret}`;
-
-  return serialized;
+  return key;
 }
 
-export async function findApiKeyByToken(context: AuthContext, token: string): Promise<ApiKey> {
-  const { db } = context;
-
+export async function findApiKeyByToken(db: DbClient, token: string): Promise<ApiKey> {
   const [id, ...rest] = token.split('.');
   const secret = rest.join('');
 

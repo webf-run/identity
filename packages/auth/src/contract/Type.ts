@@ -1,9 +1,11 @@
 import type { DbClient } from '../db/client.js';
-import { Invitation, Tenant } from './DbType.js';
+import type { Access } from './Access.js';
+import type { Invitation, Tenant } from './DbType.js';
 
 
 export interface AuthContext {
   db: DbClient;
+  access: Access;
 }
 
 export type ExternalProfile = {
@@ -16,7 +18,6 @@ export type ExternalProfile = {
 export type InitResponse = {
   apiKey: string;
 };
-
 
 export type OAuthLogin = {
   type: 'login';
@@ -73,7 +74,7 @@ export type NewInvitationInput = {
   duration?: number;
 };
 
-export type NewTenant = {
+export type NewTenantInput = {
   name: string;
   description: string;
   key?: string;

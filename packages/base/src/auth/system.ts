@@ -1,6 +1,6 @@
 import { hasAppInitialized, initialize, type Access } from '@webf/auth/context';
 import { init, DbClient, type DbOptions } from '@webf/auth/db';
-import { Hono, type MiddlewareHandler } from 'hono';
+import { Hono } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
 import type { OAuth2Client } from '../oauth/client.js';
@@ -59,7 +59,7 @@ export async function makeAuth(options: AuthOptions): Promise<AuthSystem> {
   // Create the Hono app dedicated to authentication routes.
   const auth: HonoAuthApp = new Hono();
 
-  // Inject the auth context into the request.
+  // Inject the auth context into the auth requests.
   auth.use('*', authContext(db));
 
   await addInitRoute(auth, db);
@@ -90,23 +90,24 @@ export async function makeAuth(options: AuthOptions): Promise<AuthSystem> {
 /**
  * Middleware to inject the identity database client into the request context.
  */
-function authContext(db: DbClient): MiddlewareHandler {
+function authContext(db: DbClient) {
   return createMiddleware(async function authContextM(c: HonoAuthContext, next) {
-    const context = { db };
+    c.set('authContext', {
+      db,
+      access: c.var.session,
+    });
 
-    c.set('authContext', context);
     await next();
   });
 }
 
 async function addInitRoute(auth: HonoAuthApp, db: DbClient): Promise<void> {
   try {
-    const initialized = await hasAppInitialized({ db });
+    const initialized = await hasAppInitialized(db);
 
     if (!initialized) {
       auth.post('/init', async function init(c) {
-        const context = c.var.authContext;
-        const response = await initialize(context);
+        const response = await initialize(db);
 
         if (response.ok) {
           c.status(200);

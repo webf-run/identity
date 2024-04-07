@@ -1,11 +1,8 @@
+export * from './contract/Access.js';
 export * from './contract/DbType.js';
 export * from './contract/Type.js';
 
 export {
-  Access,
-  ClientAppAccess,
-  PublicAccess,
-  UserAccess,
   isClient,
   isPublic,
   isUser,
@@ -20,7 +17,7 @@ export {
 } from './context/user/password.js';
 
 export {
-  generateApiKey,
+  createNewApiKey,
   findApiKeyByToken,
 } from './context/system/apiKey.js';
 
@@ -42,6 +39,7 @@ export {
 
 export {
   createNewTenantWithInvite,
+  getTenants,
 } from './context/tenant/tenant.js';
 
 export {
@@ -51,4 +49,5 @@ export {
 export {
   createBearerToken,
   createNewUser,
+  getUsers,
 } from './context/user/user.js';

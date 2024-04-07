@@ -1,16 +1,16 @@
 import { eq } from 'drizzle-orm';
-import { nanoid } from 'nanoid';
 
 import { Tenant } from '../context.js';
 import { DbClient } from '../db/client.js';
 import { tenant, tenantUser } from '../schema/identity.js';
+import { pk } from '../util/code.js';
 
 
 export async function createTenantUser(db: DbClient, tenantId: string, userId: string) {
   const now = new Date();
 
   const newTenantUser = {
-    id: nanoid(),
+    id: pk(),
     userId,
     tenantId,
     createdAt: now,

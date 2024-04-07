@@ -1,8 +1,9 @@
 import type { User } from '../../contract/DbType.js';
 import type { AuthContext, AuthToken, UserInput } from '../../contract/Type.js';
-import { createToken, createUser } from '../../dal/userDAL.js';
+import { createToken, createUser, getUsersByTenant } from '../../dal/userDAL.js';
 import { createLocalLogin } from '../../dal/loginDAL.js';
 import { createTenantUser } from '../../dal/tenantDAL.js';
+import { isMember } from '../access.js';
 
 /**
  * Issue a new bearer token for the user.
@@ -34,4 +35,17 @@ export async function createNewUser(context: AuthContext, input: UserInput, pass
   });
 
   return user;
+}
+
+
+export async function getUsers(ctx: AuthContext, tenantId: string): Promise<User[]> {
+  const { access, db } = ctx;
+
+  if (!isMember(access, tenantId)) {
+    throw 'Not authorized';
+  }
+
+  const users = await getUsersByTenant(db, tenantId, { number: 1, size: 50 });
+
+  return users;
 }

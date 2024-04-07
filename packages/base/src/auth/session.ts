@@ -4,7 +4,6 @@ import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
 import type {
-  Access,
   AuthToken,
   ClientAppAccess,
   PublicAccess,
@@ -71,7 +70,7 @@ export function session(options: SessionOptions) {
 }
 
 async function handleTokenAuth(c: Context, db: DbClient, token: string) {
-  const apiKey = await findApiKeyByToken({ db }, token);
+  const apiKey = await findApiKeyByToken(db, token);
 
   c.set('session', clientAccess(apiKey));
 }

@@ -1,10 +1,10 @@
 import { eq, and } from 'drizzle-orm';
-import { nanoid } from 'nanoid';
 
 import { UserLocalLogin } from '../contract/DbType.js';
 import { DbClient } from '../db/client.js';
 import { Nil } from '../result.js';
 import { localLogin, providerLogin, userEmail } from '../schema/identity.js';
+import { pk } from '../util/code.js';
 import { hash } from '../util/hash.js';
 
 export async function changePassword(db: DbClient, userId: string, newPassword: string): Promise<Nil<boolean>> {
@@ -28,7 +28,7 @@ export async function createLocalLogin(db: DbClient, userId: string, username: s
   const [passwordHashed, hashFn] = await hash(password);
 
   const newLogin = {
-    id: nanoid(),
+    id: pk(),
     userId,
     username,
     password: passwordHashed,
@@ -45,7 +45,7 @@ export async function createLocalLogin(db: DbClient, userId: string, username: s
 
 export async function createSocialLogin(db: DbClient, userId: string, providerId: string, subjectId: string) {
   const newLogin = {
-    id: nanoid(),
+    id: pk(),
     userId,
     providerId,
     subjectId,

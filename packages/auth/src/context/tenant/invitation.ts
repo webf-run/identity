@@ -1,16 +1,21 @@
 import { eq } from 'drizzle-orm';
-import { nanoid } from 'nanoid';
 
 import { ONE_DAY_MS } from '../../constant.js';
 import { Invitation } from '../../contract/DbType.js';
 import type { AuthContext, NewInvitationInput } from '../../contract/Type.js';
 import { Nil } from '../../result.js';
 import * as schema from '../../schema/identity.js';
-import { inviteCode } from '../../util/code.js';
+import { inviteCode, pk } from '../../util/code.js';
+import { isMember } from '../access.js';
 
 
 export async function inviteUser(context: AuthContext, input: NewInvitationInput, tenantId: string): Promise<Nil<Invitation>> {
-  const { db } = context;
+  const { access, db } = context;
+
+  if (!isMember(access, tenantId)) {
+    throw new Error('Invalid access');
+  }
+
   const invitation = buildInvitation(input, tenantId);
 
   await db.insert(schema.invitation)
@@ -38,7 +43,7 @@ function buildInvitation(invitation: NewInvitationInput, tenantId: string): Invi
   const expiryAt = new Date(now.getTime() + duration);
 
   const newInvitation = {
-    id: nanoid(),
+    id: pk(),
     code: inviteCode(),
     firstName: invitation.firstName,
     lastName: invitation.lastName,
