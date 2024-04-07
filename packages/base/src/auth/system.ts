@@ -4,6 +4,7 @@ import { Hono, type MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
 import type { OAuth2Client } from '../oauth/client.js';
+import { claimAndAcceptInvitation } from './invitation.js';
 import { addOpenIDStrategy } from './oauth.js';
 import { addPasswordStrategy } from './password.js';
 import { getSessionInfo, session } from './session.js';
@@ -74,6 +75,8 @@ export async function makeAuth(options: AuthOptions): Promise<AuthSystem> {
     // Add password strategy to the auth app.
     await addPasswordStrategy(auth);
   }
+
+  await claimAndAcceptInvitation(auth);
 
   // Add session middleware to the app for every incoming request.
   app.use('*', session({ db }));
