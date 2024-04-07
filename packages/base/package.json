@@ -27,15 +27,15 @@
     "@webf/auth": "*"
   },
   "dependencies": {
-    "@hono/node-server": "^1.5.0",
+    "@hono/node-server": "^1.9.1",
     "@pothos/core": "^3.41.0",
     "graphql": "^16.8.1",
-    "hono": "^3.12.7",
-    "oauth4webapi": "^2.8.1",
+    "hono": "^3.12.12",
+    "oauth4webapi": "^2.10.4",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@webf/auth": "*"
+    "@webf/auth": "^0.3.0"
   },
   "volta": {
     "node": "20.11.0"

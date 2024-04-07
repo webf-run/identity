@@ -20,22 +20,20 @@
     "packages/auth",
     "packages/base"
   ],
-  "dependencies": {
-  },
   "devDependencies": {
     "@types/madge": "^5.0.3",
-    "@types/node": "^20.11.7",
-    "@typescript-eslint/eslint-plugin": "^6.19.1",
-    "@typescript-eslint/parser": "^6.19.1",
-    "dotenv": "^16.4.1",
-    "dotenv-cli": "^7.3.0",
-    "eslint": "^8.56.0",
+    "@types/node": "^20.12.5",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "dotenv": "^16.4.5",
+    "dotenv-cli": "^7.4.1",
+    "eslint": "^8.57.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
-    "glob": "^10.3.10",
+    "glob": "^10.3.12",
     "madge": "^6.1.0",
     "rimraf": "^5.0.5",
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.4"
   }
 }
