@@ -1,6 +1,6 @@
 {
   "name": "@webf/auth",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Multi-tenant IAM system",
   "type": "module",
   "exports": {
@@ -33,9 +33,9 @@
     "postgres": "^3.4.3"
   },
   "dependencies": {
-    "argon2": "^0.31.2",
+    "argon2": "^0.40.1",
     "crypto-random-string": "^5.0.0",
-    "drizzle-orm": "^0.29.5",
+    "drizzle-orm": "^0.30.8",
     "nanoid": "^5.0.4",
     "oauth4webapi": "^2.10.4",
     "zod": "^3.22.4"

@@ -10,7 +10,7 @@ export async function hash(entity: string): Promise<[string, string]> {
 
 export function verify(hash: string, original: string, algo: string): Promise<boolean> {
   if (algo === HASH_FN) {
-    return argon2.verify(hash, original, { type: argon2.argon2id });
+    return argon2.verify(hash, original);
   }
 
   throw 'Only argon2id hashing is supported';
