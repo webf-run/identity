@@ -1,5 +1,5 @@
 import SchemaBuilder from '@pothos/core';
-import type { NewInvitationInput, Tenant, User, AuthContext } from '@webf/auth/context';
+import type { NewInvitationInput, Tenant, User, AuthContext, Invitation, ResetPasswordRequest } from '@webf/auth/context';
 
 import type {
   NewTenantInput,
@@ -9,6 +9,8 @@ import type {
 export type GraphQLSchema = {
   Context: AuthContext;
   Objects: {
+    Invitation: Invitation;
+    ResetPasswordRequest: ResetPasswordRequest;
     // Identity Types
     NewTenantResponse: NewTenantResponse;
     User: User;

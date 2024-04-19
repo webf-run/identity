@@ -35,7 +35,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@webf/auth": "^0.3.0"
+    "@webf/auth": "^0.4.0"
   },
   "volta": {
     "node": "20.11.0"
