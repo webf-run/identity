@@ -28,9 +28,9 @@ export {
 } from './context/system/system.js';
 
 export {
+  acceptInvitation,
   claimInvitation,
   claimWithSocial,
-  acceptInvitation,
 } from './context/tenant/claim.js';
 
 export {

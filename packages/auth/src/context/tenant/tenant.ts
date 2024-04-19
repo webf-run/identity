@@ -1,10 +1,8 @@
-import { nanoid } from 'nanoid';
-
-import { ONE_DAY_MS } from '../../constant.js';
 import type { AuthContext, NewTenantInput, NewTenantResponse } from '../../contract/Type.js';
-import { inviteCode, pk } from '../../util/code.js';
-import * as schema from '../../schema/identity.js';
 import { isClient } from '../access.js';
+import { addTenant } from '../../dal/tenantDAL.js';
+import { addInvitation } from '../../dal/invitationDAL.js';
+import { buildInvitation } from './invite.js';
 
 /**
  * Creates a new tenant with an invitation. Uses transaction scope!
@@ -16,45 +14,21 @@ export async function createNewTenantWithInvite(context: AuthContext, payload: N
     throw new Error('Invalid access');
   }
 
-  const { invitation } = payload;
+  const result = await db.transaction(async (tx) => {
 
-  const tenantId = pk();
-  const now = new Date();
-  const duration = invitation.duration ?? 4 * ONE_DAY_MS;
-  const expiryAt = new Date(now.getTime() + duration);
+    const { invitation } = payload;
 
-  const newTenant = {
-    id: tenantId,
-    name: payload.name,
-    description: payload.description,
-    key: payload.key ?? nanoid(24),
-    createdAt: now,
-    updatedAt: now,
-  };
+    const newTenant = await addTenant(tx, payload);
 
-  const newInvitation = {
-    id: pk(),
-    code: inviteCode(),
-    firstName: invitation.firstName,
-    lastName: invitation.lastName,
-    email: invitation.email,
-    duration,
-    expiryAt,
-    tenantId,
-    createdAt: now,
-    updatedAt: now,
-  };
+    const newInvitation = buildInvitation(invitation, newTenant.id);
 
-  await db.transaction(async (tx) => {
-    await tx.insert(schema.tenant)
-      .values(newTenant);
+    await addInvitation(tx, newInvitation);
 
-    await tx.insert(schema.invitation)
-      .values(newInvitation);
+    return {
+      tenant: newTenant,
+      invitation: newInvitation,
+    };
   });
 
-  return {
-    tenant: newTenant,
-    invitation: newInvitation,
-  };
+  return result;
 }

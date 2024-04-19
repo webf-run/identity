@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { nanoid } from 'nanoid';
 
 import type { Tenant } from '../contract/DbType.js';
 import { Page } from '../contract/Utility.js';
@@ -6,6 +7,32 @@ import { DbClient } from '../db/client.js';
 import { tenant, tenantUser } from '../schema/identity.js';
 import { pk } from '../util/code.js';
 import type { Nil } from '../result.js';
+
+
+export type AddTenantInput = {
+  name: string;
+  description: string;
+  key?: string;
+};
+
+export async function addTenant(db: DbClient, input: AddTenantInput): Promise<Tenant> {
+  const tenantId = pk();
+  const now = new Date();
+
+  const newTenant = {
+    id: tenantId,
+    name: input.name,
+    description: input.description,
+    key: input.key ?? nanoid(24),
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  await db.insert(tenant)
+    .values(newTenant);
+
+  return newTenant;
+}
 
 
 export async function addTenantUser(db: DbClient, tenantId: string, userId: string) {
