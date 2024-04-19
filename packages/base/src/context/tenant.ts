@@ -1,7 +1,3 @@
-import { isClient, createNewTenantWithInvite, type Tenant, isUser, type AuthContext } from '@webf/auth/context';
-import { getTenantsForUser } from '@webf/auth/dal';
-
-
 export type NewTenantInput = {
   name: string;
   description: string;

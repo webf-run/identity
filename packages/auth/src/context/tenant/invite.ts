@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm';
 import { ONE_DAY_MS } from '../../constant.js';
 import { Invitation } from '../../contract/DbType.js';
 import type { AuthContext, NewInvitationInput } from '../../contract/Type.js';
+import { addInvitation } from '../../dal/invitationDAL.js';
 import { Nil } from '../../result.js';
 import * as schema from '../../schema/identity.js';
 import { inviteCode, pk } from '../../util/code.js';
@@ -18,14 +19,17 @@ export async function inviteUser(context: AuthContext, input: NewInvitationInput
 
   const invitation = buildInvitation(input, tenantId);
 
-  await db.insert(schema.invitation)
-    .values(invitation);
+  await addInvitation(db, invitation);
 
   return invitation;
 }
 
 export async function extendInvitationExpiry(context: AuthContext, invitation: Invitation): Promise<Nil<Invitation>> {
   const { db } = context;
+
+  if (!isMember(context.access, invitation.tenantId)) {
+    throw new Error('Invalid access');
+  }
 
   const results = await db.update(schema.invitation)
     .set({

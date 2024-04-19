@@ -39,17 +39,16 @@ export async function addPasswordStrategy(app: HonoAuthApp): Promise<void> {
     const context = c.var.authContext;
 
     // Check if the username and password exists in the database.
-    const result = await authenticate(context, parsed.data);
-
-    if (result.ok) {
-      const token = result.value;
+    try {
+      const token = await authenticate(context, parsed.data);
       await setSession(c, token);
-      c.status(200);
-    } else {
-      c.status(404);
-    }
 
-    return c.json(result.value);
+      c.status(200);
+      return c.json(token);
+    } catch (e) {
+      c.status(404);
+      return c.json({ value: e });
+    }
   });
 
   // Request a password reset
@@ -67,9 +66,9 @@ export async function addPasswordStrategy(app: HonoAuthApp): Promise<void> {
     const dto = parsed.data;
     const result = await forgotPassword(c.var.authContext, dto.username);
 
-    c.status(result.ok ? 200 : 404);
+    c.status(result ? 200 : 404);
 
-    return c.json({ value: result.value });
+    return c.json({ value: result });
   });
 
   app.get('/reset-password/:token', async (c) => {
@@ -95,8 +94,8 @@ export async function addPasswordStrategy(app: HonoAuthApp): Promise<void> {
     const dto = parsed.data;
     const result = await resetPassword(c.var.authContext, dto.token, dto.newPassword);
 
-    c.status(result.ok ? 200 : 404);
+    c.status(result ? 200 : 404);
 
-    return c.json({ value: result.value });
+    return c.json({ value: result });
   });
 }

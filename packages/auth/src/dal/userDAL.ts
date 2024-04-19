@@ -1,7 +1,8 @@
 import { eq, and } from 'drizzle-orm';
 
-import type { Page, User, UserToken } from '../contract/DbType.js';
+import type { User, UserToken } from '../contract/DbType.js';
 import type { UserInput, UserWithMembership } from '../contract/Type.js';
+import type { Page } from '../contract/Utility.js';
 import type { DbClient } from '../db/client.js';
 import type { Nil } from '../result.js';
 import { providerLogin, tenantUser, user, userEmail, userToken } from '../schema/identity.js';

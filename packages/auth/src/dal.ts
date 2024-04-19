@@ -1,9 +1,8 @@
 export {
-  findInvitationByCode,
   deleteInvitation,
+  findInvitationByCode,
   getInvitationById,
 } from './dal/invitationDAL.js';
-
 
 export {
   changePassword,
@@ -27,7 +26,8 @@ export {
   deleteToken,
 } from './dal/userDAL.js';
 
-
 export {
-  getTenantsForUser,
+  addTenantUser,
+  getTenants,
+  getUserTenants,
 } from './dal/tenantDAL.js';

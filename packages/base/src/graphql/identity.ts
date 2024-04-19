@@ -54,7 +54,8 @@ builder.queryFields((t) => ({
 
     async resolve(_parent, _args, context) {
       try {
-        const response = await getTenants(context);
+        const page = { number: 1, size: 50 };
+        const response = await getTenants(context, page);
 
         return response;
       } catch (error) {

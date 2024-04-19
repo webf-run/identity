@@ -109,9 +109,9 @@ async function addInitRoute(auth: HonoAuthApp, db: DbClient): Promise<void> {
       auth.post('/init', async function init(c) {
         const response = await initialize(db);
 
-        if (response.ok) {
+        if (response) {
           c.status(200);
-          return c.json(response.value);
+          return c.json(response);
         } else {
           c.status(404);
           return c.json({});

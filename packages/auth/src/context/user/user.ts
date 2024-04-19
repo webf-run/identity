@@ -2,7 +2,7 @@ import type { User } from '../../contract/DbType.js';
 import type { AuthContext, AuthToken, UserInput } from '../../contract/Type.js';
 import { createToken, createUser, getUsersByTenant } from '../../dal/userDAL.js';
 import { createLocalLogin } from '../../dal/loginDAL.js';
-import { createTenantUser } from '../../dal/tenantDAL.js';
+import { addTenantUser } from '../../dal/tenantDAL.js';
 import { isMember } from '../access.js';
 
 /**
@@ -29,7 +29,7 @@ export async function createNewUser(context: AuthContext, input: UserInput, pass
   const user = await db.transaction(async (tx) => {
     const user = await createUser(tx, input);
     const _login = await createLocalLogin(tx, user.id, input.email, password);
-    const _tenantUser = await createTenantUser(tx, input.tenantId, user.id);
+    const _tenantUser = await addTenantUser(tx, input.tenantId, user.id);
 
     return user;
   });
@@ -37,7 +37,9 @@ export async function createNewUser(context: AuthContext, input: UserInput, pass
   return user;
 }
 
-
+/**
+ * Get users in a given tenant.
+ */
 export async function getUsers(ctx: AuthContext, tenantId: string): Promise<User[]> {
   const { access, db } = ctx;
 

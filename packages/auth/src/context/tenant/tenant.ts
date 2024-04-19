@@ -1,12 +1,10 @@
 import { nanoid } from 'nanoid';
 
 import { ONE_DAY_MS } from '../../constant.js';
-import type { Tenant } from '../../contract/DbType.js';
 import type { AuthContext, NewTenantInput, NewTenantResponse } from '../../contract/Type.js';
-import { getTenantsForUser } from '../../dal/tenantDAL.js';
 import { inviteCode, pk } from '../../util/code.js';
 import * as schema from '../../schema/identity.js';
-import { isClient, isUser } from '../access.js';
+import { isClient } from '../access.js';
 
 /**
  * Creates a new tenant with an invitation. Uses transaction scope!
@@ -59,16 +57,4 @@ export async function createNewTenantWithInvite(context: AuthContext, payload: N
     tenant: newTenant,
     invitation: newInvitation,
   };
-}
-
-export async function getTenants(context: AuthContext): Promise<Tenant[]> {
-  const { access, db } = context;
-
-  if (!isUser(access)) {
-    throw 'Not authorized';
-  }
-
-  const tenants = await getTenantsForUser(db, access.user.id);
-
-  return tenants;
 }

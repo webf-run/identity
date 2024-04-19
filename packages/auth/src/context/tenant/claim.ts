@@ -3,15 +3,12 @@ import type { AuthContext, ExternalProfile } from '../../contract/Type.js';
 import { createEmail } from '../../dal/emailDAL.js';
 import { deleteInvitation, findInvitationByCode } from '../../dal/invitationDAL.js';
 import { createLocalLogin, createSocialLogin } from '../../dal/loginDAL.js';
-import { createTenantUser } from '../../dal/tenantDAL.js';
+import { addTenantUser } from '../../dal/tenantDAL.js';
 import { createUser, findUserByEmail, findUserBySocialId } from '../../dal/userDAL.js';
-import type { Nil } from '../../result.js';
-import { tenantUser } from '../../schema/identity.js';
-import { pk } from '../../util/code.js';
 import { isPublic, isUser } from '../access.js';
 
 
-export async function claimInvitation(ctx: AuthContext, code: string, password: string): Promise<Nil<User>> {
+export async function claimInvitation(ctx: AuthContext, code: string, password: string): Promise<User> {
   const { access, db } = ctx;
 
   if (!isPublic(access)) {
@@ -31,15 +28,16 @@ export async function claimInvitation(ctx: AuthContext, code: string, password: 
   }
 
   return await db.transaction(async (tx) => {
-    const user = await createUser(db, invitation);
+    const user = await createUser(tx, invitation);
 
-    await createEmail(db, user.id, invitation.email, true);
-    await createTenantUser(db, invitation.tenantId, user.id);
+    await createEmail(tx, user.id, invitation.email, true);
+    await addTenantUser(tx, invitation.tenantId, user.id);
 
     if (password) {
       const username = invitation.email;
-      await createLocalLogin(db, user.id, username, password);
+      await createLocalLogin(tx, user.id, username, password);
     }
+
     await deleteInvitation(tx, invitation.id);
 
     return user;
@@ -47,7 +45,7 @@ export async function claimInvitation(ctx: AuthContext, code: string, password: 
 }
 
 
-export async function claimWithSocial(ctx: AuthContext, inviteCode: string, profile: ExternalProfile): Promise<Nil<User>> {
+export async function claimWithSocial(ctx: AuthContext, inviteCode: string, profile: ExternalProfile): Promise<User> {
   const { db } = ctx;
   const invitation = await findInvitationByCode(db, inviteCode);
 
@@ -63,21 +61,21 @@ export async function claimWithSocial(ctx: AuthContext, inviteCode: string, prof
 
   const newUser = await db.transaction(async (tx) => {
     // Step 1: Create user
-    const user = await createUser(db, invitation);
+    const user = await createUser(tx, invitation);
 
     // Step 2: Add email
-    await createEmail(db, user.id, invitation.email, true);
+    await createEmail(tx, user.id, invitation.email, true);
 
     // If the claimed email is different from the invitation email, add the claimed email as well.
     if (profile.email !== invitation.email) {
-      await createEmail(db, user.id, profile.email, profile.emailVerified);
+      await createEmail(tx, user.id, profile.email, profile.emailVerified);
     }
 
     // Step 3: add user to the tenant.
-    await createTenantUser(db, invitation.tenantId, user.id);
+    await addTenantUser(tx, invitation.tenantId, user.id);
 
     // Step 4: Create social login
-    await createSocialLogin(db, user.id, profile.provider, profile.subjectId);
+    await createSocialLogin(tx, user.id, profile.provider, profile.subjectId);
 
     // Step 5: Delete invitation
     await deleteInvitation(tx, invitation.id);
@@ -88,7 +86,7 @@ export async function claimWithSocial(ctx: AuthContext, inviteCode: string, prof
   return newUser;
 }
 
-export async function acceptInvitation(ctx: AuthContext, code: string) {
+export async function acceptInvitation(ctx: AuthContext, code: string): Promise<boolean> {
   const { access, db } = ctx;
 
   if (!isUser(access)) {
@@ -102,19 +100,12 @@ export async function acceptInvitation(ctx: AuthContext, code: string) {
     throw 'Invitation not found';
   }
 
-  const now = new Date();
   const tenantId = invitation.tenantId;
 
   await db.transaction(async (tx) => {
-    await tx.insert(tenantUser)
-      .values({
-        id: pk(),
-        userId,
-        tenantId,
-        createdAt: now,
-        updatedAt: now,
-      });
-
+    await addTenantUser(tx, tenantId, userId);
     await deleteInvitation(tx, invitation.id);
   });
+
+  return true;
 }

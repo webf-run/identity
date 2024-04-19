@@ -1,6 +1,7 @@
 export * from './contract/Access.js';
 export * from './contract/DbType.js';
 export * from './contract/Type.js';
+export * from './contract/Utility.js';
 
 export {
   isClient,
@@ -33,13 +34,21 @@ export {
 } from './context/tenant/claim.js';
 
 export {
+  deleteTenant,
+} from './context/tenant/deleteTenant.js';
+
+export {
   inviteUser,
   extendInvitationExpiry,
-} from './context/tenant/invitation.js';
+} from './context/tenant/invite.js';
+
+export {
+  getTenants,
+  getUserTenants,
+} from './context/tenant/list.js';
 
 export {
   createNewTenantWithInvite,
-  getTenants,
 } from './context/tenant/tenant.js';
 
 export {

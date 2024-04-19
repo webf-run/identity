@@ -12,12 +12,11 @@ import {
   findResetPasswordRequestByEmail
 } from '../../dal/resetDAL.js';
 import { deleteToken } from '../../dal/userDAL.js';
-import { AsyncResult, err, ok, type Nil } from '../../result.js';
 import { verify } from '../../util/hash.js';
 import { createBearerToken } from './user.js';
 
 
-export async function authenticate(ctx: AuthContext, input: Credentials): AsyncResult<AuthToken> {
+export async function authenticate(ctx: AuthContext, input: Credentials): Promise<AuthToken> {
   const { db } = ctx;
   const { password } = input;
 
@@ -27,35 +26,31 @@ export async function authenticate(ctx: AuthContext, input: Credentials): AsyncR
 
   // User with given email not found.
   if (!login) {
-    return err('INVALID_CREDENTIALS', 'Invalid user credentials');
+    throw 'Invalid user credentials';
   }
 
   const verified = await verify(login.password, password, login.hashFn);
 
   // User with given email found but no password match.
   if (!verified) {
-    return err('INVALID_CREDENTIALS', 'Invalid user credentials');
+    throw 'Invalid user credentials';
   }
 
   // Generate a token for the user.
   const token = await createBearerToken(ctx, login.userId);
 
-  if (token) {
-    return ok(token);
-  } else {
-    return err('INTERNAL_ERROR', 'Internal error');
-  }
+  return token;
 }
 
 
-export async function forgotPassword(ctx: AuthContext, username: string): AsyncResult<boolean> {
+export async function forgotPassword(ctx: AuthContext, username: string): Promise<boolean> {
   const { db } = ctx;
 
   const userFound = await findResetPasswordRequestByEmail(db, username);
 
   // If no user is found, then return true.
   if (!userFound) {
-    return ok(true);
+    return true;
   }
 
   if (userFound.count === 0) {
@@ -64,7 +59,7 @@ export async function forgotPassword(ctx: AuthContext, username: string): AsyncR
 
   // TODO: Send the email again
 
-  return ok(true);
+  return true;
 }
 
 
@@ -83,7 +78,7 @@ export async function getResetTokenInfo(ctx: AuthContext, token: string): Promis
   return resetRequest;
 }
 
-export async function resetPassword(ctx: AuthContext, token: string, newPassword: string): AsyncResult<boolean> {
+export async function resetPassword(ctx: AuthContext, token: string, newPassword: string): Promise<boolean> {
   const { db } = ctx;
 
   // Token is valid for 30 minutes only
@@ -92,7 +87,7 @@ export async function resetPassword(ctx: AuthContext, token: string, newPassword
   const resetRequest = await findResetPasswordRequestByCode(db, token, validTime);
 
   if (!resetRequest) {
-    return err('INVALID_CREDENTIALS', 'Invalid reset request');
+    throw 'Invalid reset request';
   }
 
   try {
@@ -102,9 +97,10 @@ export async function resetPassword(ctx: AuthContext, token: string, newPassword
     });
   } catch (err) {
     // Transaction has failed.
+    return false;
   }
 
-  return ok(true);
+  return true;
 }
 
 
