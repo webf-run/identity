@@ -1,4 +1,4 @@
-import { acceptInvitation, claimInvitation, inviteUser, getUsers, createNewTenantWithInvite, getTenants } from '@webf/auth/context';
+import { acceptInvitation, claimInvitation, inviteUser, getUsers, createNewTenantWithInvite, getTenants, getInvitationInfo, getResetTokenInfo, resetPassword, forgotPassword } from '@webf/auth/context';
 
 import { builder } from './builder.js';
 
@@ -35,6 +35,21 @@ builder.objectType('Tenant', {
     id: t.exposeID('id'),
     name: t.exposeString('name'),
     description: t.exposeString('description'),
+  }),
+});
+
+builder.objectType('Invitation', {
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    firstName: t.exposeString('firstName'),
+    lastName: t.exposeString('lastName'),
+  }),
+});
+
+builder.objectType('ResetPasswordRequest', {
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    userId: t.exposeID('userId')
   }),
 });
 
@@ -84,6 +99,49 @@ builder.queryFields((t) => ({
       } catch (error) {
         console.log(error);
         throw error;
+      }
+    },
+  }),
+
+  getInvitationInfo: t.field({
+    type: 'Invitation',
+    
+    args: {
+      invitationCode: t.arg({type: 'String', required: true}),
+    },
+    async resolve(_parent, args, context) {
+      try {
+        const response = await getInvitationInfo(context, args.invitationCode);
+
+        if(response){
+          return response;
+        }
+        throw 'Not found'
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+  }),
+
+  getResetTokenInfo: t.field({
+    type: 'ResetPasswordRequest',
+
+    args: {
+      resetToken: t.arg({type: 'String', required: true}),
+    },
+    async resolve(_parent, args, context) {
+      try {
+        const response = await getResetTokenInfo(context, args.resetToken)
+
+        if(response){
+          return response;
+        }
+        throw 'Not found'
+      } catch (error) {
+        console.log(error);
+        throw error;
+        
       }
     },
   }),
@@ -176,4 +234,43 @@ builder.mutationFields((t) => ({
       }
     },
   }),
+
+  resetPassword: t.field({
+    type: 'Boolean',
+    args: {
+      resetToken: t.arg({type: 'String', required: true}),
+      newPassword: t.arg({type: 'String', required: true}),
+    },
+    async resolve(_parent, args, context) {
+      try {
+        const response = await resetPassword(context, args.resetToken, args.newPassword);
+
+        if(response.ok)
+            return true;
+        throw 'Failed to reset password!'
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+  }),
+
+  forgotPassword: t.field({
+    type: 'Boolean',
+    args: {
+      userName: t.arg({type: 'String', required: true}),
+    },
+    async resolve(_parent, args, context) {
+      try {
+        const response = await forgotPassword(context, args.userName);
+
+        if(response.ok)
+          return true;
+        throw 'Failed to forget password!'
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    }
+  })
 }));

@@ -41,6 +41,7 @@ export {
 export {
   inviteUser,
   extendInvitationExpiry,
+  getInvitationInfo,
 } from './context/tenant/invite.js';
 
 export {
