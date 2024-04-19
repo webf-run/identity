@@ -1,7 +1,7 @@
 import { sql } from 'drizzle-orm';
 
 import type { InitResponse } from '../../contract/Type.js';
-import { generateApiKey } from '../../dal/apiKey.js';
+import { generateApiKey } from '../../dal/apiKeyDAL.js';
 import type { DbClient } from '../../db/client.js';
 import type { Nil } from '../../result.js';
 import { apiKey } from '../../schema/identity.js';

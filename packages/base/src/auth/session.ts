@@ -4,17 +4,14 @@ import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
 import type {
+  Access,
   AuthToken,
-  ClientAppAccess,
-  PublicAccess,
-  UserAccess,
-  UserWithMembership
-} from '@webf/auth/context';
-import { findApiKeyByToken } from '@webf/auth/context';
-import { findUserByToken } from '@webf/auth/dal';
+  PublicAccess} from '@webf/auth/context';
+import { findAccess } from '@webf/auth/context';
 import type { DbClient } from '@webf/auth/db';
 
 import type { HonoAuthContext } from './type.js';
+import type { Nil } from '@webf/auth/result';
 
 export const SESSION_COOKIE = 'webf_session';
 
@@ -48,54 +45,33 @@ export function session(options: SessionOptions) {
     const authHeader = c.req.header('Authorization');
     const sessionCookie = getCookie(c, SESSION_COOKIE);
 
+    let access: Nil<Access> = null;
+
     if (authHeader) {
       const [type, token] = authHeader.split(' ');
-
-      if (type.toLowerCase() === 'Bearer'.toLowerCase()) {
-        await handleBearerToken(c, db, token);
-      } else if (type === 'ApiKey') {
-        await handleTokenAuth(c, db, token);
-      } else {
-        throw unauthorized();
-      }
+      access = await findAccess(db, token, type);
     } else if (sessionCookie) {
-      await handleBearerToken(c, db, sessionCookie);
+      access = await findAccess(db, sessionCookie, 'Bearer');
     } else {
-      c.set('session', publicAccess());
+      access = publicAccess();
     }
+
+    // TODO: Better error handling here.
+    if (!access) {
+      throw unauthorized();
+    }
+
+    c.set('access', access);
 
     // Continue to next middleware/handler.
     await next();
   });
 }
 
-async function handleTokenAuth(c: Context, db: DbClient, token: string) {
-  const apiKey = await findApiKeyByToken(db, token);
-
-  c.set('session', clientAccess(apiKey));
-}
-
-async function handleBearerToken(c: Context, db: DbClient, token: string) {
-  const user = await findUserByToken(db, token);
-
-  if (!user) {
-    throw unauthorized();
-  }
-
-  c.set('session', userAccess(user));
-}
-
-function userAccess(user: UserWithMembership): UserAccess {
-  return { type: 'user', user };
-}
-
 function publicAccess(): PublicAccess {
   return { type: 'public' };
 }
 
-function clientAccess(key: ClientAppAccess['key']): ClientAppAccess {
-  return { type: 'client', key };
-}
 
 function unauthorized() {
   return new HTTPException(401, {

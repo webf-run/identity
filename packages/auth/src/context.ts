@@ -8,6 +8,7 @@ export {
   isPublic,
   isUser,
   isMember,
+  findAccess,
 } from './context/access.js';
 
 export {
@@ -19,7 +20,6 @@ export {
 
 export {
   createNewApiKey,
-  findApiKeyByToken,
 } from './context/system/apiKey.js';
 
 export {
@@ -35,7 +35,8 @@ export {
 
 export {
   deleteTenant,
-} from './context/tenant/deleteTenant.js';
+  deleteInvitation,
+} from './context/tenant/delete.js';
 
 export {
   inviteUser,
