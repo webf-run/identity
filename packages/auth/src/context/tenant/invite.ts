@@ -35,11 +35,7 @@ export async function extendInvitationExpiry(context: AuthContext, invitation: I
 }
 
 export async function getInvitationInfo(context: AuthContext, invitationCode: string): Promise<Nil<Invitation>> {
-  const { access, db } = context;
-
-  if (isPublic(access)) {
-    throw new Error('Invalid access');
-  }
+  const { db } = context;
 
   const response = await findInvitationByCode(db, invitationCode);
 

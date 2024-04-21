@@ -1,9 +1,16 @@
 import SchemaBuilder from '@pothos/core';
-import type { NewInvitationInput, Tenant, User, AuthContext, Invitation, ResetPasswordRequest } from '@webf/auth/context';
+import type {
+  AuthContext,
+  Invitation,
+  NewInvitationInput,
+  ResetPasswordRequest,
+  Tenant,
+  User,
+} from '@webf/auth/context';
 
 import type {
   NewTenantInput,
-  NewTenantResponse
+  NewTenantResponse,
 } from '../context/tenant.js';
 
 export type GraphQLSchema = {

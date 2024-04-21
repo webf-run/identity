@@ -1,4 +1,15 @@
-import { acceptInvitation, claimInvitation, inviteUser, getUsers, createNewTenantWithInvite, getTenants, getInvitationInfo, getResetTokenInfo, resetPassword, forgotPassword } from '@webf/auth/context';
+import {
+  acceptInvitation,
+  claimInvitation,
+  createNewTenantWithInvite,
+  forgotPassword,
+  getInvitationInfo,
+  getResetTokenInfo,
+  getTenants,
+  getUsers,
+  inviteUser,
+  resetPassword,
+} from '@webf/auth/context';
 
 import { builder } from './builder.js';
 
@@ -49,7 +60,7 @@ builder.objectType('Invitation', {
 builder.objectType('ResetPasswordRequest', {
   fields: (t) => ({
     id: t.exposeID('id'),
-    userId: t.exposeID('userId')
+    userId: t.exposeID('userId'),
   }),
 });
 
@@ -105,7 +116,7 @@ builder.queryFields((t) => ({
 
   getInvitationInfo: t.field({
     type: 'Invitation',
-    
+
     args: {
       invitationCode: t.arg({type: 'String', required: true}),
     },
@@ -128,20 +139,20 @@ builder.queryFields((t) => ({
     type: 'ResetPasswordRequest',
 
     args: {
-      resetToken: t.arg({type: 'String', required: true}),
+      resetToken: t.arg({ type: 'String', required: true }),
     },
     async resolve(_parent, args, context) {
       try {
-        const response = await getResetTokenInfo(context, args.resetToken)
+        const response = await getResetTokenInfo(context, args.resetToken);
 
-        if(response){
+        if (response) {
           return response;
         }
         throw 'Not found'
       } catch (error) {
-        console.log(error);
+        console.error(error);
+
         throw error;
-        
       }
     },
   }),
@@ -238,8 +249,8 @@ builder.mutationFields((t) => ({
   resetPassword: t.field({
     type: 'Boolean',
     args: {
-      resetToken: t.arg({type: 'String', required: true}),
-      newPassword: t.arg({type: 'String', required: true}),
+      resetToken: t.arg({ type: 'String', required: true }),
+      newPassword: t.arg({ type: 'String', required: true }),
     },
     async resolve(_parent, args, context) {
       try {
@@ -247,7 +258,8 @@ builder.mutationFields((t) => ({
 
         return response;
       } catch (error) {
-        console.log(error);
+        console.error(error);
+
         throw error;
       }
     },
@@ -268,5 +280,5 @@ builder.mutationFields((t) => ({
         throw error;
       }
     }
-  })
+  }),
 }));
