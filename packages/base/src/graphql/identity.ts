@@ -245,9 +245,7 @@ builder.mutationFields((t) => ({
       try {
         const response = await resetPassword(context, args.resetToken, args.newPassword);
 
-        if(response.ok)
-            return true;
-        throw 'Failed to reset password!'
+        return response;
       } catch (error) {
         console.log(error);
         throw error;
@@ -264,9 +262,7 @@ builder.mutationFields((t) => ({
       try {
         const response = await forgotPassword(context, args.userName);
 
-        if(response.ok)
-          return true;
-        throw 'Failed to forget password!'
+        return response;
       } catch (error) {
         console.log(error);
         throw error;
