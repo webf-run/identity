@@ -1,10 +1,10 @@
 import { ONE_DAY_MS } from '../../constant.js';
 import { Invitation } from '../../contract/DbType.js';
 import type { AuthContext, NewInvitationInput } from '../../contract/Type.js';
-import { addInvitation, changeExpiry } from '../../dal/invitationDAL.js';
+import { addInvitation, changeExpiry, findInvitationByCode } from '../../dal/invitationDAL.js';
 import { Nil } from '../../result.js';
 import { inviteCode, pk } from '../../util/code.js';
-import { isMember } from '../access.js';
+import { isMember, isPublic } from '../access.js';
 
 
 export async function inviteUser(context: AuthContext, input: NewInvitationInput, tenantId: string): Promise<Nil<Invitation>> {
@@ -32,6 +32,14 @@ export async function extendInvitationExpiry(context: AuthContext, invitation: I
   const result = await changeExpiry(db, invitation.id, newExpiry);
 
   return result;
+}
+
+export async function getInvitationInfo(context: AuthContext, invitationCode: string): Promise<Nil<Invitation>> {
+  const { db } = context;
+
+  const response = await findInvitationByCode(db, invitationCode);
+
+  return response;
 }
 
 export function buildInvitation(invitation: NewInvitationInput, tenantId: string): Invitation {
