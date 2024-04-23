@@ -54,6 +54,7 @@ builder.objectType('Invitation', {
     id: t.exposeID('id'),
     firstName: t.exposeString('firstName'),
     lastName: t.exposeString('lastName'),
+    email: t.exposeString('email'),
   }),
 });
 
@@ -114,7 +115,7 @@ builder.queryFields((t) => ({
     },
   }),
 
-  getInvitationInfo: t.field({
+  getInvitation: t.field({
     type: 'Invitation',
 
     args: {
@@ -135,7 +136,7 @@ builder.queryFields((t) => ({
     },
   }),
 
-  getResetTokenInfo: t.field({
+  getResetToken: t.field({
     type: 'ResetPasswordRequest',
 
     args: {
