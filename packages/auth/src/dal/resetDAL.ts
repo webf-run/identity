@@ -48,9 +48,8 @@ export async function findResetPasswordRequestByCode(db: DbClient, code: string,
   return result.at(0);
 }
 
-export async function deleteResetPasswordRequest(db: DbClient, code: string): Promise<void> {
+export async function deleteResetPasswordRequest(db: DbClient, id: string): Promise<void> {
   await db
     .delete(resetPasswordRequest)
-    .where(eq(resetPasswordRequest.code, code))
-    .execute();
+    .where(eq(resetPasswordRequest.id, id));
 }
