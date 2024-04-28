@@ -33,7 +33,7 @@ cp ./.env.backup .env.test
 # Create a database and run migrations
 npm run test:db:setup
 
-# Run tests
+# Run all tests
 npm run test
 
 # Cleanup DB

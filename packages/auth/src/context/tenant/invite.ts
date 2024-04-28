@@ -4,7 +4,7 @@ import type { AuthContext, NewInvitationInput } from '../../contract/Type.js';
 import { addInvitation, changeExpiry, findInvitationByCode } from '../../dal/invitationDAL.js';
 import { Nil } from '../../result.js';
 import { inviteCode, pk } from '../../util/code.js';
-import { isMember, isPublic } from '../access.js';
+import { isMember } from '../access.js';
 
 
 export async function inviteUser(context: AuthContext, input: NewInvitationInput, tenantId: string): Promise<Nil<Invitation>> {

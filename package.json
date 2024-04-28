@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "dev:pack": "tsx ./scripts/pack.ts",
+    "test:auth": "npm run test -w packages/auth",
     "test:db:setup": "npm run test:db:setup -w packages/auth",
     "test:db:teardown": "npm run test:db:teardown -w packages/auth"
   },
@@ -15,9 +16,6 @@
   },
   "license": "SEE LICENSE IN LICENSE",
   "keywords": [],
-  "volta": {
-    "node": "20.11.0"
-  },
   "workspaces": [
     "packages/auth",
     "packages/base"
@@ -35,10 +33,13 @@
     "glob": "^10.3.12",
     "madge": "^7.0.0",
     "rimraf": "^5.0.5",
-    "tsx": "^4.7.2",
+    "tsx": "^4.7.3",
     "typescript": "^5.4.5"
   },
   "dependencies": {
     "zod": "^3.23.4"
+  },
+  "volta": {
+    "node": "22.0.0"
   }
 }

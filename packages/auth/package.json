@@ -20,7 +20,8 @@
     "build": "tsc -p ./tsconfig.build.json",
     "lint": "eslint ./src",
     "generate": "drizzle-kit generate:pg",
-    "test": "NODE_OPTIONS='--import tsx' node --test",
+    "test:legacy": "NODE_OPTIONS='--import tsx' node --test",
+    "test": "dotenvx run -f .env.test -- tsx --test 'test/**/*.spec.ts'",
     "test:db:setup": "dotenvx run -f .env.test -- tsx ./test/helper/dbSetup.ts --clean",
     "test:db:teardown": "dotenvx run -f .env.test -- tsx ./test/helper/dbCleanup.ts"
   },
@@ -36,16 +37,16 @@
   "dependencies": {
     "argon2": "^0.40.1",
     "crypto-random-string": "^5.0.0",
-    "drizzle-orm": "^0.30.8",
+    "drizzle-orm": "0.30.8",
     "nanoid": "^5.0.4",
     "oauth4webapi": "^2.10.4",
-    "zod": "^3.22.4"
+    "zod": "^3.23.4"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.20.14",
+    "drizzle-kit": "0.20.14",
     "postgres": "^3.4.4"
   },
   "volta": {
-    "node": "20.11.0"
+    "node": "22.0.0"
   }
 }

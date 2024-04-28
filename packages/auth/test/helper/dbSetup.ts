@@ -33,7 +33,7 @@ export async function run() {
 
     const newEnv = {
       ...dbEnv,
-      API_KEY: key.apiKey,
+      WEBF_API_KEY: key.apiKey,
     };
 
     let envStr = '';

@@ -1,10 +1,15 @@
 import postgres from 'postgres';
+import { z } from 'zod';
 
 import type { Access, AuthContext } from '../../src/context.js';
 import {  createToken, findUserByToken } from '../../src/dal.js';
 import { init, type DbClient } from '../../src/db/client.js';
-import { parseEnv } from './dbEnv.js';
 import { findApiKeyByToken } from '../../src/dal/apiKeyDAL.js';
+import { parseEnv } from './dbEnv.js';
+
+const apiKeyDecoder = z.object({
+  WEBF_API_KEY: z.string(),
+});
 
 export type Connection = {
   db: DbClient;
@@ -31,7 +36,6 @@ export function getDb(): Connection {
 }
 
 export function getContext(db: DbClient, access: Access): AuthContext {
-
   return { db, access };
 }
 
@@ -56,9 +60,9 @@ export async function getUserAccess(db: DbClient, userId: string): Promise<Acces
   return access;
 }
 
-export async function getClientAccess(db: DbClient, token: string): Promise<Access> {
-
-  const key = await findApiKeyByToken(db, token);
+export async function getClientAccess(db: DbClient): Promise<Access> {
+  const env = apiKeyDecoder.parse(process.env);
+  const key = await findApiKeyByToken(db, env.WEBF_API_KEY);
 
   const access: Access = {
     type: 'client',
