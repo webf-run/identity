@@ -16,12 +16,13 @@
   "scripts": {
     "check:types": "tsc",
     "check:cycles": "tsx ./scripts/cycles.ts",
-    "dev": "dotenv -- tsx ./src/main.ts",
     "prebuild": "rimraf ./dist",
     "build": "tsc -p ./tsconfig.build.json",
     "lint": "eslint ./src",
     "generate": "drizzle-kit generate:pg",
-    "test": "NODE_OPTIONS='--import tsx' node --test"
+    "test": "NODE_OPTIONS='--import tsx' node --test",
+    "test:db:setup": "dotenvx run -f .env.test -- tsx ./test/helper/dbSetup.ts --clean",
+    "test:db:teardown": "dotenvx run -f .env.test -- tsx ./test/helper/dbCleanup.ts"
   },
   "repository": {
     "type": "git",

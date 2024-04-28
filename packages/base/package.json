@@ -10,7 +10,6 @@
   "scripts": {
     "check:types": "tsc",
     "check:cycles": "tsx ./scripts/cycles.ts",
-    "dev": "dotenv -- tsx ./src/main.ts",
     "prebuild": "rimraf ./dist",
     "build": "tsc -p ./tsconfig.build.json",
     "lint": "eslint ./src",
