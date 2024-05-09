@@ -1,22 +1,15 @@
 import assert, { rejects } from 'node:assert';
 import { after, describe, it } from 'node:test';
 
-import { createNewTenantWithInvite, type NewTenantInput } from '../src/context.js';
+import { createNewTenantWithInvite } from '../src/context.js';
 import { getClientAccess, getContext, getDb, getPublicAccess } from './helper/context.js';
+import { createRandomTenant } from './helper/newTenant.js';
 
 const { db, end } = getDb();
 
 
 describe('New Tenant Creation', () => {
-  const input: NewTenantInput = {
-    name: 'Test Tenant',
-    description: 'Test Tenant Description',
-    invitation: {
-      firstName: 'Test',
-      lastName: 'User',
-      email: 'test@webf.run',
-    },
-  };
+  const input = new Array(1).fill(0).map(createRandomTenant)[0];
 
   it('should not create a new teant for `PublicAccess`', async () => {
     // Setup Data
