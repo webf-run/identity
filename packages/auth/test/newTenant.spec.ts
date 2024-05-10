@@ -9,22 +9,23 @@ const { db, end } = getDb();
 
 
 describe('New Tenant Creation', () => {
-  const input = new Array(1).fill(0).map(createRandomTenant)[0];
-
+  
   it('should not create a new teant for `PublicAccess`', async () => {
     // Setup Data
+    const input = createRandomTenant();
     const access = getPublicAccess();
     const context = getContext(db, access);
-
+    
     // SUT - System Under Test
     const response = createNewTenantWithInvite(context, input);
-
+    
     // Verify - Result
     await rejects(response);
   });
-
+  
   it('should create a new tenant for `ClientAccess`', async () => {
     // Setup Data
+    const input = createRandomTenant();
     const access = await getClientAccess(db);
     const context = getContext(db, access);
 

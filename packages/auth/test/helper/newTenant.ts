@@ -5,7 +5,8 @@ export function createRandomTenant(): NewTenantInput {
   const firstName = faker.person.firstName();
   const lastName = faker.person.lastName();
   const description = faker.person.bio();
-  const email = faker.internet.email({firstName: firstName, lastName: lastName});
+  const email = faker.internet.email({ firstName, lastName });
+  
   return {
     name: `${firstName} ${lastName}`,
     description: description,
@@ -13,6 +14,6 @@ export function createRandomTenant(): NewTenantInput {
       firstName: firstName,
       lastName: lastName,
       email: email,
-    }
-  }
+    },
+  };
 }

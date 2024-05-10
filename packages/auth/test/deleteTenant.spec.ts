@@ -8,7 +8,7 @@ import { createRandomTenant } from './helper/newTenant.js';
 const { db, end } = getDb();
 
 describe('Delete Tenant', () => {
-  const input = new Array(1).fill(0).map(createRandomTenant)[0];
+  const input = createRandomTenant();
 
   it('should not delete tenant for `PublicAccess`', async () => {
     // Setup Data
