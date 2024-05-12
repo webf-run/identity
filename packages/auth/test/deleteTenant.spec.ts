@@ -8,18 +8,18 @@ import { createRandomTenant } from './helper/newTenant.js';
 const { db, end } = getDb();
 
 describe('Delete Tenant', () => {
-  const input = createRandomTenant();
 
   it('should not delete tenant for `PublicAccess`', async () => {
     // Setup Data
+    const input = createRandomTenant();
     const access = await getClientAccess(db);
     const context = getContext(db, access);
     const tenantResponse = await createNewTenantWithInvite(context, input);
     const publicAccess = getPublicAccess();
     const publicContext = getContext(db, publicAccess);
 
-  // SUT - System Under Test
-  const response = deleteTenant(publicContext, tenantResponse.tenant.id);
+    // SUT - System Under Test
+    const response = deleteTenant(publicContext, tenantResponse.tenant.id);
 
     // Verify - Result
     await rejects(response);
@@ -27,6 +27,7 @@ describe('Delete Tenant', () => {
 
   it('should delete tenant for `ClientAccess`', async () => {
     // Setup Data
+    const input = createRandomTenant();
     const clientAccess = await getClientAccess(db);
     const clientContext = getContext(db, clientAccess);
     const tenantResponse = await createNewTenantWithInvite(clientContext, input);
@@ -38,6 +39,6 @@ describe('Delete Tenant', () => {
     assert(response, 'Tenant ID is missing');
   });
 
-})
+});
 
 after(end);

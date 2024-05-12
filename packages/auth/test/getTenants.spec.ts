@@ -8,7 +8,7 @@ import { createRandomTenant } from './helper/newTenant.js';
 const { db, end } = getDb();
 
 describe('Get Tenants', () => {
-  
+
   it('should not get tenant for `PublicAccess`', async () => {
     // Setup Data
     const input = createRandomTenant();
@@ -17,20 +17,20 @@ describe('Get Tenants', () => {
     const tenantResponse = await createNewTenantWithInvite(context, input);
     const publicAccess = getPublicAccess();
     const publicContext = getContext(db, publicAccess);
-    
+
     // SUT - System Under Test
     const response = getTenants(publicContext, {number: 1, size:1});
-    
+
     // Verify - Result
     await rejects(response);
   });
-  
-  it('should get tenant for `ClientAccess`', async () => {
+
+  it('should get all tenants for `ClientAccess`', async () => {
     // Setup Data
     const input = createRandomTenant();
     const clientAccess = await getClientAccess(db);
     const clientContext = getContext(db, clientAccess);
-    const tenantResponse = await createNewTenantWithInvite(clientContext, input);
+    const _response = await createNewTenantWithInvite(clientContext, input);
 
     // SUT - System Under Test
     const response = await getTenants(clientContext, {number: 1, size:1});
@@ -38,6 +38,6 @@ describe('Get Tenants', () => {
     // Verify - Result
     assert(response, 'Tenant ID is missing');
   });
-})
+});
 
 after(end);
