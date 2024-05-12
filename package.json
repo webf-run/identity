@@ -19,7 +19,7 @@
   "keywords": [],
   "workspaces": [
     "packages/auth",
-    "packages/base"
+    "packages/hono"
   ],
   "devDependencies": {
     "@dotenvx/dotenvx": "^0.38.0",

@@ -1,6 +1,6 @@
 {
-  "name": "@webf/base",
-  "version": "0.10.0",
+  "name": "@webf/hono-auth",
+  "version": "0.11.0",
   "description": "Base system for building APIs",
   "type": "module",
   "exports": {
