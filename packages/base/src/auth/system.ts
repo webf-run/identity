@@ -1,9 +1,9 @@
 import { hasAppInitialized, initialize, type Access } from '@webf/auth/context';
 import { init, DbClient, type DbOptions } from '@webf/auth/db';
+import type { OAuth2Client } from '@webf/auth/util/OAuth2Client';
 import { Hono } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
-import type { OAuth2Client } from '../oauth/client.js';
 import { claimAndAcceptInvitation } from './invitation.js';
 import { addOpenIDStrategy } from './oauth.js';
 import { addPasswordStrategy } from './password.js';

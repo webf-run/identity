@@ -1,6 +1,6 @@
 import { isUser, processOAuthAuthorization, OAuthState } from '@webf/auth/context';
+import type { OAuth2Client } from '@webf/auth/util/OAuth2Client';
 
-import type { OAuth2Client } from '../oauth/client.js';
 import { setSession } from './session.js';
 import type { HonoAuthApp, OAuthCallbacks } from './type.js';
 

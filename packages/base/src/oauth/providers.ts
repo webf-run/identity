@@ -1,4 +1,4 @@
-import { OAuth2Client, OAuth2Options } from './client.js';
+import { OAuth2Client, OAuth2Options } from '@webf/auth/util/OAuth2Client';
 
 export const GOOGLE= 'google' as const;
 export const ZOHO= 'zoho' as const;

@@ -4,6 +4,7 @@
   "description": "IAM system built on top of Postgres",
   "type": "module",
   "scripts": {
+    "check:types": "npm run check:types --workspaces",
     "build": "npm run build --workspaces",
     "dev:pack": "tsx ./scripts/pack.ts",
     "test:auth": "npm run test -w packages/auth",
