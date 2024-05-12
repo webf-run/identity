@@ -1,10 +1,8 @@
 {
-  "id": "1cb1f60a-3c6e-4927-ac4f-98a999134e98",
-  "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "5",
-  "dialect": "pg",
+  "version": "6",
+  "dialect": "postgresql",
   "tables": {
-    "api_key": {
+    "public.api_key": {
       "name": "api_key",
       "schema": "",
       "columns": {
@@ -56,7 +54,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "invitation": {
+    "public.invitation": {
       "name": "invitation",
       "schema": "",
       "columns": {
@@ -126,29 +124,29 @@
         "invitation_tenant_id_tenant_id_fk": {
           "name": "invitation_tenant_id_tenant_id_fk",
           "tableFrom": "invitation",
-          "tableTo": "tenant",
           "columnsFrom": [
             "tenant_id"
           ],
+          "tableTo": "tenant",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "invitation_code_unique": {
           "name": "invitation_code_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "code"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "local_login": {
+    "public.local_login": {
       "name": "local_login",
       "schema": "",
       "columns": {
@@ -194,29 +192,29 @@
         "local_login_user_id_app_user_id_fk": {
           "name": "local_login_user_id_app_user_id_fk",
           "tableFrom": "local_login",
-          "tableTo": "app_user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "app_user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "local_login_username_unique": {
           "name": "local_login_username_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "username"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "login_attempt": {
+    "public.login_attempt": {
       "name": "login_attempt",
       "schema": "",
       "columns": {
@@ -244,21 +242,21 @@
         "login_attempt_user_id_app_user_id_fk": {
           "name": "login_attempt_user_id_app_user_id_fk",
           "tableFrom": "login_attempt",
-          "tableTo": "app_user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "app_user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "provider_login": {
+    "public.provider_login": {
       "name": "provider_login",
       "schema": "",
       "columns": {
@@ -292,30 +290,30 @@
         "provider_login_user_id_app_user_id_fk": {
           "name": "provider_login_user_id_app_user_id_fk",
           "tableFrom": "provider_login",
-          "tableTo": "app_user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "app_user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "provider_unique_id": {
           "name": "provider_unique_id",
-          "nullsNotDistinct": false,
           "columns": [
             "provider_id",
             "subject_id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "reset_password_request": {
+    "public.reset_password_request": {
       "name": "reset_password_request",
       "schema": "",
       "columns": {
@@ -355,29 +353,29 @@
         "reset_password_request_user_id_app_user_id_fk": {
           "name": "reset_password_request_user_id_app_user_id_fk",
           "tableFrom": "reset_password_request",
-          "tableTo": "app_user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "app_user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "reset_password_request_code_unique": {
           "name": "reset_password_request_code_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "code"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "tenant": {
+    "public.tenant": {
       "name": "tenant",
       "schema": "",
       "columns": {
@@ -424,14 +422,14 @@
       "uniqueConstraints": {
         "key": {
           "name": "key",
-          "nullsNotDistinct": false,
           "columns": [
             "key"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "tenant_user": {
+    "public.tenant_user": {
       "name": "tenant_user",
       "schema": "",
       "columns": {
@@ -471,43 +469,43 @@
         "tenant_user_tenant_id_tenant_id_fk": {
           "name": "tenant_user_tenant_id_tenant_id_fk",
           "tableFrom": "tenant_user",
-          "tableTo": "tenant",
           "columnsFrom": [
             "tenant_id"
           ],
+          "tableTo": "tenant",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         },
         "tenant_user_user_id_app_user_id_fk": {
           "name": "tenant_user_user_id_app_user_id_fk",
           "tableFrom": "tenant_user",
-          "tableTo": "app_user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "app_user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "membership": {
           "name": "membership",
-          "nullsNotDistinct": false,
           "columns": [
             "tenant_id",
             "user_id"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "app_user": {
+    "public.app_user": {
       "name": "app_user",
       "schema": "",
       "columns": {
@@ -547,7 +545,7 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "user_email": {
+    "public.user_email": {
       "name": "user_email",
       "schema": "",
       "columns": {
@@ -581,29 +579,29 @@
         "user_email_user_id_app_user_id_fk": {
           "name": "user_email_user_id_app_user_id_fk",
           "tableFrom": "user_email",
-          "tableTo": "app_user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "app_user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "user_email_email_unique": {
           "name": "user_email_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
       }
     },
-    "user_token": {
+    "public.user_token": {
       "name": "user_token",
       "schema": "",
       "columns": {
@@ -637,15 +635,15 @@
         "user_token_user_id_app_user_id_fk": {
           "name": "user_token_user_id_app_user_id_fk",
           "tableFrom": "user_token",
-          "tableTo": "app_user",
           "columnsFrom": [
             "user_id"
           ],
+          "tableTo": "app_user",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -655,8 +653,10 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "1cb1f60a-3c6e-4927-ac4f-98a999134e98",
+  "prevId": "00000000-0000-0000-0000-000000000000"
 }

@@ -29,9 +29,9 @@
     "@hono/node-server": "^1.11.1",
     "@pothos/core": "^3.41.1",
     "graphql": "^16.8.1",
-    "hono": "^4.2.8",
+    "hono": "^4.3.5",
     "oauth4webapi": "^2.10.4",
-    "zod": "^3.23.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@webf/auth": "^0.5.0"
