@@ -50,9 +50,9 @@ export function session(options: SessionOptions) {
 
     if (authHeader) {
       const [type, token] = authHeader.split(' ');
-      access = await findAccess(db, token, type);
+      access = await findAccess(db, type, token);
     } else if (sessionCookie) {
-      access = await findAccess(db, sessionCookie, 'Bearer');
+      access = await findAccess(db, 'Bearer', sessionCookie);
     } else {
       access = publicAccess();
     }
@@ -62,7 +62,8 @@ export function session(options: SessionOptions) {
       throw unauthorized();
     }
 
-    c.set('access', access);
+    // TODO: Fix type safety later
+    c.set('session', access);
 
     // Continue to next middleware/handler.
     await next();

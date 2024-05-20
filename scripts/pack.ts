@@ -51,7 +51,7 @@ async function main() {
   const destination = '../crm';
 
   const auth = './packages/auth';
-  const base = './packages/base';
+  const base = './packages/hono';
 
   console.log('Build packages');
   await build(auth);
