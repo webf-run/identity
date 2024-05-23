@@ -6,8 +6,10 @@ import {
   getInvitationInfo,
   getResetTokenInfo,
   getTenants,
+  getUserTenants,
   getUsers,
   inviteUser,
+  isClient,
   resetPassword,
 } from '@webf/auth/context';
 
@@ -76,12 +78,28 @@ builder.objectType('NewTenantResponse', {
 // QUERY API
 builder.queryFields((t) => ({
 
+  getMyTenants: t.field({
+    type: ['Tenant'],
+
+    async resolve(_parent, _args, context) {
+      try {
+        const response = await getUserTenants(context);
+
+        return response;
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+  }),
+
   getTenants: t.field({
     type: ['Tenant'],
 
     async resolve(_parent, _args, context) {
       try {
         const page = { number: 1, size: 50 };
+
         const response = await getTenants(context, page);
 
         return response;

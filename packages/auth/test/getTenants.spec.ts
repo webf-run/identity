@@ -19,7 +19,7 @@ describe('Get Tenants', () => {
     const publicContext = getContext(db, publicAccess);
 
     // SUT - System Under Test
-    const response = getTenants(publicContext, {number: 1, size:1});
+    const response = getTenants(publicContext, { number: 1, size: 1 });
 
     // Verify - Result
     await rejects(response);
