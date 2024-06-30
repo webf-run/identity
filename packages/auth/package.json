@@ -1,6 +1,6 @@
 {
   "name": "@webf/auth",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Multi-tenant IAM system",
   "type": "module",
   "exports": {
